@@ -5,7 +5,7 @@
 ///	twitter @technostalgicGM
 ///
 
-textColor = {
+var textColor = {
 	light: 0,
 	dark: 1,
 	green: 2,
@@ -17,58 +17,74 @@ textColor = {
 };
 
 class textRenderer{
-	constructor(spritesheet, colorVariants = 8){
+	constructor(spritesheet, charsize, colorVariants = 8){
 		this.spritesheet = spritesheet;
+		this.charSize = charsize;
 		this.colors = colorVariants;
-		this.charSize = new vec2(
-			spritesheet.width / 13, 
-			(spritesheet.height / this.colors / 3) );
+		this.align = 0.5; // centered text alignment
+		
+		this.defaults = {
+			color: textColor.light,
+			scale: 1,
+		}
+	}
+	
+	setDefaultColor(col = textColor.light){
+		this.defaults.color = col;
+	}
+	setDefaultScale(scale = 1){
+		this.defaults.scale = scale;
 	}
 	
 	getCharSprite(character = ' '){
 		character = character.toLowerCase();
 		var cz = this.charSize;
-		var ii
+		var ii;
 		
 		ii = "0123456789".indexOf(character);
-		if(ii >= 0) return cs.getSprite(ii, 0);
+		if(ii >= 0) return cz.getSprite(ii, 0);
 		
 		switch(character){
-			case " ": new spriteBox(new vec2(), new vec2(this.charSize.x, 0));
-			case "!": return cz.getSprite(11);
-			case ":": return cz.getSprite(12);
-			case "-": return cz.getSprite(13);
+			case ' ': return new spriteBox(new vec2(), new vec2(this.charSize.x, 0));
+			case '!': return cz.getSprite(10);
+			case ':': return cz.getSprite(11);
+			case '-': return cz.getSprite(12);
 		}
 		
-		"abcdefghijklm";
-		if(ii >= 0) return cs.getSprite(ii, 1);
+		ii = "abcdefghijklm".indexOf(character);
+		if(ii >= 0) return cz.getSprite(ii, 1);
 		
-		"nopqrstuvwxyz";
-		if(ii >= 0) return cs.getSprite(ii, 2);
+		ii = "nopqrstuvwxyz".indexOf(character);
+		if(ii >= 0) return cz.getSprite(ii, 2);
 		
 		return new spriteBox(new vec2(), new vec2(this.charSize.x, 0));
 	}
 	
-	drawString(ctx, str = "-- hello world! --", pos = new vec2(), color = textColor.light, scale = 1){
+	drawString(ctx, str = "-- hello world! --", pos = new vec2(), color, scale){
 		var sprites = [];
-		var colOffset = 
-			(color >= this.colors ? 0 : color) * 
-			(this.charSize.y * 3);
+		var col = color || this.defaults.color;
+		var scl = scale || this.defaults.scale;
+		var colOffset =
+			(col >= this.colors ? 0 : col) * 
+			(this.charSize.y * 3);	
 		
 		for(var i = 0; i < str.length; i++){
 			var s = this.getCharSprite(str[i]);
-			console.log(s.width);
 			s.pos.y += colOffset;
 			sprites.push(s);
 		}
+		
+		var alignOffset = this.align * (sprites.length * this.charSize.x * scl)
+		
 		for(var i = 0; i < sprites.length; i++){
 			var box = sprites[i];
+			if(box.height <= 0) continue;
 			ctx.drawImage(
 				this.spritesheet,
 				box.left, box.top,
 				box.width, box.height,
-				pos.x, pos.y,
-				box.width * scale, box.height * scale
+				pos.x + i * this.charSize.x * scl - alignOffset, pos.y,
+				box.width * scl, box.height * scl
 				);
 		}
 	}

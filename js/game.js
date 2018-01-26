@@ -10,12 +10,14 @@
 var debug = true;
 	localStorageEnabled = true;
 	timeElapsed = 0;
+	
 var config = {},
 	controls = {};
+	
 var fonts = {},
 	gfx = {},
 	sfx = {};
-
+	
 // canvas and contexts
 var renderTarget,
 	scalingTarget;
@@ -28,14 +30,14 @@ function log(obj){
 	var ob = obj || "console logged @" + timeElapsed + "ms";
 	console.log(ob);
 }
-function loadFont(assetname, filename){
+function loadFont(assetname, filename, charsize, colorVariants = 8){
 	var out = "load font '" + filename + "'... ";
 	
 	var r = new Image();
 	r.onload = function(e){ this.loadedState = 1; };
 	r.onerror = function(e){ this.loadedState = 9; };
 	r.src = "gfx/" + filename;
-	var f = new textRenderer(r, 3);
+	var f = new textRenderer(r, charsize, colorVariants);
 	fonts[assetname] = f;
 	
 	out += "success!";
@@ -74,6 +76,9 @@ function clearScreen(color = "#aaa"){
 	renderContext.fillRect(0, 0, renderTarget.width, renderTarget.height);
 	scalingContext.fillRect(0, 0, scalingTarget.width, scalingTarget.height);
 }
+function printScreen(){
+	scalingContext.drawImage(renderTarget, 0, 0, scalingTarget.width, scalingTarget.height);
+}
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }High-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function init(){
@@ -94,8 +99,8 @@ function loadFonts(){
 	log("loading fonts... ")
 	fonts = {};
 	
-	loadFont("small", "font_small.png");
-	loadFont("large", "font_large.png");
+	loadFont("small", "font_small.png", new vec2(12, 8), 3);
+	loadFont("large", "font_large.png", new vec2(18, 32), 3);
 	
 	log(Object.keys(fonts).length.toString() + " fonts indexed");
 }
@@ -219,7 +224,9 @@ function update(dt){}
 function draw(){
 	clearScreen();
 	
-	fonts.large.drawString(renderContext);
+	fonts.large.drawString(renderContext, "-- Yo! your: MAMA!", new vec2(300), textColor.light);
+	
+	printScreen();
 }
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ { ------------------ } ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ///
