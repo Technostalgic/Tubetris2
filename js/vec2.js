@@ -1,6 +1,6 @@
 ///
 ///	code by Isaiah Smith
-///		
+///	
 ///	https://technostalgic.tech	
 ///	twitter @technostalgicGM
 ///
@@ -67,6 +67,11 @@ class vec2{
 			Math.pow(this.y - vec.y, 2));
 		return d;
 	}
+	getSprite(xColumn = 0, yRow = 0){
+		// returns a spritebox using this as the sprite's frame size
+		
+		return spriteBox.sprite(this.clone(), xColumn, yRow);
+	}
 	
 	clone(){
 		return new vec2(this.x, this.y);
@@ -92,4 +97,22 @@ class vec2{
 	toString(){
 		return "vector<" + this.x + ", " + this.y + ">";
 	}
+}
+
+class spriteBox{
+	constructor(pos = new vec2(), size = new vec2()){
+		this.pos = pos;
+		this.size = size;
+	}
+	
+	static sprite(charSize, xColumn = 0, yRow = 0){
+		return new spriteBox(new vec2(charSize.x * xColumn, charSize.y * yRow), charSize);
+	}
+	
+	get left(){ return Math.round(this.pos.x); }
+	get right() { return Math.round(this.pos.x + this.size.x); }
+	get top(){ return Math.round(this.pos.y); }
+	get bottom() { return Math.round(this.pos.y + this.size.y); }
+	get width() { return Math.round(this.size.x); }
+	get height() { return Math.round(this.size.y); }
 }

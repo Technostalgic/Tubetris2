@@ -12,7 +12,8 @@ var debug = true;
 	timeElapsed = 0;
 var config = {},
 	controls = {};
-var gfx = {},
+var fonts = {},
+	gfx = {},
 	sfx = {};
 
 // canvas and contexts
@@ -22,9 +23,24 @@ var renderContext,
 	scalingContext;
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function log(obj = "@ console logged"){
+function log(obj){
 	if(!debug) return;
-	console.log(obj);
+	var ob = obj || "console logged @" + timeElapsed + "ms";
+	console.log(ob);
+}
+function loadFont(assetname, filename){
+	var out = "load font '" + filename + "'... ";
+	
+	var r = new Image();
+	r.onload = function(e){ this.loadedState = 1; };
+	r.onerror = function(e){ this.loadedState = 9; };
+	r.src = "gfx/" + filename;
+	var f = new textRenderer(r, 3);
+	fonts[assetname] = f;
+	
+	out += "success!";
+	log(out);
+	return r;
 }
 function loadGraphic(assetname, filename){
 	var out = "load graphic '" + filename + "'... ";
@@ -67,11 +83,21 @@ function init(){
 	log("intitialized game!");
 }
 function loadAssets(){
+	loadFonts();
 	loadGFX();
 	loadSFX();
 	
 	log("waiting for assets to finish downloading... ");
 	assetLoadingFinishCheck()
+}
+function loadFonts(){
+	log("loading fonts... ")
+	fonts = {};
+	
+	loadFont("small", "font_small.png");
+	loadFont("large", "font_large.png");
+	
+	log(Object.keys(fonts).length.toString() + " fonts indexed");
 }
 function loadGFX(){
 	log("loading graphics... ")
@@ -170,7 +196,7 @@ function assetLoadingFinishCheck(){
 	return true;
 }
 function finishLoading(){
-	log("--> finished loading game! " + (performance.now()).toString() + "ms elapsed");
+	log("--> finished loading game! @" + (performance.now()).toString() + "ms");
 	getCanvas();
 	applyConfig();
 	startGameLoop();
@@ -192,6 +218,8 @@ function step(){
 function update(dt){}
 function draw(){
 	clearScreen();
+	
+	fonts.large.drawString(renderContext);
 }
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ { ------------------ } ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ///
