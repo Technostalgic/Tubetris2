@@ -69,6 +69,7 @@ function loadSound(assetname, filename){
 	log(out);
 	return r;
 }
+
 function clearScreen(color = "#aaa"){
 	renderContext.fillStyle = color;
 	scalingContext.fillStyle = color;
@@ -78,6 +79,18 @@ function clearScreen(color = "#aaa"){
 }
 function printScreen(){
 	scalingContext.drawImage(renderTarget, 0, 0, scalingTarget.width, scalingTarget.height);
+}
+function drawImage(ctx, img, pos, sprite, scale = 1){
+	if(!sprite)
+		sprite = new spriteBox(new vec2, new vec2(img.width, img.height));
+	
+	ctx.drawImage(
+		img,
+		sprite.left, sprite.top,
+		sprite.width, sprite.height,
+		pos.x, pos.y,
+		sprite.width * scale, sprite.height * scale
+		);
 }
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }High-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

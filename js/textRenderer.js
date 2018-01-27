@@ -59,33 +59,41 @@ class textRenderer{
 		
 		return new spriteBox(new vec2(), new vec2(this.charSize.x, 0));
 	}
-	
-	drawString(ctx, str = "-- hello world! --", pos = new vec2(), color, scale){
+	getStringSprites(str = "", color = 0){
 		var sprites = [];
+		
 		var col = color || this.defaults.color;
-		var scl = scale || this.defaults.scale;
 		var colOffset =
 			(col >= this.colors ? 0 : col) * 
-			(this.charSize.y * 3);	
-		
+			(this.charSize.y * 3);
+			
 		for(var i = 0; i < str.length; i++){
 			var s = this.getCharSprite(str[i]);
 			s.pos.y += colOffset;
 			sprites.push(s);
 		}
+		return sprites;
+	}
+	
+	drawString(ctx, str = "-- hello world! --", pos = new vec2(), color, scale){
+		var sprites = this.getStringSprites(str, color);
+		var scl = scale || this.defaults.scale;
 		
 		var alignOffset = this.align * (sprites.length * this.charSize.x * scl)
 		
 		for(var i = 0; i < sprites.length; i++){
 			var box = sprites[i];
 			if(box.height <= 0) continue;
-			ctx.drawImage(
-				this.spritesheet,
-				box.left, box.top,
-				box.width, box.height,
-				pos.x + i * this.charSize.x * scl - alignOffset, pos.y,
-				box.width * scl, box.height * scl
-				);
+			var tpos = pos.plus(new vec2(i * this.charSize.x * scl - alignOffset, 0));
+			
+			drawImage(ctx, this.spritesheet, tpos, box, scale);
+			//ctx.drawImage(
+			//	this.spritesheet,
+			//	box.left, box.top,
+			//	box.width, box.height,
+			//	pos.x + i * this.charSize.x * scl - alignOffset, pos.y,
+			//	box.width * scl, box.height * scl
+			//	);
 		}
 	}
 }
