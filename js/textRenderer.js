@@ -22,6 +22,8 @@ class textRenderer{
 		this.charSize = charsize;
 		this.colors = colorVariants;
 		this.align = 0.5; // centered text alignment
+		this.specCharWidths = [];
+		this.useSpecificCharWidth = false;
 		
 		this.defaults = {
 			color: textColor.light,
@@ -35,29 +37,42 @@ class textRenderer{
 	setDefaultScale(scale = 1){
 		this.defaults.scale = scale;
 	}
+	setSpecificCharacterWidths(cwidths){
+		for(var i in cwidths){
+			var j = i.toLowerCase().charCodeAt(0);
+			this.specCharWidths[j] = cwidths[i];
+		}
+		this.useSpecificCharWidth = true;
+	}
 	
 	getCharSprite(character = ' '){
 		character = character.toLowerCase();
+		
+		var cwidth = this.charSize.x;
+		if(this.useSpecificCharWidth)
+			if(this.specCharWidths[character.charCodeAt(0)] != undefined)
+				cwidth = this.specCharWidths[character.charCodeAt(0)];
+		
 		var cz = this.charSize;
 		var ii;
 		
 		ii = "0123456789".indexOf(character);
-		if(ii >= 0) return cz.getSprite(ii, 0);
+		if(ii >= 0) return cz.getSprite(ii, 0, cwidth);
 		
 		switch(character){
 			case ' ': return new spriteBox(new vec2(), new vec2(this.charSize.x, 0));
-			case '!': return cz.getSprite(10);
-			case ':': return cz.getSprite(11);
-			case '-': return cz.getSprite(12);
+			case '!': return cz.getSprite(10, 0, cwidth);
+			case ':': return cz.getSprite(11, 0, cwidth);
+			case '-': return cz.getSprite(12, 0, cwidth);
 		}
 		
 		ii = "abcdefghijklm".indexOf(character);
-		if(ii >= 0) return cz.getSprite(ii, 1);
+		if(ii >= 0) return cz.getSprite(ii, 1, cwidth);
 		
 		ii = "nopqrstuvwxyz".indexOf(character);
-		if(ii >= 0) return cz.getSprite(ii, 2);
+		if(ii >= 0) return cz.getSprite(ii, 2, cwidth);
 		
-		return new spriteBox(new vec2(), new vec2(this.charSize.x, 0));
+		return new spriteBox(new vec2(), new vec2(cwidth, 0));
 	}
 	getStringSprites(str = "", color = 0){
 		var sprites = [];
@@ -81,19 +96,14 @@ class textRenderer{
 		
 		var alignOffset = this.align * (sprites.length * this.charSize.x * scl)
 		
+		var xoff = 0;
 		for(var i = 0; i < sprites.length; i++){
 			var box = sprites[i];
 			if(box.height <= 0) continue;
-			var tpos = pos.plus(new vec2(i * this.charSize.x * scl - alignOffset, 0));
+			var tpos = pos.plus(new vec2(xoff - alignOffset, 0));
 			
 			drawImage(ctx, this.spritesheet, tpos, box, scale);
-			//ctx.drawImage(
-			//	this.spritesheet,
-			//	box.left, box.top,
-			//	box.width, box.height,
-			//	pos.x + i * this.charSize.x * scl - alignOffset, pos.y,
-			//	box.width * scl, box.height * scl
-			//	);
+			xoff += box.width * scl;
 		}
 	}
 }

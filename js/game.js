@@ -115,6 +115,20 @@ function loadFonts(){
 	loadFont("small", "font_small.png", new vec2(12, 8), 3);
 	loadFont("large", "font_large.png", new vec2(18, 32), 3);
 	
+	fonts.large.setSpecificCharacterWidths({
+		'!': 18 - 5,
+		':': 18 - 5,
+		'j': 18 - 1,
+		'1': 18 - 3
+	});
+	fonts.small.setSpecificCharacterWidths({
+		'0': 8,
+		'1': 8,
+		'2': 10,
+		'3': 10,
+		'4': 8,
+	});
+	
 	log(Object.keys(fonts).length.toString() + " fonts indexed");
 }
 function loadGFX(){
@@ -230,14 +244,15 @@ function step(){
 	update(dt);
 	draw();
 	
-	window.requestAnimationFrame(step);
+	// FIX: UNCOMMENT LINE BELOW
+	// window.requestAnimationFrame(step);
 	timeElapsed = performance.now();
 }
 function update(dt){}
 function draw(){
 	clearScreen();
 	
-	fonts.large.drawString(renderContext, "-- Yo! your: MAMA!", new vec2(300), textColor.light);
+	fonts.small.drawString(renderContext, "0123456789\nabcdefghijklm\nnopqrstuvwxyz", new vec2(300), textColor.light);
 	
 	printScreen();
 }

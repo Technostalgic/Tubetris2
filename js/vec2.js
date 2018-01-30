@@ -5,7 +5,7 @@
 ///	twitter @technostalgicGM
 ///
 
-var dir = {
+var side = {
 	none: 0,
 	left: 1,
 	right: 2,
@@ -67,10 +67,10 @@ class vec2{
 			Math.pow(this.y - vec.y, 2));
 		return d;
 	}
-	getSprite(xColumn = 0, yRow = 0){
+	getSprite(xColumn = 0, yRow = 0, altwidth = null){
 		// returns a spritebox using this as the sprite's frame size
 		
-		return spriteBox.sprite(this.clone(), xColumn, yRow);
+		return spriteBox.charSprite(this.clone(), xColumn, yRow, altwidth);
 	}
 	
 	clone(){
@@ -83,13 +83,13 @@ class vec2{
 			Math.cos(angle) * magnitude, 
 			Math.sin(angle) * magnitude);
 	}
-	static fromDir(direction){
+	static fromSide(side){
 		switch(direction){
-			case dir.none: return new vec2(0, 0);
-			case dir.left: return new vec2(-1, 0);
-			case dir.right: return new vec2(1, 0);
-			case dir.up: return new vec2(0, -1);
-			case dir.down: return new vec2(0, 1);
+			case side.none: return new vec2(0, 0);
+			case side.left: return new vec2(-1, 0);
+			case side.right: return new vec2(1, 0);
+			case side.up: return new vec2(0, -1);
+			case side.down: return new vec2(0, 1);
 		}
 		return new vec2();
 	}
@@ -105,8 +105,9 @@ class spriteBox{
 		this.size = size;
 	}
 	
-	static sprite(charSize, xColumn = 0, yRow = 0){
-		return new spriteBox(new vec2(charSize.x * xColumn, charSize.y * yRow), charSize);
+	static charSprite(charSize, xColumn = 0, yRow = 0, altwidth = null){
+		altwidth = !!altwidth ? altwidth : charSize.x;
+		return new spriteBox(new vec2(charSize.x * xColumn, charSize.y * yRow), new vec2(altwidth, charSize.y));
 	}
 	
 	get left(){ return Math.round(this.pos.x); }
