@@ -26,11 +26,15 @@ var renderContext,
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function log(obj){
+	// logs the spcified object to the console
+	
 	if(!debug) return;
 	var ob = obj || "console logged @" + timeElapsed + "ms";
 	console.log(ob);
 }
 function loadFont(assetname, filename, charsize, colorVariants = 8){
+	// downloads the specified font image and puts it into a textRenderer container with the specified data
+	
 	var out = "load font '" + filename + "'... ";
 	
 	var r = new Image();
@@ -45,6 +49,8 @@ function loadFont(assetname, filename, charsize, colorVariants = 8){
 	return r;
 }
 function loadGraphic(assetname, filename){
+	// downloads the specified image asset
+	
 	var out = "load graphic '" + filename + "'... ";
 	
 	var r = new Image();
@@ -58,6 +64,8 @@ function loadGraphic(assetname, filename){
 	return r;
 }
 function loadSound(assetname, filename){
+	// downloads the specified sound asset
+	
 	var out = "load sound '" + filename + "'... ";
 	
 	var r = new Audio("sfx/" + filename);
@@ -71,6 +79,8 @@ function loadSound(assetname, filename){
 }
 
 function clearScreen(color = "#aaa"){
+	// clears the screen to a solid color
+	
 	renderContext.fillStyle = color;
 	scalingContext.fillStyle = color;
 	
@@ -78,9 +88,12 @@ function clearScreen(color = "#aaa"){
 	scalingContext.fillRect(0, 0, scalingTarget.width, scalingTarget.height);
 }
 function printScreen(){
+	// prints the rendering canvas onto the main canvas so it can be scaled to fit the screen
 	scalingContext.drawImage(renderTarget, 0, 0, scalingTarget.width, scalingTarget.height);
 }
 function drawImage(ctx, img, pos, sprite, scale = 1){
+	// draws an image onto the specifed context
+	
 	if(!sprite)
 		sprite = new spriteBox(new vec2, new vec2(img.width, img.height));
 	
@@ -95,12 +108,14 @@ function drawImage(ctx, img, pos, sprite, scale = 1){
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }High-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function init(){
+	// initializes the game
 	loadConfig();
 	loadControls();
 	loadAssets();
 	log("intitialized game!");
 }
 function loadAssets(){
+	// downloads and prepares all the assets needed from the server
 	loadFonts();
 	loadGFX();
 	loadSFX();
@@ -109,6 +124,7 @@ function loadAssets(){
 	assetLoadingFinishCheck()
 }
 function loadFonts(){
+	// downloads all the needed font spritesheets from the server and parses them into a textRenderer container
 	log("loading fonts... ")
 	fonts = {};
 	
@@ -132,6 +148,7 @@ function loadFonts(){
 	log(Object.keys(fonts).length.toString() + " fonts indexed");
 }
 function loadGFX(){
+	// downloads all the needed graphics from the server to the client
 	log("loading graphics... ")
 	gfx = {};
 	
@@ -142,6 +159,7 @@ function loadGFX(){
 	log(Object.keys(gfx).length.toString() + " files indexed");
 }
 function loadSFX(){
+	// downloads the all the needed sound effects from the server to the client
 	log("loading sound effects... ");
 	sfx = {};
 	
@@ -150,16 +168,20 @@ function loadSFX(){
 	log(Object.keys(sfx).length.toString() + " files indexed");
 }
 function loadConfig(){
+	// loads the game configuration from localStorage
 	log("loading game configuration... ");
 	setDefaultConfig();
 }
 function loadControls(){
+	// loads the controls from localStorage
 	log("loading controls... ");
 	setDefaultControls();
 }
 
 function setDefaultConfig(){
+	// sets the default game configuration settings
 	config = {
+		animText: true,
 		animSpeed: 100,
 		music: true,
 		sound: true,
@@ -168,6 +190,7 @@ function setDefaultConfig(){
 	};
 }
 function setDefaultControls(){
+	// sets the default game controls
 	controls = {
 		ballLeft: 0,
 		ballRight: 0,
@@ -212,6 +235,12 @@ function getCanvas(){
 }
 
 function assetLoadingFinishCheck(){
+	for(var i in fonts){
+		if(!fonts[i].spritesheet.loadedState){
+			setTimeout(assetLoadingFinishCheck, 100);
+			return false;
+		}
+	}
 	for(var i in gfx){
 		if(!gfx[i].loadedState){
 			setTimeout(assetLoadingFinishCheck, 100);
