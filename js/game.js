@@ -29,7 +29,9 @@ var renderContext,
 var logType = {
 	log: 0,
 	error: 1,
-	success: 2
+	success: 2,
+	notify: 3,
+	unimportant: 4
 }
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,6 +55,12 @@ function log(obj, type = logType.log){
 			case logType.success:
 				style = "color: #0b0; background-color: #efe";  
 				break;
+			case logType.notify:
+				style = "color: #00d; background-color: #fff";  
+				break;
+			case logType.unimportant:
+				style = "color: #999; background-color: #fff";  
+				break;
 		}
 	}
 	
@@ -74,7 +82,7 @@ function loadFont(assetname, filename, charsize, colorVariants = 8){
 	
 	fonts[assetname] = f;
 	out += "success!";
-	log(out);
+	log(out, logType.unimportant);
 	return r;
 }
 function loadGraphic(assetname, filename){
@@ -89,7 +97,7 @@ function loadGraphic(assetname, filename){
 	gfx[assetname] = r;
 	
 	out += "success!";
-	log(out);
+	log(out, logType.unimportant);
 	return r;
 }
 function loadSound(assetname, filename){
@@ -103,7 +111,7 @@ function loadSound(assetname, filename){
 	sfx[assetname] = r;
 	
 	out += "success!";
-	log(out);
+	log(out, logType.unimportant);
 	return r;
 }
 
@@ -138,7 +146,8 @@ function drawImage(ctx, img, pos, sprite = null, scale = 1){
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }High-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function init(){
 	// initializes the game
-	log("initializing game @" + performance.now().toString() + "ms...");
+	log("initializing game @" + performance.now().toString() + "ms...", logType.notify);
+	gameState.switchState(new state_mainMenu());
 	getCanvas();
 	loadConfig();
 	loadControls();
@@ -214,7 +223,7 @@ function loadFonts(){
 		'z': 10
 	});
 	
-	log(Object.keys(fonts).length.toString() + " fonts indexed");
+	log(Object.keys(fonts).length.toString() + " fonts indexed", logType.notify);
 }
 function loadGFX(){
 	// downloads all the needed graphics from the server to the client
@@ -226,7 +235,7 @@ function loadGFX(){
 	loadGraphic("tiles_blocks", "tiles_blocks.png");
 	loadGraphic("balls", "balls.png");
 	
-	log(Object.keys(gfx).length.toString() + " files indexed");
+	log(Object.keys(gfx).length.toString() + " images indexed", logType.notify);
 }
 function loadSFX(){
 	// downloads the all the needed sound effects from the server to the client
@@ -235,7 +244,7 @@ function loadSFX(){
 	
 	// load sounds
 	
-	log(Object.keys(sfx).length.toString() + " files indexed");
+	log(Object.keys(sfx).length.toString() + " sounds indexed", logType.notify);
 }
 function loadConfig(){
 	// loads the game configuration from localStorage
@@ -286,7 +295,7 @@ function generateDynamicTextures(){
 }
 function generateBackground(){
 	// generates the dark tile texture that is drawn in the background
-	log("generating background texture...");
+	log("generating background texture...", logType.unimportant);
 	
 	var bg = document.createElement("canvas");
 	bg.width = 600;
@@ -309,7 +318,7 @@ function generateBackground(){
 }
 function generateForeground_border(){
 	// generates the tile border that surrounds the background tiles in menu
-	log("generating foreground border texture...");
+	log("generating foreground border texture...", logType.unimportant);
 	
 	var fg = document.createElement("canvas");
 	fg.width = 600;
@@ -335,7 +344,7 @@ function generateForeground_border(){
 }
 function generateForeground_overlay(){
 	//generates the texture that is overlayed over the background for the HUD text to disply on during gameplay
-	log("generating foreground overlay texture...");
+	log("generating foreground overlay texture...", logType.unimportant);
 	
 	var fg = document.createElement("canvas");
 	fg.width = 600;
@@ -512,24 +521,25 @@ function step(){
 	window.requestAnimationFrame(step);
 	timeElapsed = performance.now();
 }
-function update(dt){}
+function update(dt){
+	gameState.current.update(dt);
+}
 function draw(){
 	// draws the graphics onto the canvas
 	clearScreen();
-	drawBackground();
 	
-	//fonts.small.drawString(renderContext, "0123456789!:- abcdefghijklmnopqrstuvwxyz", new vec2(300, 300), textColor.light);
-	//fonts.large.drawString(renderContext, "0123456789!:- abcde", new vec2(300, 500), textColor.light);
-	//fonts.large.drawString(renderContext, "efghijklmnopqrstuvwxyz", new vec2(300, 532), textColor.light);
+	gameState.current.draw();
 	
-	drawForeground();
 	printScreen();
 }
 
 function drawBackground(){
 	drawImage(renderContext, gfx.background, new vec2());
 }
-function drawForeground(){
+function drawForegroundBorder(){
+	drawImage(renderContext, gfx.foreground_border, new vec2());
+}
+function drawForegroundOverlay(){
 	drawImage(renderContext, gfx.foreground_overlay, new vec2());
 }
 
