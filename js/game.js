@@ -24,13 +24,40 @@ var renderTarget,
 var renderContext,
 	scalingContext;
 ///
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global enumerators{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+var logType = {
+	log: 0,
+	error: 1,
+	success: 2
+}
+///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function log(obj){
+function log(obj, type = logType.log){
 	// logs the spcified object to the console
-	
 	if(!debug) return;
+	
+	// sets the console styling if the object is stylable (aka if it's a string)
+	var style;
+	if(obj.constructor.name == "String"){
+		obj = "%c" + obj;
+		
+		style = "color: #222; background-color: #ddd";
+		switch(type){
+			case logType.log:
+				style = "color: #000; background-color: #fff"; 
+				break;
+			case logType.error:
+				style = "color: #f00; background-color: #fdd";  
+				break;
+			case logType.success:
+				style = "color: #0b0; background-color: #efe";  
+				break;
+		}
+	}
+	
 	var ob = obj || "console logged @" + timeElapsed + "ms";
-	console.log(ob);
+	if(style) console.log(ob, style);
+	else console.log(ob);
 }
 function loadFont(assetname, filename, charsize, colorVariants = 8){
 	// downloads the specified font image and puts it into a textRenderer container with the specified data
@@ -38,12 +65,13 @@ function loadFont(assetname, filename, charsize, colorVariants = 8){
 	var out = "load font '" + filename + "'... ";
 	
 	var r = new Image();
-	r.onload = function(e){ this.loadedState = 1; };
-	r.onerror = function(e){ this.loadedState = 9; };
-	r.src = "gfx/" + filename;
 	var f = new textRenderer(r, charsize, colorVariants);
-	fonts[assetname] = f;
 	
+	r.onload = function(e){ this.loadedState = 1; f.loadedState = 1; };
+	r.onerror = function(e){ this.loadedState = e; f.loadedState = e; };
+	r.src = "gfx/" + filename;
+	
+	fonts[assetname] = f;
 	out += "success!";
 	log(out);
 	return r;
@@ -55,7 +83,7 @@ function loadGraphic(assetname, filename){
 	
 	var r = new Image();
 	r.onload = function(e){ this.loadedState = 1; };
-	r.onerror = function(e){ this.loadedState = 9; };
+	r.onerror = function(e){ this.loadedState = e; };
 	r.src = "gfx/" + filename;
 	gfx[assetname] = r;
 	
@@ -70,7 +98,7 @@ function loadSound(assetname, filename){
 	
 	var r = new Audio("sfx/" + filename);
 	r.onload = function(e){ this.loadedState = 1; };
-	r.onerror = function(e){ this.loadedState = 9; };
+	r.onerror = function(e){ this.loadedState = e; };
 	sfx[assetname] = r;
 	
 	out += "success!";
@@ -121,6 +149,8 @@ function loadAssets(){
 	loadSFX();
 	
 	log("waiting for assets to finish downloading... ");
+	// enters a recursive callback to check to see if the assets are finished loading 
+	// a few times per second, when they are finished, finishLoading() is called
 	assetLoadingFinishCheck()
 }
 function loadFonts(){
@@ -129,7 +159,7 @@ function loadFonts(){
 	fonts = {};
 	
 	loadFont("small", "font_small.png", new vec2(12, 8), 3);
-	loadFont("large", "font_large.png", new vec2(18, 32), 3);
+	loadFont("large", "font_lrge.png", new vec2(18, 32), 3);
 	
 	fonts.large.setSpecificCharacterWidths({
 		'!': 18 - 5,
@@ -235,29 +265,47 @@ function getCanvas(){
 }
 
 function assetLoadingFinishCheck(){
+	var errs = [];
 	for(var i in fonts){
 		if(!fonts[i].spritesheet.loadedState){
 			setTimeout(assetLoadingFinishCheck, 100);
 			return false;
-		}
+		} 
+		// if there is an error loading the font, it is added to the errs array
+		else if (fonts[i].spritesheet.loadedState != 1)
+			errs.push({ obj: fonts[i], varName: "fonts." + i });
 	}
 	for(var i in gfx){
 		if(!gfx[i].loadedState){
 			setTimeout(assetLoadingFinishCheck, 100);
 			return false;
 		}
+		// if there is an error loading the asset, it is added to the errs array
+		else if (gfx[i].loadedState != 1)
+			errs.push({ obj: gfx[i], varName: "gfx." + i });
 	}
 	for(var i in sfx){
 		if(!sfx[i].loadedState){
 			setTimeout(assetLoadingFinishCheck, 100);
 			return false;
 		}
+		// if there is an error loading the asset, it is added to the errs array 
+		else if (gfx[i].loadedState != 1)
+			errs.push({ obj: gfx[i], varName: "sfx." + i });
 	}
-	finishLoading();
+	
+	finishLoading(errs);
 	return true;
 }
-function finishLoading(){
-	log("--> finished loading game! @" + (performance.now()).toString() + "ms");
+function handleAssetLoadingErrors(errors){
+	for(var i in errors){
+		log("*** error loading '" + errors[i].obj.constructor.name + "' @ var: " + errors[i].varName, logType.error);
+		log(errors[i].obj.loadedState);
+	}
+}
+function finishLoading(errors = []){
+	if(debug) handleAssetLoadingErrors(errors);
+	log("--> finished loading game! @" + (performance.now()).toString() + "ms", logType.success);
 	getCanvas();
 	applyConfig();
 	startGameLoop();
