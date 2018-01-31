@@ -159,20 +159,56 @@ function loadFonts(){
 	fonts = {};
 	
 	loadFont("small", "font_small.png", new vec2(12, 8), 3);
-	loadFont("large", "font_lrge.png", new vec2(18, 32), 3);
+	loadFont("large", "font_large.png", new vec2(18, 32), 3);
 	
 	fonts.large.setSpecificCharacterWidths({
-		'!': 18 - 5,
-		':': 18 - 5,
-		'j': 18 - 1,
-		'1': 18 - 3
+		'1': 14,
+		'!': 12,
+		':': 12,
+		' ': 6,
+		'j': 16
 	});
 	fonts.small.setSpecificCharacterWidths({
-		'0': 8,
-		'1': 8,
-		'2': 10,
-		'3': 10,
-		'4': 8,
+		'0': 9,
+		'1': 7,
+		'2': 9,
+		'3': 9,
+		'4': 10,
+		'5': 10,
+		'6': 9,
+		'7': 9,
+		'8': 9,
+		'9': 9,
+		'!': 5,
+		':': 5,
+		'-': 9,
+		' ': 4,
+		'a': 10,
+		'b': 9,
+		'c': 9,
+		'd': 10,
+		'e': 9,
+		'f': 7,
+		'g': 10,
+		'h': 10,
+		'i': 7,
+		'j': 9,
+		'k': 10,
+		'l': 8,
+		'm': 12,
+		'n': 11,
+		'o': 11,
+		'p': 10,
+		'q': 11,
+		'r': 10,
+		's': 9,
+		't': 9,
+		'u': 10,
+		'v': 10,
+		'w': 12,
+		'x': 12,
+		'y': 11,
+		'z': 10
 	});
 	
 	log(Object.keys(fonts).length.toString() + " fonts indexed");
@@ -339,7 +375,9 @@ function update(dt){}
 function draw(){
 	clearScreen();
 	
-	fonts.small.drawString(renderContext, "0123456789!:- abcdefghijklmnopqrstuvwxyz", new vec2(300), textColor.light);
+	fonts.small.drawString(renderContext, "0123456789!:- abcdefghijklmnopqrstuvwxyz", new vec2(300, 300), textColor.light);
+	fonts.large.drawString(renderContext, "0123456789!:- abcde", new vec2(300, 500), textColor.light);
+	fonts.large.drawString(renderContext, "efghijklmnopqrstuvwxyz", new vec2(300, 532), textColor.light);
 	
 	printScreen();
 }

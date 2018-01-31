@@ -60,7 +60,7 @@ class textRenderer{
 		if(ii >= 0) return cz.getSprite(ii, 0, cwidth);
 		
 		switch(character){
-			case ' ': return new spriteBox(new vec2(), new vec2(this.charSize.x, 0));
+			case ' ': return new spriteBox(new vec2(), new vec2(cwidth, 0));
 			case '!': return cz.getSprite(10, 0, cwidth);
 			case ':': return cz.getSprite(11, 0, cwidth);
 			case '-': return cz.getSprite(12, 0, cwidth);
@@ -89,20 +89,30 @@ class textRenderer{
 		}
 		return sprites;
 	}
+	getStringWidth(str){
+		var sprites = this.getStringSprites(str);
+		var w = 0;
+		for(var i = sprites.length - 1; i >= 0; i--)
+			w += sprites[i].width;
+		return w * this.defaults.scale;
+	}
 	
 	drawString(ctx, str = "-- hello world! --", pos = new vec2(), color, scale){
 		var sprites = this.getStringSprites(str, color);
 		var scl = scale || this.defaults.scale;
 		
-		var alignOffset = this.align * (sprites.length * this.charSize.x * scl)
+		var swidth = 0;
+		for(var i = sprites.length - 1; i >= 0; i--)
+			swidth += sprites[i].width;
+		var alignOffset = this.align * (swidth * scl);
 		
 		var xoff = 0;
 		for(var i = 0; i < sprites.length; i++){
 			var box = sprites[i];
-			if(box.height <= 0) continue;
-			var tpos = pos.plus(new vec2(xoff - alignOffset, 0));
-			
-			drawImage(ctx, this.spritesheet, tpos, box, scale);
+			if(box.height > 0){
+				var tpos = pos.plus(new vec2(xoff - alignOffset, 0));
+				drawImage(ctx, this.spritesheet, tpos, box, scale);
+			}
 			xoff += box.width * scl;
 		}
 	}
