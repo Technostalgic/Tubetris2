@@ -5,6 +5,7 @@
 ///	twitter @technostalgicGM
 ///
 
+// enumerates the different colors in a font's color spritesheet
 var textColor = {
 	light: 0,
 	dark: 1,
@@ -18,6 +19,7 @@ var textColor = {
 
 class textRenderer{
 	constructor(spritesheet, charsize, colorVariants = 8){
+		// initializes a textRenderer object, used for rendering text with a given text spritesheet
 		this.spritesheet = spritesheet;
 		this.charSize = charsize;
 		this.colors = colorVariants;
@@ -32,12 +34,15 @@ class textRenderer{
 	}
 	
 	setDefaultColor(col = textColor.light){
+		// sets the default textColor that the text will be rendered as
 		this.defaults.color = col;
 	}
 	setDefaultScale(scale = 1){
+		// sets the default scale that the text will be rendered at
 		this.defaults.scale = scale;
 	}
 	setSpecificCharacterWidths(cwidths){
+		// sets an individual width for each character in the spritesheet to provide more accurate spacing
 		for(var i in cwidths){
 			var j = i.toLowerCase().charCodeAt(0);
 			this.specCharWidths[j] = cwidths[i];
@@ -46,6 +51,7 @@ class textRenderer{
 	}
 	
 	getCharSprite(character = ' '){
+		// returns the spritebox that represents the character's position and size within the spritesheet
 		character = character.toLowerCase();
 		
 		var cwidth = this.charSize.x;
@@ -75,6 +81,7 @@ class textRenderer{
 		return new spriteBox(new vec2(), new vec2(cwidth, 0));
 	}
 	getStringSprites(str = "", color = 0){
+		// returns a list of character sprites that represent the characters' position and size inside the spritesheet
 		var sprites = [];
 		
 		var col = color || this.defaults.color;
@@ -90,6 +97,7 @@ class textRenderer{
 		return sprites;
 	}
 	getStringWidth(str){
+		// returns the width in pixels that the string will be when it's drawn
 		var sprites = this.getStringSprites(str);
 		var w = 0;
 		for(var i = sprites.length - 1; i >= 0; i--)
@@ -98,6 +106,7 @@ class textRenderer{
 	}
 	
 	drawString(ctx, str = "-- hello world! --", pos = new vec2(), color, scale){
+		// renders the string to the specified context with the graphics inside this textRenderer's spritesheet
 		var sprites = this.getStringSprites(str, color);
 		var scl = scale || this.defaults.scale;
 		

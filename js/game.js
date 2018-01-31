@@ -25,6 +25,7 @@ var renderContext,
 	scalingContext;
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global enumerators{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+// enumerates the different styles that console logs can be
 var logType = {
 	log: 0,
 	error: 1,
