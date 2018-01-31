@@ -222,14 +222,12 @@ function setDefaultConfig(){
 function setDefaultControls(){
 	// sets the default game controls
 	controls = {
-		ballLeft: 0,
-		ballRight: 0,
-		ballDown: 0,
-		ballUp: 0,
-		bumpLeft: 0,
-		bumpRight: 0,
-		bumpDown: 0,
+		Left: 0,
+		Right: 0,
+		Up: 0,
+		Down: 0,
 		quickDrop: 0,
+		nudgeDown: 0,
 		rotateCW: 0,
 		rotateCCW: 0,
 		select: 0,
@@ -238,6 +236,7 @@ function setDefaultControls(){
 }
 
 function applyConfig(){
+	// applies the game configuration settings
 	var smoothing = config.imageSmoothing;
 	
 	renderContext.mozImageSmoothingEnabled    = smoothing;
@@ -253,11 +252,14 @@ function applyConfig(){
 	scalingContext.imageSmoothingEnabled       = smoothing;
 }
 function getCanvas(){
+	// gets or creates the canvas and canvas contexts from the webpage and sets them to the global variables
 	log("retrieving canvas data... ");
 	
+	// the scaling canvas is what is displayed on the webpage
 	scalingTarget = document.getElementById("canvas");
 	scalingContext = scalingTarget.getContext("2d");
 	
+	// the rendering canvas is the canvas that everything is rendered to in the game's native resolution, it is then rescaled by the scaling canvas to the desired resolution before being drawn
 	renderTarget = document.createElement("canvas");
 	renderTarget.width = 600;
 	renderTarget.height = 800;
@@ -265,6 +267,8 @@ function getCanvas(){
 }
 
 function assetLoadingFinishCheck(){
+	// checks to see if the assets are done downloading, if not, it sets a callback to itself and returns empty
+	
 	var errs = [];
 	for(var i in fonts){
 		if(!fonts[i].spritesheet.loadedState){
@@ -298,12 +302,16 @@ function assetLoadingFinishCheck(){
 	return true;
 }
 function handleAssetLoadingErrors(errors){
+	// logs the errors in the console
 	for(var i in errors){
+		// the problem variable
 		log("*** error loading '" + errors[i].obj.constructor.name + "' @ var: " + errors[i].varName, logType.error);
+		// the error object
 		log(errors[i].obj.loadedState);
 	}
 }
 function finishLoading(errors = []){
+	// called after all assets are done downloading
 	if(debug) handleAssetLoadingErrors(errors);
 	log("--> finished loading game! @" + (performance.now()).toString() + "ms", logType.success);
 	getCanvas();
@@ -312,10 +320,12 @@ function finishLoading(errors = []){
 }
 
 function startGameLoop(){
+	// sets an animation frame callback for the main gameloop step
 	log("initiating game loop...");
 	window.requestAnimationFrame(step);
 }
 function step(){
+	// a game step occurs, update logic is applied and the game is rendered
 	var dt = performance.now() - timeElapsed;
 	
 	update(dt);
@@ -329,7 +339,7 @@ function update(dt){}
 function draw(){
 	clearScreen();
 	
-	fonts.small.drawString(renderContext, "0123456789\nabcdefghijklm\nnopqrstuvwxyz", new vec2(300), textColor.light);
+	fonts.small.drawString(renderContext, "0123456789!:- abcdefghijklmnopqrstuvwxyz", new vec2(300), textColor.light);
 	
 	printScreen();
 }
