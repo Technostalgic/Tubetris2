@@ -105,7 +105,7 @@ class textRenderer{
 		return w * this.defaults.scale;
 	}
 	
-	drawString(ctx, str = "-- hello world! --", pos = new vec2(), color, scale){
+	drawString(ctx, str = "-- hello: world! --", pos = new vec2(), color, scale){
 		// renders the string to the specified context with the graphics inside this textRenderer's spritesheet
 		var sprites = this.getStringSprites(str, color);
 		var scl = scale || this.defaults.scale;

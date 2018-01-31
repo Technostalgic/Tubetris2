@@ -120,7 +120,7 @@ function printScreen(){
 	// prints the rendering canvas onto the main canvas so it can be scaled to fit the screen
 	scalingContext.drawImage(renderTarget, 0, 0, scalingTarget.width, scalingTarget.height);
 }
-function drawImage(ctx, img, pos, sprite, scale = 1){
+function drawImage(ctx, img, pos, sprite = null, scale = 1){
 	// draws an image onto the specifed context
 	
 	if(!sprite)
@@ -138,6 +138,7 @@ function drawImage(ctx, img, pos, sprite, scale = 1){
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }High-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function init(){
 	// initializes the game
+	getCanvas();
 	loadConfig();
 	loadControls();
 	loadAssets();
@@ -219,6 +220,7 @@ function loadGFX(){
 	log("loading graphics... ")
 	gfx = {};
 	
+	loadGraphic("tiles_empty", "tiles_empty.png");
 	loadGraphic("tiles_tubes", "tiles_tubes.png");
 	loadGraphic("tiles_blocks", "tiles_blocks.png");
 	loadGraphic("balls", "balls.png");
@@ -270,6 +272,120 @@ function setDefaultControls(){
 		select: 0,
 		pause: 0
 	};
+}
+
+function generateDynamicTextures(){
+	log("generating dynamic textures...");
+	
+	generateBackground();
+	generateForeground_border();
+	generateForeground_overlay();
+	
+	log("finished generating dynamic textures! @" + performance.now() + "ms", logType.success);
+}
+function generateBackground(){
+	// generates the dark tile texture that is drawn in the background
+	log("generating background texture...");
+	
+	var bg = document.createElement("canvas");
+	bg.width = 600;
+	bg.height = 800;
+	var bgctx = bg.getContext("2d");
+	var off = new vec2(-20, -16);
+	var tilesize = 32;
+	var cX = Math.floor(bg.width / tilesize) + 1;
+	var cY = Math.floor(bg.height / tilesize) + 1;
+	var sbox = new spriteBox(new vec2(32, 0), new vec2(32));
+	
+	for(var y = 0; y <= cY; y++){
+		for(var x = 0; x <= cX; x++){
+			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
+			drawImage(bgctx, gfx.tiles_empty, tpos, sbox);
+		}
+	}
+	
+	gfx.background = bg;
+}
+function generateForeground_border(){
+	// generates the tile border that surrounds the background tiles in menu
+	log("generating foreground border texture...");
+	
+	var fg = document.createElement("canvas");
+	fg.width = 600;
+	fg.height = 800;
+	var fgctx = fg.getContext("2d");
+	var off = new vec2(-20, -16);
+	var tilesize = 32;
+	var cX = Math.floor(fg.width / tilesize) + 1;
+	var cY = Math.floor(fg.height / tilesize);
+	var sbox = new spriteBox(new vec2(0), new vec2(32));
+	
+	for(var y = 0; y <= cY; y++){
+		for(var x = 0; x <= cX;
+			x += (y == 0 || y == cY) ?
+			1 : cX
+			){
+			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
+			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
+		}
+	}
+	
+	gfx.foreground_border = fg;
+}
+function generateForeground_overlay(){
+	//generates the texture that is overlayed over the background for the HUD text to disply on during gameplay
+	log("generating foreground overlay texture...");
+	
+	var fg = document.createElement("canvas");
+	fg.width = 600;
+	fg.height = 800;
+	var fgctx = fg.getContext("2d");
+	var off = new vec2(-20, -16);
+	var tilesize = 32;
+	var cX = Math.floor(fg.width / tilesize) + 1;
+	var cY = Math.floor(fg.height / tilesize);
+	var sbox = new spriteBox(new vec2(), new vec2(32));
+	
+	// border foreground tiles
+	for(var y = 0; y <= cY; y++){
+		for(var x = 0; x <= cX;
+			x += (y == 0 || y == cY) ?
+			1 : cX
+			){
+			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
+			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
+		}
+	}
+	
+	// foreground tiles above next piece area
+	for(var x = 11; x < cX; x++){
+		var tpos = off.plus(new vec2(x * tilesize, 1 * tilesize));
+		drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
+	}
+	// foreground tiles to the left of next piece area
+	for(var y = 1; y <= 3; y++){
+		for(var x = 11; x <= 12; x++){
+			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
+			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
+		}
+	}
+	// foreground tiles to the right of next piece area
+	for(var y = 1; y <= 3; y++){
+		for(var x = cX - 1; x < cX; x++){
+			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
+			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
+		}
+	}
+	
+	// foreground tiles on the right side of the screen
+	for(var y = 4; y < cY; y++){
+		for(var x = 11; x < cX; x++){
+			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
+			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
+		}
+	}
+	
+	gfx.foreground_overlay = fg;
 }
 
 function applyConfig(){
@@ -350,8 +466,8 @@ function handleAssetLoadingErrors(errors){
 function finishLoading(errors = []){
 	// called after all assets are done downloading
 	if(debug) handleAssetLoadingErrors(errors);
-	log("--> finished loading game! @" + (performance.now()).toString() + "ms", logType.success);
-	getCanvas();
+	log("--> finished loading game assets! @" + (performance.now()).toString() + "ms", logType.success);
+	generateDynamicTextures();
 	applyConfig();
 	startGameLoop();
 }
@@ -368,20 +484,30 @@ function step(){
 	update(dt);
 	draw();
 	
-	// FIX: UNCOMMENT LINE BELOW
-	// window.requestAnimationFrame(step);
+	window.requestAnimationFrame(step);
 	timeElapsed = performance.now();
 }
 function update(dt){}
 function draw(){
+	// draws the graphics onto the canvas
 	clearScreen();
+	drawBackground();
 	
-	fonts.small.drawString(renderContext, "0123456789!:- abcdefghijklmnopqrstuvwxyz", new vec2(300, 300), textColor.light);
-	fonts.large.drawString(renderContext, "0123456789!:- abcde", new vec2(300, 500), textColor.light);
-	fonts.large.drawString(renderContext, "efghijklmnopqrstuvwxyz", new vec2(300, 532), textColor.light);
+	//fonts.small.drawString(renderContext, "0123456789!:- abcdefghijklmnopqrstuvwxyz", new vec2(300, 300), textColor.light);
+	//fonts.large.drawString(renderContext, "0123456789!:- abcde", new vec2(300, 500), textColor.light);
+	//fonts.large.drawString(renderContext, "efghijklmnopqrstuvwxyz", new vec2(300, 532), textColor.light);
 	
+	drawForeground();
 	printScreen();
 }
+
+function drawBackground(){
+	drawImage(renderContext, gfx.background, new vec2());
+}
+function drawForeground(){
+	drawImage(renderContext, gfx.foreground_overlay, new vec2());
+}
+
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ { ------------------ } ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ///
 
