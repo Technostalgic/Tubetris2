@@ -1,7 +1,7 @@
 ///
 ///	code by Isaiah Smith
-///		
-///	https://technostalgic.tech  
+///
+///	https://technostalgic.tech
 ///	twitter @technostalgicGM
 ///
 
@@ -25,15 +25,14 @@ class controlState{
 		log("initializing controlState...");
 		controlState.keys = [];
 		controlState.mouseDown = false;
+		controlState.controls = {};
 	}
-	
 	static listenForKeyDown(e){
 		if(!e.keyCode) return;
 		controlState.keys[e.keyCode] = true;
 		
 		var a = controlState.getControlsForKey(e.keyCode);
 		for(var i = a.length - 1; i >= 0; i--){
-			log("control " + a[i] + " pressed", logType.notify);
 			gameState.current.controlTap(a[i]);
 		}
 	}
@@ -48,39 +47,43 @@ class controlState{
 	static isControlDown(action = controlAction.none){
 		switch(action){
 			case controlAction.none: return false;
-			case controlAction.left: return controlState.isKeyDown(controls.left);
-			case controlAction.right: return controlState.isKeyDown(controls.right);
-			case controlAction.up: return controlState.isKeyDown(controls.up);
-			case controlAction.down: return controlState.isKeyDown(controls.down);
-			case controlAction.quickDrop: return controlState.isKeyDown(controls.quickDrop);
-			case controlAction.nudgeDown: return controlState.isKeyDown(controls.nudgeDown);
-			case controlAction.rotateCW: return controlState.isKeyDown(controls.rotateCW);
-			case controlAction.rotateCCW: return controlState.isKeyDown(controls.rotateCCW);
-			case controlAction.select: return controlState.isKeyDown(controls.select);
-			case controlAction.pause: return controlState.isKeyDown(controls.pause);
+			case controlAction.left: return controlState.isKeyDown(controlState.controls.left);
+			case controlAction.right: return controlState.isKeyDown(controlState.controls.right);
+			case controlAction.up: return controlState.isKeyDown(controlState.controls.up);
+			case controlAction.down: return controlState.isKeyDown(controlState.controls.down);
+			case controlAction.quickDrop: return controlState.isKeyDown(controlState.controls.quickDrop);
+			case controlAction.nudgeDown: return controlState.isKeyDown(controlState.controls.nudgeDown);
+			case controlAction.rotateCW: return controlState.isKeyDown(controlState.controls.rotateCW);
+			case controlAction.rotateCCW: return controlState.isKeyDown(controlState.controls.rotateCCW);
+			case controlAction.select: return controlState.isKeyDown(controlState.controls.select);
+			case controlAction.pause: return controlState.isKeyDown(controlState.controls.pause);
 		}
 		return false;
 	}
 	
+	static setControls(controls){
+		controlState.controls = controls;
+	}
+	
 	static getAllControls(){
 		return [
-			controls.left,
-			controls.right,
-			controls.up,
-			controls.down,
-			controls.quickDrop,
-			controls.nudgeDown,
-			controls.rotateCW,
-			controls.rotateCCW,
-			controls.select,
-			controls.pause
+			controlState.controls.left,
+			controlState.controls.right,
+			controlState.controls.up,
+			controlState.controls.down,
+			controlState.controls.quickDrop,
+			controlState.controls.nudgeDown,
+			controlState.controls.rotateCW,
+			controlState.controls.rotateCCW,
+			controlState.controls.select,
+			controlState.controls.pause
 		];
 	}
 	static getControlsForKey(keycode){
 		var r = [];
 		
-		for(var i in controls)
-			if(controls[i] == keycode)
+		for(var i in controlState.controls)
+			if(controlState.controls[i] == keycode)
 				r.push(controlAction[i]);
 			
 		return r;

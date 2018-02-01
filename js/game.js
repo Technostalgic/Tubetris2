@@ -11,8 +11,7 @@ var debug = true;
 	localStorageEnabled = true;
 	timeElapsed = 0;
 	
-var config = {},
-	controls = {};
+var config = {};
 	
 var fonts = {},
 	gfx = {},
@@ -148,14 +147,19 @@ function init(){
 	// initializes the game
 	log("initializing game @" + performance.now().toString() + "ms...", logType.notify);
 	addInputEventListeners();
+	
 	controlState.init();
 	gameState.switchState(new state_mainMenu());
+	
 	getCanvas();
+	
 	loadConfig();
 	loadControls();
 	loadAssets();
+	
 	log("intitialized game!");
 }
+
 function loadAssets(){
 	// downloads and prepares all the assets needed from the server
 	loadFonts();
@@ -254,7 +258,7 @@ function loadConfig(){
 	setDefaultConfig();
 }
 function loadControls(){
-	// loads the controls from localStorage
+	// loads the controlState.controls from localStorage
 	log("loading controls... ");
 	setDefaultControls();
 }
@@ -271,22 +275,23 @@ function setDefaultConfig(){
 	};
 }
 function setDefaultControls(){
-	// sets the default game controls
-	controls = {
+	// sets the default game controlState.controls
+	var c = {
 		left: 37,
 		right: 39,
-		up: 0,
-		down: 0,
+		up: 38,
+		down: 40,
 		quickDrop: 0,
-		nudgeDown: 0,
-		rotateCW: 0,
+		nudgeDown: 40,
+		rotateCW: 38,
 		rotateCCW: 0,
-		select: 0,
-		pause: 0
+		select: 32,
+		pause: 13
 	};
+	controlState.setControls(c);
 }
 function addInputEventListeners(){
-	window.addEventListener('keydown', function(e){ log("key '" + e.key + "'(" + e.keyCode + ") pressed", logType.notify); });
+	//window.addEventListener('keydown', function(e){ log("key '" + e.key + "'(" + e.keyCode + ") pressed", logType.notify); });
 	window.addEventListener('keydown', controlState.listenForKeyDown);
 	window.addEventListener('keyup', controlState.listenForKeyUp);
 }
