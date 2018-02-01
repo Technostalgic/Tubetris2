@@ -105,7 +105,7 @@ function loadSound(assetname, filename){
 	var out = "load sound '" + filename + "'... ";
 	
 	var r = new Audio("sfx/" + filename);
-	r.onload = function(e){ this.loadedState = 1; };
+	r.oncanplay = function(e){ this.loadedState = 1; };
 	r.onerror = function(e){ this.loadedState = e; };
 	sfx[assetname] = r;
 	
@@ -141,6 +141,10 @@ function drawImage(ctx, img, pos, sprite = null, scale = 1){
 		sprite.width * scale, sprite.height * scale
 		);
 }
+
+function screenCenter(){
+	return new vec2(renderTarget.width / 2, renderTarget.height / 2);
+}
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }High-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function init(){
@@ -151,13 +155,12 @@ function init(){
 	addInputEventListeners();
 	
 	controlState.init();
-	gameState.switchState(new state_mainMenu());
-	
 	
 	loadConfig();
 	loadControls();
 	loadAssets();
-	
+
+	gameState.switchState(new state_mainMenu());	
 	log("intitialized game!");
 }
 
@@ -241,6 +244,7 @@ function loadGFX(){
 	loadGraphic("tiles_tubes", "tiles_tubes.png");
 	loadGraphic("tiles_blocks", "tiles_blocks.png");
 	loadGraphic("balls", "balls.png");
+	loadGraphic("arrows", "arrows.png");
 	
 	log(Object.keys(gfx).length.toString() + " images indexed", logType.notify);
 }
@@ -250,6 +254,8 @@ function loadSFX(){
 	sfx = {};
 	
 	// load sounds
+	loadSound("moveCursor", "moveCursor.wav");
+	loadSound("select", "select.wav");
 	
 	log(Object.keys(sfx).length.toString() + " sounds indexed", logType.notify);
 }
@@ -505,7 +511,7 @@ function assetLoadingFinishCheck(){
 			return false;
 		}
 		// if there is an error loading the asset, it is added to the errs array 
-		else if (gfx[i].loadedState != 1)
+		else if (sfx[i].loadedState != 1)
 			errs.push({ obj: gfx[i], varName: "sfx." + i });
 	}
 	
