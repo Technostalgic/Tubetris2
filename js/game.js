@@ -147,6 +147,8 @@ function drawImage(ctx, img, pos, sprite = null, scale = 1){
 function init(){
 	// initializes the game
 	log("initializing game @" + performance.now().toString() + "ms...", logType.notify);
+	addInputEventListeners();
+	controlState.init();
 	gameState.switchState(new state_mainMenu());
 	getCanvas();
 	loadConfig();
@@ -271,10 +273,10 @@ function setDefaultConfig(){
 function setDefaultControls(){
 	// sets the default game controls
 	controls = {
-		Left: 0,
-		Right: 0,
-		Up: 0,
-		Down: 0,
+		left: 37,
+		right: 39,
+		up: 0,
+		down: 0,
 		quickDrop: 0,
 		nudgeDown: 0,
 		rotateCW: 0,
@@ -282,6 +284,19 @@ function setDefaultControls(){
 		select: 0,
 		pause: 0
 	};
+}
+function addInputEventListeners(){
+	window.addEventListener('keydown', function(e){ log("key '" + e.key + "'(" + e.keyCode + ") pressed", logType.notify); });
+	window.addEventListener('keydown', controlState.listenForKeyDown);
+	window.addEventListener('keyup', controlState.listenForKeyUp);
+}
+function preventKeyScrolling(){
+	// prevents arrow key / space scrolling on the web page
+	window.addEventListener("keydown", function(e) {
+		if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+			e.preventDefault();
+		}
+	}, false);
 }
 
 function generateDynamicTextures(){
@@ -546,4 +561,5 @@ function drawForegroundOverlay(){
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ { ------------------ } ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ///
 
+preventKeyScrolling();
 window.addEventListener("load", init);

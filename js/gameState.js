@@ -8,9 +8,13 @@
 var gameMode;
 
 class gameState{
-	constructor(){ }
+	constructor(){ 
+		this.timeElapsed = 0;
+	}
 	
-	update(dt){ }
+	update(dt){
+		this.timeElapsed += dt;
+	}
 	draw(){ }
 	
 	static get current(){
@@ -31,6 +35,9 @@ class gameState{
 	
 	switchFrom(tostate = null){}
 	switchTo(fromstate = null){}
+	
+	controlTap(control = controlAction.none){}
+	controlDown(control = controlAction.none){}
 }
 
 class state_mainMenu extends gameState{
@@ -40,6 +47,7 @@ class state_mainMenu extends gameState{
 	
 	update(dt){
 		// updates the main menu
+		super.update(dt);
 	}
 	draw(){
 		// draws the the main menu
@@ -52,6 +60,13 @@ class state_mainMenu extends gameState{
 		
 	}
 	switchTo(fromstate = null){
+		
+	}
+	
+	controlTap(control = controlAction.none){
+		
+	}
+	controlDown(control = controlAction.none){
 		
 	}
 }
