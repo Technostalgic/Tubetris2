@@ -37,7 +37,8 @@ class gameState{
 	switchTo(fromstate = null){}
 	
 	controlTap(control = controlAction.none){}
-	controlDown(control = controlAction.none){}
+	mouseTap(pos){}
+	mouseMove(pos){}
 }
 
 class state_mainMenu extends gameState{

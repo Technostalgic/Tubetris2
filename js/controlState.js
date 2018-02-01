@@ -25,7 +25,19 @@ class controlState{
 		log("initializing controlState...");
 		controlState.keys = [];
 		controlState.mouseDown = false;
+		controlState.mousePos = new vec2();
 		controlState.controls = {};
+	}
+	
+	static listenForMouseMove(e){
+		controlState.mousePos = new vec2(e.offsetX, e.offsetY);
+		gameState.current.mouseMove(controlState.mousePos);
+	}
+	static listenForMouseDown(e){
+		controlState.mouseDown = true;
+	}
+	static listenForMouseUp(e){
+		controlState.mouseDown = false;
 	}
 	static listenForKeyDown(e){
 		if(!e.keyCode) return;
@@ -64,7 +76,7 @@ class controlState{
 	static setControls(controls){
 		controlState.controls = controls;
 	}
-	
+
 	static getAllControls(){
 		return [
 			controlState.controls.left,

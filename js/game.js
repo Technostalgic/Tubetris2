@@ -146,12 +146,13 @@ function drawImage(ctx, img, pos, sprite = null, scale = 1){
 function init(){
 	// initializes the game
 	log("initializing game @" + performance.now().toString() + "ms...", logType.notify);
+	
+	getCanvas();
 	addInputEventListeners();
 	
 	controlState.init();
 	gameState.switchState(new state_mainMenu());
 	
-	getCanvas();
 	
 	loadConfig();
 	loadControls();
@@ -292,6 +293,9 @@ function setDefaultControls(){
 }
 function addInputEventListeners(){
 	//window.addEventListener('keydown', function(e){ log("key '" + e.key + "'(" + e.keyCode + ") pressed", logType.notify); });
+	scalingTarget.addEventListener('mousedown', controlState.listenForMouseDown);
+	scalingTarget.addEventListener('mouseup', controlState.listenForMouseUp);
+	scalingTarget.addEventListener('mousemove', controlState.listenForMouseMove);
 	window.addEventListener('keydown', controlState.listenForKeyDown);
 	window.addEventListener('keyup', controlState.listenForKeyUp);
 }
