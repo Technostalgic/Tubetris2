@@ -551,7 +551,7 @@ function finishLoading(errors = []){
 
 function startGameLoop(){
 	// sets an animation frame callback for the main gameloop step
-	log("initiating game loop...");
+	log("initiating game loop...", logType.notify);
 	window.requestAnimationFrame(step);
 }
 function step(){

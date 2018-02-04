@@ -56,10 +56,11 @@ class gameState{
 
 // a pressable button in the GUI that the player can interact with
 class menuButton{
-	constructor(text, pos){
+	constructor(text, pos, description = ""){
 		// initializes a button
 		this.pos = pos;
 		this.text = text;
+		this.description = description;
 		this.action = null;
 		
 		// sets this.size
@@ -74,8 +75,10 @@ class menuButton{
 	
 	trigger(args){
 		// called when the button is pressed by the player
-		if(action)
-			action(args);
+		if(this.action)
+			this.action(args);
+		
+		log("menu button '" + this.text + "' triggered", logType.log);
 	}
 	
 	draw(selected = false){
@@ -85,10 +88,15 @@ class menuButton{
 		fonts.large.drawString(renderContext, this.text, this.pos, col);
 		
 		if(selected){
+			// draws arrows to the left and right of the button
 			var w = fonts.large.getStringWidth(this.text);
 			var mpos = this.pos.plus(new vec2(0, fonts.large.charSize.y / 2));
 			drawArrow(mpos.plus(new vec2(w / -2 - 10, 0)), side.right);
 			drawArrow(mpos.plus(new vec2(w / 2 + 10, 0)), side.left);
+			
+			// draws the button's description
+			var dpos = screenCenter().plus(new vec2(0, 370));
+			fonts.small.drawString(renderContext, this.description, dpos, textColor.light);
 		}
 	}
 }
@@ -108,10 +116,10 @@ class state_mainMenu extends gameState{
 		// adds the buttons to the interface
 		this.buttons = [];
 		var off = -2;
-		this.buttons.push(new menuButton("Start Game", screenCenter().plus(new vec2(0, off * 45)))); off++;
-		this.buttons.push(new menuButton("Scoreboard", screenCenter().plus(new vec2(0, off * 45)))); off++;
-		this.buttons.push(new menuButton("Options", screenCenter().plus(new vec2(0, off * 45)))); off++;
-		this.buttons.push(new menuButton("Credits", screenCenter().plus(new vec2(0, off * 45)))); off++;
+		this.buttons.push(new menuButton("Start Game", screenCenter().plus(new vec2(0, off * 45)), "start a new game")); off++;
+		this.buttons.push(new menuButton("Scoreboard", screenCenter().plus(new vec2(0, off * 45)), "view the highest scoring players")); off++;
+		this.buttons.push(new menuButton("Options", screenCenter().plus(new vec2(0, off * 45)), "configure gameplay and av options")); off++;
+		this.buttons.push(new menuButton("Credits", screenCenter().plus(new vec2(0, off * 45)), "see who contributed to making the game!")); off++;
 	}
 	
 	selectionDown(){
@@ -122,7 +130,6 @@ class state_mainMenu extends gameState{
 	}
 	selectionUp(){
 		// moves the menu cursor up to the previous selectable menu item
-		console.log(this.currentSelection);
 		this.currentSelection -= 1;
 		if(this.currentSelection < 0)
 			this.currentSelection = this.buttons.length - 1;
