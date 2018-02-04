@@ -22,6 +22,7 @@ var controlAction = {
 
 class controlState{
 	static init(){
+		// initializes the static fields of controlState
 		log("initializing controlState...");
 		controlState.keys = [];
 		controlState.mouseDown = false;
@@ -30,16 +31,20 @@ class controlState{
 	}
 	
 	static listenForMouseMove(e){
+		// the event listener that is triggered when the mouse is moved
 		controlState.mousePos = new vec2(e.offsetX, e.offsetY);
 		gameState.current.mouseMove(controlState.mousePos);
 	}
 	static listenForMouseDown(e){
+		// the event listener that is triggered when the mouse is pressed
 		controlState.mouseDown = true;
 	}
 	static listenForMouseUp(e){
+		// the event listener that is triggered when the mouse is released
 		controlState.mouseDown = false;
 	}
 	static listenForKeyDown(e){
+		// the event listener that is triggered when a keyboard key is pressed
 		if(!e.keyCode) return;
 		controlState.keys[e.keyCode] = true;
 		
@@ -49,14 +54,17 @@ class controlState{
 		}
 	}
 	static listenForKeyUp(e){
+		// the event listener that is triggered when a keyboard key is released
 		if(!e.keyCode) return;
 		controlState.keys[e.keyCode] = false;
 	}
 	
 	static isKeyDown(keyCode){
+		// checks to see if a key is currently pressed
 		return(!!controlState.keys[keyCode]);
 	}
 	static isControlDown(action = controlAction.none){
+		// checks to see if a control action is currently being triggered
 		switch(action){
 			case controlAction.none: return false;
 			case controlAction.left: return controlState.isKeyDown(controlState.controls.left);
@@ -74,10 +82,12 @@ class controlState{
 	}
 	
 	static setControls(controls){
+		// sets the control bindings
 		controlState.controls = controls;
 	}
 
 	static getAllControls(){
+		// returns a list of all the keys currently bound to control actions
 		return [
 			controlState.controls.left,
 			controlState.controls.right,
@@ -92,6 +102,7 @@ class controlState{
 		];
 	}
 	static getControlsForKey(keycode){
+		// returns all the control actions currently bound to a specified key
 		var r = [];
 		
 		for(var i in controlState.controls)
