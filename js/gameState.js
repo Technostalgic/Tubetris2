@@ -68,7 +68,8 @@ class menuButton{
 	
 	calcSize(){
 		// calculates and sets this.size
-		fonts.large.getStringWidth();
+		var w = fonts.large.getStringWidth();
+		this.size = new vec2(w, fonts.large.charSize.y);
 	}
 	
 	trigger(args){
@@ -82,6 +83,13 @@ class menuButton{
 		var col = selected ? textColor.green : textColor.light;
 		
 		fonts.large.drawString(renderContext, this.text, this.pos, col);
+		
+		if(selected){
+			var w = fonts.large.getStringWidth(this.text);
+			var mpos = this.pos.plus(new vec2(0, fonts.large.charSize.y / 2));
+			drawArrow(mpos.plus(new vec2(w / -2 - 10, 0)), side.right);
+			drawArrow(mpos.plus(new vec2(w / 2 + 10, 0)), side.left);
+		}
 	}
 }
 

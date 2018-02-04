@@ -143,7 +143,20 @@ function drawImage(ctx, img, pos, sprite = null, scale = 1){
 }
 
 function screenCenter(){
+	// returns the center point of the render target
 	return new vec2(renderTarget.width / 2, renderTarget.height / 2);
+}
+function drawArrow(pos, dir = side.right){
+	// renders a blinking arrow at the specified position and facing the specified direction
+	var blinkRate = 500;
+	var isBlinking = gameState.current.timeElapsed % blinkRate >= blinkRate / 2;
+	
+	var ssize = 16;
+	var spos = new vec2(ssize * (dir - 1), isBlinking ? 16 : 0);
+	var sprite = new spriteBox(spos, new vec2(ssize));
+	
+	drawImage(renderContext, gfx.arrows, pos.minus(new vec2(ssize / 2)), sprite);
+	
 }
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }High-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
