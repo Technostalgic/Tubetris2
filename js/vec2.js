@@ -5,6 +5,7 @@
 ///	twitter @technostalgicGM
 ///
 
+// enumerates between the 4 sides of a recatangle
 var side = {
 	none: 0,
 	left: 1,
@@ -38,7 +39,7 @@ class vec2{
 	}
 	minus(vec){
 		//returns the result of this subtracted to another specified vector2
-		return this.plus(vec.inverted);
+		return this.plus(vec.inverted());
 	}
 	rotate(rot){
 		//rotates the vector by the specified angle
