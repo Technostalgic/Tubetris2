@@ -118,3 +118,26 @@ class spriteBox{
 	get width() { return Math.round(this.size.x); }
 	get height() { return Math.round(this.size.y); }
 }
+
+class collisionBox{
+	constructor(pos = new vec2(), size = new vec2()){
+		this.pos = pos;
+		this.size = size;
+	}
+	static fromSides(left, top, right, bottom){
+		return new collisionBox(new vec2(left, top), new vec2(right - left, bottom - top));
+	}
+	
+	get left(){ return (this.pos.x); }
+	get right() { return (this.pos.x + this.size.x); }
+	get top(){ return (this.pos.y); }
+	get bottom() { return (this.pos.y + this.size.y); }
+	get width() { return (this.size.x); }
+	get height() { return (this.size.y); }
+	
+	get center() { return this.pos.plus(this.size.multiply(0.5)); }
+	get topLeft() { return this.pos.clone(); }
+	get topRight() { return this.pos.plus(new vec2(this.size.x, 0)); }
+	get bottomLeft() { return this.pos.plus(new vec2(0, this.size.y)); }
+	get bottomRight() { return this.pos.plus(this.size); }
+}

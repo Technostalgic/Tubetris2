@@ -95,7 +95,7 @@ class menuButton{
 			drawArrow(mpos.plus(new vec2(w / 2 + 10, 0)), side.left);
 			
 			// draws the button's description
-			var dpos = screenCenter().plus(new vec2(0, 370));
+			var dpos = new vec2(screenBounds.center.x, screenBounds.bottom - 30);
 			fonts.small.drawString(renderContext, this.description, dpos, textColor.light);
 		}
 	}
@@ -116,10 +116,10 @@ class state_mainMenu extends gameState{
 		// adds the buttons to the interface
 		this.buttons = [];
 		var off = -2;
-		this.buttons.push(new menuButton("Start Game", screenCenter().plus(new vec2(0, off * 45)), "start a new game")); off++;
-		this.buttons.push(new menuButton("Scoreboard", screenCenter().plus(new vec2(0, off * 45)), "view the highest scoring players")); off++;
-		this.buttons.push(new menuButton("Options", screenCenter().plus(new vec2(0, off * 45)), "configure gameplay and av options")); off++;
-		this.buttons.push(new menuButton("Credits", screenCenter().plus(new vec2(0, off * 45)), "see who contributed to making the game!")); off++;
+		this.buttons.push(new menuButton("Start Game", screenBounds.center.plus(new vec2(0, off * 45)), "start a new game")); off++;
+		this.buttons.push(new menuButton("Scoreboard", screenBounds.center.plus(new vec2(0, off * 45)), "view the highest scoring players")); off++;
+		this.buttons.push(new menuButton("Options", screenBounds.center.plus(new vec2(0, off * 45)), "configure gameplay and av options")); off++;
+		this.buttons.push(new menuButton("Credits", screenBounds.center.plus(new vec2(0, off * 45)), "see who contributed to making the game!")); off++;
 	}
 	
 	selectionDown(){
@@ -150,7 +150,7 @@ class state_mainMenu extends gameState{
 		// draws the the main menu
 		drawBackground();
 		
-		fonts.large.drawString(renderContext, "TUBETRIS", new vec2(screenCenter().x, 48), textColor.green, 3);
+		fonts.large.drawString(renderContext, "TUBETRIS", new vec2(screenBounds.center.x, 48), textColor.green, 3);
 		
 		for(var i = this.buttons.length - 1; i >= 0; i--){
 			var sel = i == this.currentSelection;

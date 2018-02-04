@@ -22,6 +22,7 @@ var renderTarget,
 	scalingTarget;
 var renderContext,
 	scalingContext;
+var screenBounds;
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global enumerators{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 // enumerates the different styles that console logs can be
@@ -142,10 +143,6 @@ function drawImage(ctx, img, pos, sprite = null, scale = 1){
 		);
 }
 
-function screenCenter(){
-	// returns the center point of the render target
-	return new vec2(renderTarget.width / 2, renderTarget.height / 2);
-}
 function drawArrow(pos, dir = side.right){
 	// renders a blinking arrow at the specified position and facing the specified direction
 	var blinkRate = 500;
@@ -156,7 +153,6 @@ function drawArrow(pos, dir = side.right){
 	var sprite = new spriteBox(spos, new vec2(ssize));
 	
 	drawImage(renderContext, gfx.arrows, pos.minus(new vec2(ssize / 2)), sprite);
-	
 }
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }High-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -494,6 +490,9 @@ function getCanvas(){
 	renderTarget.width = 600;
 	renderTarget.height = 800;
 	renderContext = renderTarget.getContext("2d");
+	
+	// sets the screen bounds
+	screenBounds = new collisionBox(new vec2(), new vec2(renderTarget.width, renderTarget.height));
 }
 
 function assetLoadingFinishCheck(){
