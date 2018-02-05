@@ -101,7 +101,7 @@ class textRenderer{
 		return w * this.defaultStyle.scale;
 	}
 	
-	drawString(ctx, str = "-- hello: world! --", pos = new vec2(), style = this.defaultStyle){
+	drawString(str = "-- hello: world! --", pos = new vec2(), style = this.defaultStyle){
 		// renders the string to the specified context with the graphics inside this textRenderer's spritesheet
 		var sprites = this.getStringSprites(str, style.color);
 		var scl = style.scale;
@@ -117,12 +117,15 @@ class textRenderer{
 			var box = sprites[i];
 			if(box.height > 0){
 				var tpos = pos.plus(new vec2(xoff - alignOffset, 0));
-				drawImage(ctx, this.spritesheet, tpos, box, scl);
+				drawImage(renderContext, this.spritesheet, tpos, box, scl);
 			}
 			xoff += box.width * scl;
 		}
 	}
 	
+	static drawText(text, pos, style){
+		style.font.drawString(text, pos, style);
+	}
 }
 
 class textStyle{

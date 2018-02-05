@@ -84,8 +84,9 @@ class menuButton{
 	draw(selected = false){
 		// renders the button on screen
 		var col = selected ? textColor.green : textColor.light;
+		var style = new textStyle(fonts.large, col);
 		
-		fonts.large.drawString(renderContext, this.text, this.pos, new textStyle(null, col));
+		textRenderer.drawText(this.text, this.pos, style);
 		
 		if(selected){
 			// draws arrows to the left and right of the button
@@ -96,7 +97,9 @@ class menuButton{
 			
 			// draws the button's description
 			var dpos = new vec2(screenBounds.center.x, screenBounds.bottom - 30);
-			fonts.small.drawString(renderContext, this.description, dpos, new textStyle(null, textColor.light));
+			var style = new textStyle(fonts.small, textColor.light);
+			
+			textRenderer.drawText(this.description, dpos, style);
 		}
 	}
 }
@@ -150,7 +153,8 @@ class state_mainMenu extends gameState{
 		// draws the the main menu
 		drawBackground();
 		
-		fonts.large.drawString(renderContext, "TUBETRIS", new vec2(screenBounds.center.x, 48), new textStyle(null, textColor.green, 3));
+		var style = new textStyle(fonts.large, textColor.green, 3);
+		textRenderer.drawText("TUBETRIS", new vec2(screenBounds.center.x, screenBounds.top + 48), style);
 		
 		for(var i = this.buttons.length - 1; i >= 0; i--){
 			var sel = i == this.currentSelection;
