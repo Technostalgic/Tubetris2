@@ -23,14 +23,10 @@ class textRenderer{
 		this.spritesheet = spritesheet;
 		this.charSize = charsize;
 		this.colors = colorVariants;
-		this.align = 0.5; // centered text alignment
 		this.specCharWidths = [];
 		this.useSpecificCharWidth = false;
 		
-		this.defaults = {
-			color: textColor.light,
-			scale: 1,
-		}
+		this.defaultStyle = new textStyle(this, textColor.light);
 	}
 	
 	setDefaultColor(col = textColor.light){
@@ -80,11 +76,11 @@ class textRenderer{
 		
 		return new spriteBox(new vec2(), new vec2(cwidth, 0));
 	}
-	getStringSprites(str = "", color = 0){
+	getStringSprites(str = "", color = null){
 		// returns a list of character sprites that represent the characters' position and size inside the spritesheet
 		var sprites = [];
 		
-		var col = color || this.defaults.color;
+		var col = color || this.defaultStyle.color;
 		var colOffset =
 			(col >= this.colors ? 0 : col) * 
 			(this.charSize.y * 3);
@@ -102,27 +98,38 @@ class textRenderer{
 		var w = 0;
 		for(var i = sprites.length - 1; i >= 0; i--)
 			w += sprites[i].width;
-		return w * this.defaults.scale;
+		return w * this.defaultStyle.scale;
 	}
 	
-	drawString(ctx, str = "-- hello: world! --", pos = new vec2(), color, scale){
+	drawString(ctx, str = "-- hello: world! --", pos = new vec2(), style = this.defaultStyle){
 		// renders the string to the specified context with the graphics inside this textRenderer's spritesheet
-		var sprites = this.getStringSprites(str, color);
-		var scl = scale || this.defaults.scale;
+		var sprites = this.getStringSprites(str, style.color);
+		var scl = style.scale;
 		
 		var swidth = 0;
 		for(var i = sprites.length - 1; i >= 0; i--)
 			swidth += sprites[i].width;
-		var alignOffset = this.align * (swidth * scl);
+		var alignOffset = style.hAlign * (swidth * scl);
+		console.log(style);
 		
 		var xoff = 0;
 		for(var i = 0; i < sprites.length; i++){
 			var box = sprites[i];
 			if(box.height > 0){
 				var tpos = pos.plus(new vec2(xoff - alignOffset, 0));
-				drawImage(ctx, this.spritesheet, tpos, box, scale);
+				drawImage(ctx, this.spritesheet, tpos, box, scl);
 			}
 			xoff += box.width * scl;
 		}
+	}
+	
+}
+
+class textStyle{
+	constructor(font, color = textColor.light, scale = 1, horizontalAlign = 0.5){
+		this.font = font;
+		this.color = color;
+		this.scale = scale;
+		this.hAlign = horizontalAlign;
 	}
 }
