@@ -92,12 +92,12 @@ class textRenderer{
 		}
 		return sprites;
 	}
-	getStringWidth(str){
+	getStringWidth(str, style = this.defaultStyle){
 		// returns the width in pixels that the string will be when it's drawn
 		var sprites = this.getStringSprites(str);
 		var w = 0;
 		for(var i = sprites.length - 1; i >= 0; i--)
-			w += sprites[i].width;
+			w += sprites[i].width * style.scale;
 		return w * this.defaultStyle.scale;
 	}
 	
@@ -110,7 +110,6 @@ class textRenderer{
 		for(var i = sprites.length - 1; i >= 0; i--)
 			swidth += sprites[i].width;
 		var alignOffset = style.hAlign * (swidth * scl);
-		console.log(style);
 		
 		var xoff = 0;
 		for(var i = 0; i < sprites.length; i++){
@@ -136,3 +135,89 @@ class textStyle{
 		this.hAlign = horizontalAlign;
 	}
 }
+
+class textBlock{
+	constructor(text, style, bounds, altStyles = [], lineheight = 32){
+		this.style = style;
+		this.altStyles = altStyles;
+		this.bounds = bounds;
+		this.lineHeight = 32;
+		this.setText(text);
+		this.setStyleAlign();
+	}
+	
+	setStyleAlign(){
+		this.style.hAlign = 0;
+		for(var i in this.altStyles)
+			this.altStyles[i].hAlign = 0;
+	}
+	setText(text){
+		this.text = text;
+		this.textSpans = [];
+		this.formTextSpans();
+	}
+	formTextSpans(){
+		var r = [];
+		
+		var ssChars = "([{<";
+		var seChars = ")]}>";
+		var spanStart = 0;
+		for(var i = 0; i < this.text.length; i++){
+			var curChar = this.text[i];
+			
+			if(spanStart < 0)
+				spanStart = i;
+			
+			if(ssChars.includes(curChar) || seChars.includes(curChar)){
+				var spanStr = this.text.substr(spanStart, i - spanStart);
+				var spanStyle = (seChars).indexOf(curChar);
+				spanStyle = spanStyle >= 0 ? this.altStyles[spanStyle] : this.style;
+				
+				var m = {text: spanStr, style: spanStyle};
+				if(m.text.length > 0)
+					this.textSpans.push(m);
+				
+				spanStart = -1;
+			}
+		}
+		var curChar = this.text[this.text.length - 1];
+		var spanStr = this.text.substr(spanStart, this.text.length - spanStart);
+		var spanStyle = (seChars).indexOf(curChar);
+		spanStyle = spanStyle > 0 ? this.altStyles[spanStyle] : this.style;
+		
+		var m = {text: spanStr, style: spanStyle};
+		this.textSpans.push(m);
+	}
+	
+	draw(){
+		var pos = this.bounds.topLeft;
+		var spaceWidth = 8;
+		
+		for(var i0 = 0; i0 < this.textSpans.length; i0++){
+			var span = this.textSpans[i0];
+			var words = span.text.split(' ');
+			for (var i1 = 0; i1 < words.length; i1++){
+				var word = words[i1].trim();
+				var width = spaceWidth + span.style.font.getStringWidth(word, span.style);
+				
+				// set new line
+				if(pos.x + width > this.bounds.right)
+					pos = new vec2(this.bounds.left, pos.y + this.lineHeight);
+				
+				textRenderer.drawText(word, pos, span.style);
+				pos.x += width;
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -572,6 +572,17 @@ function draw(){
 	
 	gameState.current.draw();
 	
+	// FOR TESTING textBlock object:
+	//var str = "Lorem Ipsum is simply (dummy text) of the [printing and typesetting industry]. Lorem Ipsum has been {the industrys standard} dummy text ever since the 1500s when an unknown printer took a galley of type and scrambled it to make a type specimen book It has survived <not only five centuries but also the leap> (into electronic typesetting) remaining essentially unchanged It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages and more recently with (desktop publishing)[ software like Aldus PageMaker] including versions <of Lorem Ipsum>";
+	//var style = new textStyle(fonts.large);
+	//var style0 = new textStyle(fonts.large, textColor.green);
+	//var style1 = new textStyle(fonts.large, textColor.dark);
+	//var style2 = new textStyle(fonts.small, textColor.light, 2);
+	//var style3 = new textStyle(fonts.small, textColor.dark);
+	//var textbox = new textBlock(str, style, collisionBox.fromSides(200, 400, 500, 500), [style0, style1, style2, style3]);
+	//textbox.draw();
+	//textbox.bounds.drawOutline(renderContext);
+	
 	printScreen();
 }
 

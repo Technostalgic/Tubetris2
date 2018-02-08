@@ -140,4 +140,14 @@ class collisionBox{
 	get topRight() { return this.pos.plus(new vec2(this.size.x, 0)); }
 	get bottomLeft() { return this.pos.plus(new vec2(0, this.size.y)); }
 	get bottomRight() { return this.pos.plus(this.size); }
+	
+	drawFill(ctx, color = "#aaa"){
+		ctx.fillStyle = color;
+		ctx.fillRect(this.left, this.top, this.width, this.height);
+	}
+	drawOutline(ctx, color = "#000", lineWidth = 1){
+		ctx.strokeStyle = color;
+		ctx.lineWidth = lineWidth;
+		ctx.strokeRect(this.left, this.top, this.width, this.height);
+	}
 }
