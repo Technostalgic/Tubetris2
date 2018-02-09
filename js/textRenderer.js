@@ -285,8 +285,32 @@ class preRenderedText{
 		r.applyHorizontalAlignment(txtBlock.bounds.left, txtBlock.bounds.right);
 		return r;
 	}
+	static fromString(str, pos, style = textStyle.getDefault()){
+		// generates preRenderedText from a string
+		var r = new preRenderedText();
+		r.mainStyle = style;
+		var cPos = 0;
+		var curLine = [];
+		
+		var sChars = style.font.getStringSprites(str, style.color);
+		for(var i = 0; i < sChars.length; i++){
+			var sprCont = new spriteContainer(
+				style.font.spritesheet,
+				sChars[i],
+				new collisionBox(pos.plus(new vec2(cPos, 0)), sChars[i].size.multiply(style.scale))
+				);
+			r.spriteContainers.push(sprCont);
+			curLine.push(sprCont);
+			
+			cPos += sChars[i].width * style.scale;
+		}
+		
+		r.lines = [curLine];
+		r.applyHorizontalAlignment(pos.x);
+		return r;
+	}
 	
-	applyHorizontalAlignment(minLeft, maxRight){
+	applyHorizontalAlignment(minLeft, maxRight = minLeft){
 		// applies the horizontal alignment according to the mainStyle rules
 		// iterate through each line of text
 		for(var i0 = 0; i0 < this.lines.length; i0++){
@@ -307,6 +331,15 @@ class preRenderedText{
 				sprCont.bounds.pos.x += xOff;
 			}
 		}
+		return this;
+	}
+	getBounds(){
+		if(this.spriteContainers.length <= 0) return null;
+		return collisionBox.fromSides(
+			this.spriteContainers[0].bounds.left, 
+			this.spriteContainers[0].bounds.top, 
+			this.spriteContainers[this.spriteContainers.length - 1].bounds.right, 
+			this.spriteContainers[this.spriteContainers.length - 1].bounds.bottom,);
 	}
 	
 	draw(){

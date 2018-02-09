@@ -63,14 +63,41 @@ class menuButton{
 		this.description = description;
 		this.action = null;
 		
-		// sets this.size
+		this.size = null;
 		this.calcSize();
+		
+		this.styles = null;
+		this.preRenders = null;
+		this.setStyles();
 	}
 	
 	calcSize(){
 		// calculates and sets this.size
 		var w = fonts.large.getStringWidth();
 		this.size = new vec2(w, fonts.large.charSize.y);
+	}
+	generatePreRenders(){
+		this.preRenders = {};
+		this.preRenders.normal = preRenderedText.fromString(this.text, this.pos, this.styles.normal);
+		this.preRenders.selected = preRenderedText.fromString(this.text, this.pos, this.styles.selected);
+		
+		var descBlock = new textBlock(this.description, this.styles.description);
+		descBlock.bounds = collisionBox.fromSides(
+			screenBounds.left + 20, 
+			screenBounds.bottom + 30, 
+			screenBounds.right - 20, 
+			screenBounds.bottom + 30 );
+		descBlock.lineHeight = 12;
+		this.preRenders.description = preRenderedText.fromBlock(descBlock);
+	}
+	
+	setStyles(normalStyle = textStyle.getDefault(), selectedStyle = new textStyle(fonts.large, textColor.green), descriptionStyle = new textStyle(fonts.small)){
+		this.styles = {
+			normal: normalStyle,
+			selected: selectedStyle,
+			description: descriptionStyle
+			};
+		this.generatePreRenders();
 	}
 	
 	trigger(args){
@@ -83,24 +110,21 @@ class menuButton{
 	
 	draw(selected = false){
 		// renders the button on screen
-		var col = selected ? textColor.green : textColor.light;
-		var style = new textStyle(fonts.large, col);
-		
-		textRenderer.drawText(this.text, this.pos, style);
-		
 		if(selected){
+			this.preRenders.selected.draw();
+			
 			// draws arrows to the left and right of the button
-			var w = fonts.large.getStringWidth(this.text);
-			var mpos = this.pos.plus(new vec2(0, fonts.large.charSize.y / 2));
-			drawArrow(mpos.plus(new vec2(w / -2 - 10, 0)), side.right);
-			drawArrow(mpos.plus(new vec2(w / 2 + 10, 0)), side.left);
+			var l = this.preRenders.selected.getBounds().left;
+			var r = this.preRenders.selected.getBounds().right;
+			var lpos = new vec2(l - 10, this.pos.y + fonts.large.charSize.y / 2);
+			var rpos = new vec2(r + 10, this.pos.y + fonts.large.charSize.y / 2);
+			drawArrow(lpos, side.right);
+			drawArrow(rpos, side.left);
 			
 			// draws the button's description
-			var dpos = new vec2(screenBounds.center.x, screenBounds.bottom - 30);
-			var style = new textStyle(fonts.small, textColor.light);
-			
-			textRenderer.drawText(this.description, dpos, style);
+			this.preRenders.description.draw();
 		}
+		else this.preRenders.normal.draw();
 	}
 }
 
