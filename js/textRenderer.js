@@ -133,9 +133,9 @@ class textStyle{
 		this.color = color;
 		this.scale = scale;
 		this.hAlign = horizontalAlign;
-		this.vAlign = 1;
+		this.vAlign = 0.5;
 	}
-	static fromAlignment(horizontal = 0.5, vertical = 1){
+	static fromAlignment(horizontal = 0.5, vertical = 0.5){
 		var r = textStyle.getDefault();
 		
 		r.hAlign = horizontal;
@@ -146,9 +146,15 @@ class textStyle{
 	static getDefault(){
 		var r = new textStyle(fonts.large, textColor.light, 1, 0.5);
 		
-		r.vAlign = 1;
+		r.vAlign = 0.5;
 		
 		return r;
+	}
+
+	setAlignment(horizontal = 0.5, vertical = 1){
+		this.hAlign = horizontal;
+		this.vAlign = vertical;
+		return this;
 	}
 }
 
@@ -223,6 +229,7 @@ class preRenderedText{
 	static fromBlock(txtBlock){
 		// generates preRenderedText from a textBlock
 		var r = new preRenderedText();
+		r.mainStyle = txtBlock.style;
 		
 		// keeps track of the line that each character is on
 		r.lines = [];
@@ -283,6 +290,7 @@ class preRenderedText{
 			r.lines.push(curLine);
 		
 		r.applyHorizontalAlignment(txtBlock.bounds.left, txtBlock.bounds.right);
+		r.applyVerticalAlignment(txtBlock.bounds.top, txtBlock.bounds.bottom);
 		return r;
 	}
 	static fromString(str, pos, style = textStyle.getDefault()){
@@ -307,6 +315,7 @@ class preRenderedText{
 		
 		r.lines = [curLine];
 		r.applyHorizontalAlignment(pos.x);
+		r.applyVerticalAlignment(pos.y);
 		return r;
 	}
 	
@@ -329,6 +338,28 @@ class preRenderedText{
 				// apply the x-offset to each character
 				var sprCont = charSprites[i1];
 				sprCont.bounds.pos.x += xOff;
+			}
+		}
+		return this;
+	}
+	applyVerticalAlignment(yMin, yMax = yMin){
+			
+		// determines how much to adjust the y-position of the character
+		var startPos = this.spriteContainers[0].bounds.top;
+		var endPos = this.spriteContainers[this.spriteContainers.length - 1].bounds.bottom;
+		var maxYOff = yMax - endPos;
+		var minYOff = yMin - startPos;
+		var yOff = maxYOff * this.mainStyle.vAlign + minYOff;
+			
+		for(var i0 = 0; i0 < this.lines.length; i0++){
+			var charSprites = this.lines[i0];
+			if(charSprites.length <= 0) continue;
+			
+			// iterate through each character in the line
+			for(var i1 = 0; i1 < charSprites.length; i1++){
+				// apply the y-offset to each character
+				var sprCont = charSprites[i1];
+				sprCont.bounds.pos.y += yOff;
 			}
 		}
 		return this;

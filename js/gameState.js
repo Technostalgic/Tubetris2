@@ -81,21 +81,24 @@ class menuButton{
 		this.preRenders.normal = preRenderedText.fromString(this.text, this.pos, this.styles.normal);
 		this.preRenders.selected = preRenderedText.fromString(this.text, this.pos, this.styles.selected);
 		
+		//FIX STYLES.DESCRIPTION
 		var descBlock = new textBlock(this.description, this.styles.description);
 		descBlock.bounds = collisionBox.fromSides(
 			screenBounds.left + 20, 
-			screenBounds.bottom - 30, 
+			screenBounds.bottom - 46, 
 			screenBounds.right - 20, 
-			screenBounds.bottom - 30 );
+			screenBounds.bottom - 18 );
 		descBlock.lineHeight = 12;
 		this.preRenders.description = preRenderedText.fromBlock(descBlock);
 	}
 	
-	setStyles(normalStyle = textStyle.getDefault(), selectedStyle = new textStyle(fonts.large, textColor.green), descriptionStyle = new textStyle(fonts.small)){
+	setStyles(normalStyle = textStyle.getDefault(), selectedStyle = new textStyle(fonts.large, textColor.green), descriptionStyle = (new textStyle(fonts.small)).setAlignment(0.5, 1)){
+		var v = descriptionStyle.setAlignment(0.5, 1)
+		console.log(v);
 		this.styles = {
 			normal: normalStyle,
 			selected: selectedStyle,
-			description: descriptionStyle
+			description: descriptionStyle.setAlignment(0.5, 1)
 			};
 		this.generatePreRenders();
 	}
@@ -116,8 +119,8 @@ class menuButton{
 			// draws arrows to the left and right of the button
 			var l = this.preRenders.selected.getBounds().left;
 			var r = this.preRenders.selected.getBounds().right;
-			var lpos = new vec2(l - 10, this.pos.y + fonts.large.charSize.y / 2);
-			var rpos = new vec2(r + 10, this.pos.y + fonts.large.charSize.y / 2);
+			var lpos = new vec2(l - 10, this.pos.y);
+			var rpos = new vec2(r + 10, this.pos.y);
 			drawArrow(lpos, side.right);
 			drawArrow(rpos, side.left);
 			
@@ -143,7 +146,7 @@ class state_mainMenu extends gameState{
 		// adds the buttons to the interface
 		this.buttons = [];
 		var off = -2;
-		this.buttons.push(new menuButton("Start Game", screenBounds.center.plus(new vec2(0, off * 45)), "start a new game")); off++;
+		this.buttons.push(new menuButton("Start Game", screenBounds.center.plus(new vec2(0, off * 45)), "start a new game this is a really long description so that I can see what multiple line text blocks look like")); off++;
 		this.buttons.push(new menuButton("Scoreboard", screenBounds.center.plus(new vec2(0, off * 45)), "view the highest scoring players")); off++;
 		this.buttons.push(new menuButton("Options", screenBounds.center.plus(new vec2(0, off * 45)), "configure gameplay and av options")); off++;
 		this.buttons.push(new menuButton("Credits", screenBounds.center.plus(new vec2(0, off * 45)), "see who contributed to making the game!")); off++;
