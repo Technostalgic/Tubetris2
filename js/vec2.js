@@ -151,3 +151,22 @@ class collisionBox{
 		ctx.strokeRect(this.left, this.top, this.width, this.height);
 	}
 }
+
+class spriteContainer{
+	constructor(spriteSheet, sprite, bounds){
+		this.spriteSheet = spriteSheet;
+		this.sprite = sprite;
+		this.bounds = bounds;
+	}
+	
+	draw(){
+		if(this.sprite.size.x <= 0 || this.sprite.size.y <= 0) return;
+		renderContext.drawImage(
+			this.spriteSheet,
+			this.sprite.left, this.sprite.top,
+			this.sprite.width, this.sprite.height,
+			this.bounds.left, this.bounds.top,
+			this.bounds.width, this.bounds.height
+			);
+	}
+}
