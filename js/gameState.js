@@ -84,9 +84,9 @@ class menuButton{
 		var descBlock = new textBlock(this.description, this.styles.description);
 		descBlock.bounds = collisionBox.fromSides(
 			screenBounds.left + 20, 
-			screenBounds.bottom + 30, 
+			screenBounds.bottom - 30, 
 			screenBounds.right - 20, 
-			screenBounds.bottom + 30 );
+			screenBounds.bottom - 30 );
 		descBlock.lineHeight = 12;
 		this.preRenders.description = preRenderedText.fromBlock(descBlock);
 	}
