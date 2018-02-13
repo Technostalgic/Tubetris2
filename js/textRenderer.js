@@ -165,14 +165,13 @@ class textBlock{
 		this.bounds = bounds;
 		this.lineHeight = lineHeight;
 		this.setText(text);
-		this.setStyleAlign();
 		this.preRender = null;
 	}
 	
-	setStyleAlign(){
-		this.style.hAlign = 0;
+	setStylesHAlign(hAlign = 0){
+		this.style.hAlign = hAlign;
 		for(var i in this.altStyles)
-			this.altStyles[i].hAlign = 0;
+			this.altStyles[i].hAlign = hAlign;
 	}
 	setText(text){
 		this.text = text;
