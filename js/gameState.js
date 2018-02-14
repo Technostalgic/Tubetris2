@@ -144,7 +144,7 @@ class state_mainMenu extends gameState{
 	addButtons(){
 		// adds the buttons to the interface
 		this.buttons = [];
-		var off = -2;
+		var off = 0;
 		this.buttons.push(new menuButton("Start Game", screenBounds.center.plus(new vec2(0, off * 45)), "start a new game")); off++;
 		this.buttons.push(new menuButton("Scoreboard", screenBounds.center.plus(new vec2(0, off * 45)), "view the highest scoring players")); off++;
 		this.buttons.push(new menuButton("Options", screenBounds.center.plus(new vec2(0, off * 45)), "configure gameplay and av options")); off++;
@@ -181,6 +181,9 @@ class state_mainMenu extends gameState{
 		
 		var style = new textStyle(fonts.large, textColor.green, 3);
 		textRenderer.drawText("TUBETRIS", new vec2(screenBounds.center.x, screenBounds.top + 48), style);
+		
+		var animStyle = new textStyle(fonts.large, textColor.green, 2);
+		textRenderer.drawText("DELUXE", new vec2(screenBounds.center.x, screenBounds.top + 148), animStyle);
 		
 		for(var i = this.buttons.length - 1; i >= 0; i--){
 			var sel = i == this.currentSelection;

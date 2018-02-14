@@ -16,6 +16,12 @@ var textColor = {
 	red: 6,
 	yellow: 7
 };
+var textAnimType = {
+	once: 0,
+	continuous: 1,
+	looping: 2,
+	pingPong: 3
+}
 
 class textRenderer{
 	constructor(spritesheet, charsize, colorVariants = 8){
@@ -125,6 +131,9 @@ class textRenderer{
 	static drawText(text, pos, style){
 		style.font.drawString(text, pos, style);
 	}
+	static drawAnimatedText(text, pos, style){
+		style.font.drawString(text, pos, style);
+	}
 }
 
 class textStyle{
@@ -155,6 +164,42 @@ class textStyle{
 		this.hAlign = horizontal;
 		this.vAlign = vertical;
 		return this;
+	}
+}
+
+class textAnim extends textStyle{
+	constructor(font, color = textColor.loght, scale = 1, horizontalAlign = 0.5){
+		super(font, color, scale, horizontalAlign);
+		
+		this.animType = textAnimType.loop;
+		this.animScale = 500;
+		this.animCharOffset = 0.1;
+		this.animOffset = gameState.current.timeElapsed;
+	}
+	
+	resetAnim(){
+		this.animOffset = gameState.current.timeElapsed;
+	}
+	getAnimProgress(){
+		var correctedAnimTime = gameState.current.timeElapsed - this.animOffset;
+		var aProg = correctedAnimTime / animScale;
+		
+		switch(this.animType){
+			case textAnimType.once:
+				return Math.min(aProg, 1);
+			case textAnimType.continuous:
+				return aProg % 2 - 1;
+			case textAnimType.looping:
+				return aProg % 1;
+			case textAnimType.pingPong:
+				return 1 - Math.abs(aProg % 2 - 1);
+		}
+	}
+	
+	getPreRender(){
+		var r = new preRenderedTextAnim();
+		
+		return r;
 	}
 }
 
@@ -375,5 +420,15 @@ class preRenderedText{
 	draw(){
 		for(var i = 0; i < this.spriteContainers.length; i++)
 			this.spriteContainers[i].draw();
+	}
+}
+
+class preRenderedTextAnim extends preRenderedText{
+	constructor(){
+		super();
+	}
+	
+	draw(){
+		
 	}
 }
