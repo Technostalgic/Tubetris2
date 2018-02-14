@@ -175,11 +175,12 @@ class textAnim{
 		this.animOffset = gameState.current.timeElapsed;
 	}
 	
-	resetAnim(){
+	resetAnim(delay = null){
 		this.animOffset = gameState.current.timeElapsed;
+		if(delay != null) this.animDelay = delay;
 	}
 	getAnimProgress(index = 0){
-		var correctedAnimTime = gameState.current.timeElapsed - this.animOffset;
+		var correctedAnimTime = gameState.current.timeElapsed - this.animOffset - this.animDelay;
 		var aProg = correctedAnimTime / this.animLength - index * this.animCharOffset;
 		
 		switch(this.animType){
@@ -255,6 +256,28 @@ class textAnim_rainbow extends textAnim{
 			sy += colOff;
 			
 			pr.spriteContainers[i].sprite.pos.y = sy;
+		}
+	}
+}
+class textAnim_scale extends textAnim{
+	constructor(animLength = 500, minScale = 0.5, maxScale = 1, charOff = 0.1){
+		super();
+		
+		this.animType = textAnimType.pingPong;
+		this.animLength = animLength;
+		this.animCharOffset = charOff;
+		this.minScale = minScale;
+		this.maxScale = maxScale;
+	}
+	
+	applyAnim(pr){
+		for(var i = 0; i < pr.spriteContainers.length; i++){
+			var cRange = this.maxScale - this.minScale;
+			var cs = this.minScale + this.getAnimProgress(i);
+			var oc = pr.spriteContainers[i].bounds.center.clone();
+			
+			pr.spriteContainers[i].bounds.size = pr.spriteContainers[i].bounds.size.multiply(cs);
+			pr.spriteContainers[i].bounds.setCenter(oc);
 		}
 	}
 }

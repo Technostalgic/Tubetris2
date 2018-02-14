@@ -141,6 +141,10 @@ class collisionBox{
 	get bottomLeft() { return this.pos.plus(new vec2(0, this.size.y)); }
 	get bottomRight() { return this.pos.plus(this.size); }
 	
+	setCenter(newCenter){
+		this.pos = new vec2(newCenter.x - this.size.x / 2, newCenter.y - this.size.y / 2);
+	}
+	
 	drawFill(ctx, color = "#aaa"){
 		ctx.fillStyle = color;
 		ctx.fillRect(this.left, this.top, this.width, this.height);

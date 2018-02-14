@@ -141,7 +141,16 @@ class state_mainMenu extends gameState{
 	constructor(){
 		// initializes a main menu gameState
 		super();
-		this.titleAnim = new textAnim_compound([
+		var tubetrisEntrance = new textAnim_scale(200, 0, 1, 0.4);
+		tubetrisEntrance.animType = textAnimType.once;
+		var deluxeEntrance = new textAnim_scale(100, 0, 1, 0);
+		deluxeEntrance.animDelay = 1000;
+		deluxeEntrance.animType = textAnimType.once;
+		
+		
+		this.titleAnim = tubetrisEntrance;
+		this.titleDeluxeAnim = new textAnim_compound([
+			deluxeEntrance,
 			new textAnim_sinWave(1000 / 3, 5, 1/2),
 			new textAnim_rainbow(500, 1/12)
 			]);
@@ -190,10 +199,10 @@ class state_mainMenu extends gameState{
 		drawBackground();
 		
 		var style = new textStyle(fonts.large, textColor.green, 3);
-		textRenderer.drawText("TUBETRIS", new vec2(screenBounds.center.x, screenBounds.top + 100), style);
+		textRenderer.drawText("TUBETRIS", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
 		
 		var animStyle = new textStyle(fonts.large, textColor.green, 2);
-		textRenderer.drawText("DELUXE", new vec2(screenBounds.center.x, screenBounds.top + 180), animStyle, this.titleAnim);
+		textRenderer.drawText("DELUXE", new vec2(screenBounds.center.x, screenBounds.top + 180), animStyle, this.titleDeluxeAnim);
 		
 		for(var i = this.buttons.length - 1; i >= 0; i--){
 			var sel = i == this.currentSelection;
