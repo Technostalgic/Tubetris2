@@ -16,6 +16,7 @@ var textColor = {
 	red: 6,
 	yellow: 7
 };
+// enumerates the different ways an animation can be played
 var textAnimType = {
 	unlimited: -1,
 	once: 0,
@@ -24,6 +25,7 @@ var textAnimType = {
 	pingPong: 3
 }
 
+// a text renderer object, used for storing information about sprite fonts
 class textRenderer{
 	constructor(spritesheet, charsize, colorVariants = 8){
 		// initializes a textRenderer object, used for rendering text with a given text spritesheet
@@ -135,6 +137,7 @@ class textRenderer{
 	}
 }
 
+// holds information about how to style text when trying to render it
 class textStyle{
 	constructor(font, color = textColor.light, scale = 1, horizontalAlign = 0.5){
 		this.font = font;
@@ -166,13 +169,14 @@ class textStyle{
 	}
 }
 
+// an animation that can be applied to text
 class textAnim{
 	constructor(){
-		this.animType = textAnimType.looping;
-		this.animLength = 500;
-		this.animDelay = 0;
-		this.animCharOffset = 0.1;
-		this.animOffset = gameState.current.timeElapsed;
+		this.animType = textAnimType.looping; // how the animation will handle repition
+		this.animLength = 500; // the total length in milliseconds of the animation
+		this.animDelay = 0; // the delay in milliseconds before the animation starts
+		this.animCharOffset = 0.1; // the animation percent offset between each character
+		this.animOffset = gameState.current.timeElapsed; // the offset of the animation from the global gameState's total timeElapsed
 	}
 	
 	resetAnim(delay = null){
@@ -205,6 +209,7 @@ class textAnim{
 		pr.draw();
 	}
 }
+// an animation that combines the effects of many different text animations
 class textAnim_compound extends textAnim{
 	constructor(textAnimations = []){
 		super();
@@ -220,6 +225,7 @@ class textAnim_compound extends textAnim{
 	}
 }
 
+// an animation that makes the text wave up and down like a sin wave
 class textAnim_sinWave extends textAnim{
 	constructor(animLength = 500, waveMag = 1, charOff = 0.1){
 		super();
@@ -239,6 +245,7 @@ class textAnim_sinWave extends textAnim{
 		}
 	}
 }
+// an animation that changes the color of the text by incrementing its hue
 class textAnim_rainbow extends textAnim{
 	constructor(animLength = 500, charOff = 0.1, charHeight = fonts.large.charSize.y){
 		super();
@@ -259,6 +266,7 @@ class textAnim_rainbow extends textAnim{
 		}
 	}
 }
+// an animation that changes the text's size
 class textAnim_scale extends textAnim{
 	constructor(animLength = 500, minScale = 0.5, maxScale = 1, charOff = 0.1){
 		super();
@@ -282,6 +290,8 @@ class textAnim_scale extends textAnim{
 	}
 }
 
+// allows a large amount of text with different styles to be drawn inline in the same 
+// paragraph with word wrapping and vertical/horizontal alignment rules
 class textBlock{
 	constructor(text, style, bounds, altStyles = [], lineHeight = 32){
 		this.style = style;
@@ -342,8 +352,11 @@ class textBlock{
 	}
 }
 
+// gets soon-to-be rendered text's character sprite information and styling information and stores
+// it so it doesn't have to be re-calculated each frame
 class preRenderedText{
 	constructor(){
+		// initializes a new preRenderedText instance
 		this.spriteContainers = [];
 		this.mainStyle = textStyle.fromAlignment(0.5, 0.5);
 		this.lines = [];
@@ -423,6 +436,8 @@ class preRenderedText{
 		var cPos = 0;
 		var curLine = [];
 		
+		// gets all the sprite information from each text character, applies styling and stores it for
+		// later rendering
 		var sChars = style.font.getStringSprites(str, style.color);
 		for(var i = 0; i < sChars.length; i++){
 			var sprCont = new spriteContainer(
@@ -436,6 +451,7 @@ class preRenderedText{
 			cPos += sChars[i].width * style.scale;
 		}
 		
+		// fromString() only supports single-line rendering
 		r.lines = [curLine];
 		r.applyHorizontalAlignment(pos.x);
 		r.applyVerticalAlignment(pos.y);
@@ -466,7 +482,8 @@ class preRenderedText{
 		return this;
 	}
 	applyVerticalAlignment(yMin, yMax = yMin){
-			
+		// re-centers the text vertically based on the given rules
+		
 		// determines how much to adjust the y-position of the character
 		var startPos = this.spriteContainers[0].bounds.top;
 		var endPos = this.spriteContainers[this.spriteContainers.length - 1].bounds.bottom;
@@ -488,6 +505,8 @@ class preRenderedText{
 		return this;
 	}
 	getBounds(){
+		// returns a rectangle that encompasses all the spritecontainers(representing ascii characters)
+		// that are to be rendered
 		if(this.spriteContainers.length <= 0) return null;
 		return collisionBox.fromSides(
 			this.spriteContainers[0].bounds.left, 
@@ -497,6 +516,7 @@ class preRenderedText{
 	}
 	
 	draw(){
+		// renders all the spritecontainers, making a line of bitmap ascii characters
 		for(var i = 0; i < this.spriteContainers.length; i++)
 			this.spriteContainers[i].draw();
 	}
