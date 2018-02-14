@@ -141,7 +141,10 @@ class state_mainMenu extends gameState{
 	constructor(){
 		// initializes a main menu gameState
 		super();
-		this.titleAnim = new textAnim_rainbow(500, 1/6);
+		this.titleAnim = new textAnim_compound([
+			new textAnim_sinWave(1000 / 3, 5, 1/2),
+			new textAnim_rainbow(500, 1/12)
+			]);
 		
 		this.buttons = [];
 		this.addButtons();

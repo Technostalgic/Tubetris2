@@ -170,6 +170,7 @@ class textAnim{
 	constructor(){
 		this.animType = textAnimType.looping;
 		this.animLength = 500;
+		this.animDelay = 0;
 		this.animCharOffset = 0.1;
 		this.animOffset = gameState.current.timeElapsed;
 	}
@@ -183,7 +184,7 @@ class textAnim{
 		
 		switch(this.animType){
 			case textAnimType.once:
-				return Math.min(aProg, 1);
+				return Math.max(0, Math.min(aProg, 1));
 			case textAnimType.continuous:
 				return aProg >= 0 ? aProg % 2 - 1 : 2 - Math.abs(aProg % 2) - 1;
 			case textAnimType.looping:
@@ -203,10 +204,26 @@ class textAnim{
 		pr.draw();
 	}
 }
+class textAnim_compound extends textAnim{
+	constructor(textAnimations = []){
+		super();
+		this.anims = textAnimations;
+	}
+	
+	addAnimation(anim){
+		this.anims.push(anim);
+	}
+	applyAnim(pr){
+		for(var i = 0; i < this.anims.length; i++)
+			this.anims[i].applyAnim(pr);
+	}
+}
+
 class textAnim_sinWave extends textAnim{
-	constructor(waveMag = 1, charOff = 0.1){
+	constructor(animLength = 500, waveMag = 1, charOff = 0.1){
 		super();
 		this.animType = textAnimType.continuous;
+		this.animLength = animLength;
 		this.animCharOffset = charOff;
 		this.waveMag = waveMag;
 		this.waveLength = Math.PI;
