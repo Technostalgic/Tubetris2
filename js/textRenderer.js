@@ -17,6 +17,7 @@ var textColor = {
 	yellow: 7
 };
 var textAnimType = {
+	unlimited: -1,
 	once: 0,
 	continuous: 1,
 	looping: 2,
@@ -128,11 +129,9 @@ class textRenderer{
 		}
 	}
 	
-	static drawText(text, pos, style){
-		style.font.drawString(text, pos, style);
-	}
-	static drawAnimatedText(text, pos, style){
-		style.font.drawString(text, pos, style);
+	static drawText(text, pos, style, animation = null){
+		if(animation) animation.drawText(text, pos, style);
+		else preRenderedText.fromString(text, pos, style).draw();
 	}
 }
 
@@ -167,10 +166,8 @@ class textStyle{
 	}
 }
 
-class textAnim extends textStyle{
-	constructor(font, color = textColor.loght, scale = 1, horizontalAlign = 0.5){
-		super(font, color, scale, horizontalAlign);
-		
+class textAnim{
+	constructor(){
 		this.animType = textAnimType.loop;
 		this.animScale = 500;
 		this.animCharOffset = 0.1;
@@ -180,9 +177,9 @@ class textAnim extends textStyle{
 	resetAnim(){
 		this.animOffset = gameState.current.timeElapsed;
 	}
-	getAnimProgress(){
+	getAnimProgress(index = 0){
 		var correctedAnimTime = gameState.current.timeElapsed - this.animOffset;
-		var aProg = correctedAnimTime / animScale;
+		var aProg = correctedAnimTime / this.animScale - index * this.animCharOffset;
 		
 		switch(this.animType){
 			case textAnimType.once:
@@ -194,12 +191,34 @@ class textAnim extends textStyle{
 			case textAnimType.pingPong:
 				return 1 - Math.abs(aProg % 2 - 1);
 		}
+		return aProg;
 	}
 	
-	getPreRender(){
-		var r = new preRenderedTextAnim();
-		
-		return r;
+	// for override
+	applyAnim(prerender){ }
+	
+	drawText(text, pos, style){
+		var pr = preRenderedText.fromString(text, pos, style);
+		this.applyAnim(pr);
+		pr.draw();
+	}
+}
+class textAnim_sinWave extends textAnim{
+	constructor(waveMag = 1, charOff = 0.1){
+		super();
+		this.animType = textAnimType.continuous;
+		this.animCharOffset = charOff;
+		this.waveMag = waveMag;
+		this.waveLength = Math.PI;
+	}
+	
+	applyAnim(pr){
+		for(var i = 0; i < pr.spriteContainers.length; i ++){
+			var cy = this.getAnimProgress(i) * this.waveLength;
+			cy = Math.sin(cy) * this.waveMag;
+			
+			pr.spriteContainers[i].bounds.pos.y += cy;
+		}
 	}
 }
 
@@ -420,15 +439,5 @@ class preRenderedText{
 	draw(){
 		for(var i = 0; i < this.spriteContainers.length; i++)
 			this.spriteContainers[i].draw();
-	}
-}
-
-class preRenderedTextAnim extends preRenderedText{
-	constructor(){
-		super();
-	}
-	
-	draw(){
-		
 	}
 }

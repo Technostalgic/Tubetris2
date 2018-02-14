@@ -38,11 +38,12 @@ var logType = {
 function log(obj, type = logType.log){
 	// logs the spcified object to the console
 	if(!debug) return;
+	var ob = obj || "console logged @" + timeElapsed + "ms";
 	
 	// sets the console styling if the object is stylable (aka if it's a string)
 	var style;
-	if(obj.constructor.name == "String"){
-		obj = "%c" + obj;
+	if(ob.constructor.name == "String"){
+		ob = "%c" + ob;
 		
 		style = "color: #222; background-color: #ddd";
 		switch(type){
@@ -64,7 +65,6 @@ function log(obj, type = logType.log){
 		}
 	}
 	
-	var ob = obj || "console logged @" + timeElapsed + "ms";
 	if(style) console.log(ob, style);
 	else console.log(ob);
 }

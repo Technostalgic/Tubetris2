@@ -23,7 +23,13 @@ class gameState{
 	
 	static get current(){
 		// returns the active gameState object
+		if(!gameMode) return gameState.empty;
 		return gameMode;
+	}
+	static get empty(){
+		return {
+			timeElapsed: 0
+		};
 	}
 	static switchState(tostate){
 		// switches the game from one gameState to another
@@ -135,6 +141,7 @@ class state_mainMenu extends gameState{
 	constructor(){
 		// initializes a main menu gameState
 		super();
+		this.titleAnim = new textAnim_sinWave(10, 1/3);
 		
 		this.buttons = [];
 		this.addButtons();
@@ -180,10 +187,10 @@ class state_mainMenu extends gameState{
 		drawBackground();
 		
 		var style = new textStyle(fonts.large, textColor.green, 3);
-		textRenderer.drawText("TUBETRIS", new vec2(screenBounds.center.x, screenBounds.top + 48), style);
+		textRenderer.drawText("TUBETRIS", new vec2(screenBounds.center.x, screenBounds.top + 100), style);
 		
 		var animStyle = new textStyle(fonts.large, textColor.green, 2);
-		textRenderer.drawText("DELUXE", new vec2(screenBounds.center.x, screenBounds.top + 148), animStyle);
+		textRenderer.drawText("DELUXE", new vec2(screenBounds.center.x, screenBounds.top + 180), animStyle, this.titleAnim);
 		
 		for(var i = this.buttons.length - 1; i >= 0; i--){
 			var sel = i == this.currentSelection;
