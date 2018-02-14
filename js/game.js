@@ -189,8 +189,8 @@ function loadFonts(){
 	log("loading fonts... ")
 	fonts = {};
 	
-	loadFont("small", "font_small.png", new vec2(12, 8), 3);
-	loadFont("large", "font_large.png", new vec2(18, 32), 3);
+	loadFont("small", "font_small.png", new vec2(12, 8), 8);
+	loadFont("large", "font_large.png", new vec2(18, 32), 8);
 	
 	fonts.large.setSpecificCharacterWidths({
 		'1': 14,
