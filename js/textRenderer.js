@@ -168,8 +168,8 @@ class textStyle{
 
 class textAnim{
 	constructor(){
-		this.animType = textAnimType.loop;
-		this.animScale = 500;
+		this.animType = textAnimType.looping;
+		this.animLength = 500;
 		this.animCharOffset = 0.1;
 		this.animOffset = gameState.current.timeElapsed;
 	}
@@ -179,15 +179,15 @@ class textAnim{
 	}
 	getAnimProgress(index = 0){
 		var correctedAnimTime = gameState.current.timeElapsed - this.animOffset;
-		var aProg = correctedAnimTime / this.animScale - index * this.animCharOffset;
+		var aProg = correctedAnimTime / this.animLength - index * this.animCharOffset;
 		
 		switch(this.animType){
 			case textAnimType.once:
 				return Math.min(aProg, 1);
 			case textAnimType.continuous:
-				return aProg % 2 - 1;
+				return aProg >= 0 ? aProg % 2 - 1 : 2 - Math.abs(aProg % 2) - 1;
 			case textAnimType.looping:
-				return aProg % 1;
+				return aProg >= 0 ? aProg % 1 : 1 - Math.abs(aProg % 1);
 			case textAnimType.pingPong:
 				return 1 - Math.abs(aProg % 2 - 1);
 		}
@@ -213,11 +213,31 @@ class textAnim_sinWave extends textAnim{
 	}
 	
 	applyAnim(pr){
-		for(var i = 0; i < pr.spriteContainers.length; i ++){
+		for(var i = 0; i < pr.spriteContainers.length; i++){
 			var cy = this.getAnimProgress(i) * this.waveLength;
 			cy = Math.sin(cy) * this.waveMag;
 			
 			pr.spriteContainers[i].bounds.pos.y += cy;
+		}
+	}
+}
+class textAnim_rainbow extends textAnim{
+	constructor(animLength = 500, charOff = 0.1, charHeight = fonts.large.charSize.y){
+		super();
+		this.animType = textAnimType.looping;
+		this.animCharOffset = charOff;
+		this.animLength = animLength;
+		this.charHeight = charHeight;
+	}
+	
+	applyAnim(pr){
+		for(var i = 0; i < pr.spriteContainers.length; i++){
+			var col = Math.floor(2 + this.getAnimProgress(i) * 6);
+			var colOff = col * this.charHeight * 3;
+			var sy = pr.spriteContainers[i].sprite.pos.y % (this.charHeight * 3);
+			sy += colOff;
+			
+			pr.spriteContainers[i].sprite.pos.y = sy;
 		}
 	}
 }
