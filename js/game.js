@@ -580,7 +580,7 @@ function draw(){
 	//var style2 = new textStyle(fonts.small, textColor.light, 2);
 	//var style3 = new textStyle(fonts.small, textColor.dark);
 	//var textbox = new textBlock(str, style, collisionBox.fromSides(50, 200, 550, 500), [style0, style1, style2, style3]);
-	//textbox.draw();
+	//textbox.clone().draw();
 	//textbox.bounds.drawOutline(renderContext);
 	
 	printScreen();

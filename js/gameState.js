@@ -71,10 +71,16 @@ class menuButton{
 		
 		this.size = null;
 		this.calcSize();
+		this.selectedLast = false;
 		
 		this.styles = null;
 		this.preRenders = null;
 		this.setStyles();
+		
+		this.selectAnim = new textAnim_scale(100, 0.75, 1.25, 0);
+		this.unselectAnim = new textAnim_scale(100, 1.25, 0.75, 0);
+		this.selectAnim.animType = textAnimType.once;
+		this.unselectAnim.animType = textAnimType.once;
 	}
 	
 	calcSize(){
@@ -118,8 +124,11 @@ class menuButton{
 	
 	draw(selected = false){
 		// renders the button on screen
+		var fSel = selected != this.selectedLast;
+		
 		if(selected){
-			this.preRenders.selected.draw();
+			if(fSel) this.selectAnim.resetAnim();
+			this.preRenders.selected.getAnimated(this.selectAnim).draw();
 			
 			// draws arrows to the left and right of the button
 			var l = this.preRenders.selected.getBounds().left;
@@ -132,7 +141,11 @@ class menuButton{
 			// draws the button's description
 			this.preRenders.description.draw();
 		}
-		else this.preRenders.normal.draw();
+		else {
+			if(fSel) this.unselectAnim.resetAnim();
+			this.preRenders.normal.getAnimated(this.unselectAnim).draw();
+		}
+		this.selectedLast = selected;
 	}
 }
 

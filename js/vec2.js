@@ -117,6 +117,10 @@ class spriteBox{
 	get bottom() { return Math.round(this.pos.y + this.size.y); }
 	get width() { return Math.round(this.size.x); }
 	get height() { return Math.round(this.size.y); }
+	
+	clone(){
+		return new spriteBox(this.pos.clone(), this.size.clone());
+	}
 }
 
 class collisionBox{
@@ -145,6 +149,10 @@ class collisionBox{
 		this.pos = new vec2(newCenter.x - this.size.x / 2, newCenter.y - this.size.y / 2);
 	}
 	
+	clone(){
+		return new collisionBox(this.pos.clone(), this.size.clone());
+	}
+	
 	drawFill(ctx, color = "#aaa"){
 		ctx.fillStyle = color;
 		ctx.fillRect(this.left, this.top, this.width, this.height);
@@ -161,6 +169,16 @@ class spriteContainer{
 		this.spriteSheet = spriteSheet;
 		this.sprite = sprite;
 		this.bounds = bounds;
+	}
+	
+	clone(){
+		var r = new spriteContainer();
+		
+		r.spriteSheet = this.spriteSheet;
+		r.sprite = this.sprite.clone();
+		r.bounds = this.bounds.clone();
+		
+		return r;
 	}
 	
 	draw(){

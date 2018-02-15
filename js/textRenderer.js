@@ -180,10 +180,12 @@ class textAnim{
 	}
 	
 	resetAnim(delay = null){
+		// restarts the animation
 		this.animOffset = gameState.current.timeElapsed;
 		if(delay != null) this.animDelay = delay;
 	}
 	getAnimProgress(index = 0){
+		// returns a percent indicating the amount that the animation has progressed
 		var correctedAnimTime = gameState.current.timeElapsed - this.animOffset - this.animDelay;
 		var aProg = correctedAnimTime / this.animLength - index * this.animCharOffset;
 		
@@ -213,12 +215,14 @@ class textAnim{
 class textAnim_compound extends textAnim{
 	constructor(textAnimations = []){
 		super();
-		this.anims = textAnimations;
+		this.anims = textAnimations; // array of different text animations that are combined to make a compound animation
 	}
 	
+	// adds an animation to the anims array
 	addAnimation(anim){
 		this.anims.push(anim);
 	}
+	// applies all the animations to a preRenderedText object
 	applyAnim(pr){
 		for(var i = 0; i < this.anims.length; i++)
 			this.anims[i].applyAnim(pr);
@@ -268,7 +272,7 @@ class textAnim_rainbow extends textAnim{
 }
 // an animation that changes the text's size
 class textAnim_scale extends textAnim{
-	constructor(animLength = 500, minScale = 0.5, maxScale = 1, charOff = 0.1){
+	constructor(animLength = 500, minScale = 0.5, maxScale = 1, charOff = 0){
 		super();
 		
 		this.animType = textAnimType.pingPong;
@@ -281,7 +285,7 @@ class textAnim_scale extends textAnim{
 	applyAnim(pr){
 		for(var i = 0; i < pr.spriteContainers.length; i++){
 			var cRange = this.maxScale - this.minScale;
-			var cs = this.minScale + this.getAnimProgress(i);
+			var cs = this.minScale + this.getAnimProgress(i) * cRange;
 			var oc = pr.spriteContainers[i].bounds.center.clone();
 			
 			pr.spriteContainers[i].bounds.size = pr.spriteContainers[i].bounds.size.multiply(cs);
@@ -458,6 +462,26 @@ class preRenderedText{
 		return r;
 	}
 	
+	calculateLines(){
+		if(this.spriteContainers.length <= 0) return;
+		this.lines = [];
+		
+		var curline = [];
+		var lastX = this.spriteContainers[0].bounds.left - 1;
+		for(var i = 0; i < this.spriteContainers.length; i++){
+			var sc = this.spriteContainers[i];
+			if(sc.bounds.left <= lastX){
+				this.lines.push(curline);
+				curline = [];
+			}
+			
+			curline.push(sc);
+			lastX = sc.bounds.left;
+		}
+		if(curline.length > 0)
+			this.lines.push(curline);
+	}
+	
 	applyHorizontalAlignment(minLeft, maxRight = minLeft){
 		// applies the horizontal alignment according to the mainStyle rules
 		// iterate through each line of text
@@ -513,6 +537,29 @@ class preRenderedText{
 			this.spriteContainers[0].bounds.top, 
 			this.spriteContainers[this.spriteContainers.length - 1].bounds.right, 
 			this.spriteContainers[this.spriteContainers.length - 1].bounds.bottom,);
+	}
+	
+	// returns a new instance of the preRender with an animation applied
+	getAnimated(anim){
+		var c = this.clone();
+		
+		anim.applyAnim(c);
+		
+		return c;
+	}
+	
+	// returns a new preRenderedText instance with the same values
+	clone(){
+		var r = new preRenderedText();
+		
+		r.spriteContainers = [];
+		for (var i = 0; i < this.spriteContainers.length; i++)
+			r.spriteContainers.push(this.spriteContainers[i].clone());
+		r.calculateLines();
+		
+		r.mainStyle = this.mainStyle;
+		
+		return r;
 	}
 	
 	draw(){
