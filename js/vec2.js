@@ -148,6 +148,14 @@ class collisionBox{
 	setCenter(newCenter){
 		this.pos = new vec2(newCenter.x - this.size.x / 2, newCenter.y - this.size.y / 2);
 	}
+	inflated(factor){
+		var r = this.clone();
+
+		r.size = r.size.multiply(factor);
+		r.setCenter(this.center);
+		
+		return r;
+	}
 	
 	clone(){
 		return new collisionBox(this.pos.clone(), this.size.clone());
