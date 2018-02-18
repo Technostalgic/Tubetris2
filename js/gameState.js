@@ -77,10 +77,8 @@ class menuButton{
 		this.preRenders = null;
 		this.setStyles();
 		
-		this.selectAnim = new textAnim_scale(100, 0.75, 1.25, 0);
-		this.unselectAnim = new textAnim_scale(100, 1.25, 0.75, 0);
-		this.selectAnim.animType = textAnimType.once;
-		this.unselectAnim.animType = textAnimType.once;
+		this.selectAnim = new textAnim_scaleTransform(100, 1, 2, 0);
+		this.unselectAnim = new textAnim_scaleTransform(100, 2, 1, 0);
 	}
 	
 	calcSize(){
@@ -131,10 +129,9 @@ class menuButton{
 			this.preRenders.selected.getAnimated(this.selectAnim).draw();
 			
 			// draws arrows to the left and right of the button
-			var l = this.preRenders.selected.getBounds().left;
-			var r = this.preRenders.selected.getBounds().right;
-			var lpos = new vec2(l - 10, this.pos.y);
-			var rpos = new vec2(r + 10, this.pos.y);
+			var off = this.text.length * 18 + 10;
+			var lpos = new vec2(this.pos.x - off, this.pos.y);
+			var rpos = new vec2(this.pos.x + off, this.pos.y);
 			drawArrow(lpos, side.right);
 			drawArrow(rpos, side.left);
 			
@@ -177,10 +174,11 @@ class state_mainMenu extends gameState{
 		// adds the buttons to the interface
 		this.buttons = [];
 		var off = 0;
-		this.buttons.push(new menuButton("Start Game", screenBounds.center.plus(new vec2(0, off * 45)), "start a new game")); off++;
-		this.buttons.push(new menuButton("Scoreboard", screenBounds.center.plus(new vec2(0, off * 45)), "view the highest scoring players")); off++;
-		this.buttons.push(new menuButton("Options", screenBounds.center.plus(new vec2(0, off * 45)), "configure gameplay and av options")); off++;
-		this.buttons.push(new menuButton("Credits", screenBounds.center.plus(new vec2(0, off * 45)), "see who contributed to making the game!")); off++;
+		var dif = 55;
+		this.buttons.push(new menuButton("Start Game", screenBounds.center.plus(new vec2(0, off * dif)), "start a new game")); off++;
+		this.buttons.push(new menuButton("Scoreboard", screenBounds.center.plus(new vec2(0, off * dif)), "view the highest scoring players")); off++;
+		this.buttons.push(new menuButton("Options", screenBounds.center.plus(new vec2(0, off * dif)), "configure gameplay and av options")); off++;
+		this.buttons.push(new menuButton("Credits", screenBounds.center.plus(new vec2(0, off * dif)), "see who contributed to making the game!")); off++;
 	}
 	
 	selectionDown(){

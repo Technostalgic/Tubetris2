@@ -272,7 +272,7 @@ class textAnim_rainbow extends textAnim{
 }
 // an animation that changes the text's size
 class textAnim_scale extends textAnim{
-	constructor(animLength = 500, minScale = 0.5, maxScale = 1, charOff = 0){
+	constructor(animLength = 500, minScale = 0.5, maxScale = 1, charOff = 0.1){
 		super();
 		
 		this.animType = textAnimType.pingPong;
@@ -290,6 +290,30 @@ class textAnim_scale extends textAnim{
 			
 			pr.spriteContainers[i].bounds.size = pr.spriteContainers[i].bounds.size.multiply(cs);
 			pr.spriteContainers[i].bounds.setCenter(oc);
+		}
+	}
+}
+// an animation that scales the text while keeping it's relative size and position ratio
+class textAnim_scaleTransform extends textAnim{
+	constructor(animLength = 500, minScale = 1, maxScale = 2, charOff = 0){
+		super();
+		
+		this.animType = textAnimType.once;
+		this.animLength = animLength;
+		this.animCharOffset = charOff;
+		this.minScale = minScale;
+		this.maxScale = maxScale;
+	}
+	
+	applyAnim(pr){
+		var prCenter = pr.findCenter();
+		for(var i = 0; i < pr.spriteContainers.length; i++){
+			var cRange = this.maxScale - this.minScale;
+			var cs = this.minScale + this.getAnimProgress(i) * cRange;
+			var rc = pr.spriteContainers[i].bounds.center.minus(prCenter);
+			
+			pr.spriteContainers[i].bounds.size = pr.spriteContainers[i].bounds.size.multiply(cs);
+			pr.spriteContainers[i].bounds.setCenter(prCenter.plus(rc.multiply(cs)));
 		}
 	}
 }
@@ -480,6 +504,10 @@ class preRenderedText{
 		}
 		if(curline.length > 0)
 			this.lines.push(curline);
+	}
+	findCenter(){
+		// returns the center point of the prerendered text
+		return this.getBounds().center;
 	}
 	
 	applyHorizontalAlignment(minLeft, maxRight = minLeft){
