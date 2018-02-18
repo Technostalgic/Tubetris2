@@ -126,7 +126,7 @@ class menuButton{
 		
 		if(selected){
 			if(fSel) this.selectAnim.resetAnim();
-			this.preRenders.selected.getAnimated(this.selectAnim).draw();
+			this.preRenders.selected.animated(this.selectAnim).draw();
 			
 			// draws arrows to the left and right of the button
 			var off = 10;
@@ -140,7 +140,7 @@ class menuButton{
 		}
 		else {
 			if(fSel) this.unselectAnim.resetAnim();
-			this.preRenders.normal.getAnimated(this.unselectAnim).draw();
+			this.preRenders.normal.animated(this.unselectAnim).draw();
 		}
 		this.selectedLast = selected;
 	}

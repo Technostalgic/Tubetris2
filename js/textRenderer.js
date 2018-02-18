@@ -568,7 +568,7 @@ class preRenderedText{
 	}
 	
 	// returns a new instance of the preRender with an animation applied
-	getAnimated(anim){
+	animated(anim){
 		var c = this.clone();
 		
 		anim.applyAnim(c);
