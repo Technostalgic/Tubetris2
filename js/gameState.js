@@ -129,9 +129,9 @@ class menuButton{
 			this.preRenders.selected.getAnimated(this.selectAnim).draw();
 			
 			// draws arrows to the left and right of the button
-			var off = this.text.length * 18 + 10;
-			var lpos = new vec2(this.pos.x - off, this.pos.y);
-			var rpos = new vec2(this.pos.x + off, this.pos.y);
+			var off = 10;
+			var lpos = new vec2(this.preRenders.selected.getBounds().inflated(this.selectAnim.maxScale).left - off, this.pos.y);
+			var rpos = new vec2(this.preRenders.selected.getBounds().inflated(this.selectAnim.maxScale).right + off, this.pos.y);
 			drawArrow(lpos, side.right);
 			drawArrow(rpos, side.left);
 			
