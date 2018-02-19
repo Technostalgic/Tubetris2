@@ -128,9 +128,8 @@ function printScreen(){
 	// prints the rendering canvas onto the main canvas so it can be scaled to fit the screen
 	scalingContext.drawImage(renderTarget, 0, 0, scalingTarget.width, scalingTarget.height);
 }
-function drawImage(ctx, img, pos, sprite = null, scale = 1){
-	// draws an image onto the specifed context
-	
+
+function printImage(ctx, img, pos, sprite = null, scale = 1){
 	if(!sprite)
 		sprite = new spriteBox(new vec2, new vec2(img.width, img.height));
 	
@@ -141,6 +140,49 @@ function drawImage(ctx, img, pos, sprite = null, scale = 1){
 		pos.x, pos.y,
 		sprite.width * scale, sprite.height * scale
 		);
+}
+function drawImage(ctx, img, pos, sprite = null, scale = 1, angle = 0){
+	// draws an image onto the specifed context
+	if(!sprite)
+		sprite = new spriteBox(new vec2, new vec2(img.width, img.height));
+	
+	// sets the context transformation to allow rotation
+	ctx.translate(pos.x, pos.y);
+	ctx.rotate(angle);
+	
+	ctx.drawImage(
+		img,
+		sprite.left, sprite.top,
+		sprite.width, sprite.height,
+		0, 0,
+		sprite.width * scale, sprite.height * scale
+		);
+	
+	// resets the context transformation
+	ctx.rotate(-angle);
+	ctx.translate(-pos.x, -pos.y);
+}
+function drawCenteredImage(ctx, img, pos, sprite = null, scale = 1, angle = 0){
+	// draws an image onto the specifed context
+	if(!sprite)
+		sprite = new spriteBox(new vec2, new vec2(img.width, img.height));
+	var cCorrect = sprite.size.multiply(-0.5);
+	
+	// sets the context transformation to allow rotation
+	ctx.translate(pos.x, pos.y);
+	ctx.rotate(angle);
+	
+	ctx.drawImage(
+		img,
+		sprite.left, sprite.top,
+		sprite.width, sprite.height,
+		cCorrect.x, cCorrect.y,
+		sprite.width * scale, sprite.height * scale
+		);
+	
+	// resets the context transformation
+	ctx.rotate(-angle);
+	ctx.translate(-pos.x, -pos.y);
 }
 
 function drawArrow(pos, dir = side.right){
@@ -349,7 +391,7 @@ function generateBackground(){
 	for(var y = 0; y <= cY; y++){
 		for(var x = 0; x <= cX; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
-			drawImage(bgctx, gfx.tiles_empty, tpos, sbox);
+			printImage(bgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	
@@ -375,7 +417,7 @@ function generateForeground_border(){
 			1 : cX
 			){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
-			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
+			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	
@@ -402,35 +444,35 @@ function generateForeground_overlay(){
 			1 : cX
 			){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
-			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
+			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	// foreground tiles to the left of next piece area
 	for(var y = 1; y <= 4; y++){
 		for(var x = 1; x < 12; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
-			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
+			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	// foreground above next piece area
 	for(var y = 1; y <= 1; y++){
 		for(var x = 11; x < cX; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
-			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
+			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	// foreground tiles to the right of next piece area
 	for(var y = 1; y <= 3; y++){
 		for(var x = cX - 1; x < cX; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
-			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
+			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	// foreground tiles on the right side of the screen
 	for(var y = 4; y < cY; y++){
 		for(var x = 11; x < cX; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
-			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
+			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	
