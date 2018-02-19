@@ -141,28 +141,20 @@ function printImage(ctx, img, pos, sprite = null, scale = 1){
 		sprite.width * scale, sprite.height * scale
 		);
 }
-function drawImage(ctx, img, pos, sprite = null, scale = 1, angle = 0){
+function drawImage(ctx, img, pos, sprite = null, scale = 1){
 	// draws an image onto the specifed context
 	if(!sprite)
 		sprite = new spriteBox(new vec2, new vec2(img.width, img.height));
-	
-	// sets the context transformation to allow rotation
-	ctx.translate(pos.x, pos.y);
-	ctx.rotate(angle);
 	
 	ctx.drawImage(
 		img,
 		sprite.left, sprite.top,
 		sprite.width, sprite.height,
-		0, 0,
+		pos.x, pos.y,
 		sprite.width * scale, sprite.height * scale
 		);
-	
-	// resets the context transformation
-	ctx.rotate(-angle);
-	ctx.translate(-pos.x, -pos.y);
 }
-function drawCenteredImage(ctx, img, pos, sprite = null, scale = 1, angle = 0){
+function drawCenteredImage(ctx, img, pos, sprite = null, scale = 1, rotation = 0){
 	// draws an image onto the specifed context
 	if(!sprite)
 		sprite = new spriteBox(new vec2, new vec2(img.width, img.height));

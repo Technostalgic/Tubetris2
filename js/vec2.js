@@ -177,6 +177,7 @@ class spriteContainer{
 		this.spriteSheet = spriteSheet;
 		this.sprite = sprite;
 		this.bounds = bounds;
+		this.rotation = null;
 	}
 	
 	clone(){
@@ -191,6 +192,10 @@ class spriteContainer{
 	
 	draw(){
 		if(this.sprite.size.x <= 0 || this.sprite.size.y <= 0) return;
+		if(this.rotation){
+			this.drawRotated();
+			return;
+		}
 		renderContext.drawImage(
 			this.spriteSheet,
 			this.sprite.left, this.sprite.top,
@@ -198,5 +203,24 @@ class spriteContainer{
 			this.bounds.left, this.bounds.top,
 			this.bounds.width, this.bounds.height
 			);
+	}
+	drawRotated(){
+		if(this.sprite.size.x <= 0 || this.sprite.size.y <= 0) return;
+		var cCorrect = this.bounds.size.multiply(-0.5);
+		var tTot = this.bounds.pos.minus(cCorrect);
+		
+		renderContext.translate(tTot.x, tTot.y);
+		renderContext.rotate(this.rotation);
+		
+		renderContext.drawImage(
+			this.spriteSheet,
+			this.sprite.left, this.sprite.top,
+			this.sprite.width, this.sprite.height,
+			cCorrect.x, cCorrect.y,
+			this.bounds.width, this.bounds.height
+			);
+			
+		renderContext.rotate(-this.rotation);
+		renderContext.translate(-tTot.x, -tTot.y);
 	}
 }
