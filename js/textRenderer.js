@@ -19,10 +19,16 @@ var textColor = {
 // enumerates the different ways an animation can be played
 var textAnimType = {
 	unlimited: -1,
-	once: 0,
-	continuous: 1,
-	looping: 2,
-	pingPong: 3
+	linear: 0,
+	linearBounce: 1,
+	trigonometric: 2,
+	trigonometricCycle: 3,
+	trigonometricBounceIn: 4,
+	trigonometricBounceOut: 5,
+	easeIn: 6,
+	easeOut: 7,
+	bulgeIn: 8,
+	bulgeOut: 9
 }
 
 // a text renderer object, used for storing information about sprite fonts
@@ -172,11 +178,12 @@ class textStyle{
 // an animation that can be applied to text
 class textAnim{
 	constructor(){
-		this.animType = textAnimType.looping; // how the animation will handle repition
+		this.animType = textAnimType.linear; // how the animation will handle repition
 		this.animLength = 500; // the total length in milliseconds of the animation
 		this.animDelay = 0; // the delay in milliseconds before the animation starts
 		this.animCharOffset = 0.1; // the animation percent offset between each character
 		this.animOffset = gameState.current.timeElapsed; // the offset of the animation from the global gameState's total timeElapsed
+		this.looping = true;
 	}
 	
 	resetAnim(delay = null){
@@ -188,17 +195,26 @@ class textAnim{
 		// returns a percent indicating the amount that the animation has progressed
 		var correctedAnimTime = gameState.current.timeElapsed - this.animOffset - this.animDelay;
 		var aProg = correctedAnimTime / this.animLength - index * this.animCharOffset;
+		if(this.animType == textAnimType.unlimited) return aProg;
+		aProg = aProg > 0 ? aProg % 1 : aProg - (aProg % 1);
+		
+		// if the animation is only supposed to play once
+		if(!this.looping){
+			if(aProg < 0) return 0; // return 0 if animation hasn't started
+			if(Math.abs(aProg) >= 1) return 1; // return 1 if animation is finished
+		}
 		
 		switch(this.animType){
-			case textAnimType.once:
-				return Math.max(0, Math.min(aProg, 1));
-			case textAnimType.continuous:
-				return aProg >= 0 ? aProg % 2 - 1 : 2 - Math.abs(aProg % 2) - 1;
-			case textAnimType.looping:
-				return aProg >= 0 ? aProg % 1 : 1 - Math.abs(aProg % 1);
-			case textAnimType.pingPong:
-				return 1 - Math.abs(aProg % 2 - 1);
+			case textAnimType.linear:
+				return aProg;
+			case textAnimType.linearBounce:
+				return aProg * 2 - 1;
+			case textAnimType.trigonometric:
+				return Math.sin(aProg * Math.PI);
+			case textAnimType.trigonometricCycle:
+				return Math.sin(aProg * Math.PI * 2);
 		}
+		
 		return aProg;
 	}
 	
@@ -233,17 +249,15 @@ class textAnim_compound extends textAnim{
 class textAnim_sinWave extends textAnim{
 	constructor(animLength = 500, waveMag = 1, charOff = 0.1){
 		super();
-		this.animType = textAnimType.continuous;
+		this.animType = textAnimType.trigonometricCycle;
 		this.animLength = animLength;
 		this.animCharOffset = charOff;
 		this.waveMag = waveMag;
-		this.waveLength = Math.PI;
 	}
 	
 	applyAnim(pr){
 		for(var i = 0; i < pr.spriteContainers.length; i++){
-			var cy = this.getAnimProgress(i) * this.waveLength;
-			cy = Math.sin(cy) * this.waveMag;
+			var cy = this.getAnimProgress(i) * this.waveMag;
 			
 			pr.spriteContainers[i].bounds.pos.y += cy;
 		}
@@ -303,6 +317,7 @@ class textAnim_scaleTransform extends textAnim{
 		this.animCharOffset = charOff;
 		this.minScale = minScale;
 		this.maxScale = maxScale;
+		this.looping = false;
 	}
 	
 	applyAnim(pr){
