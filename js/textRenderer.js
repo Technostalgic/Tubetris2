@@ -196,7 +196,6 @@ class textAnim{
 		var correctedAnimTime = gameState.current.timeElapsed - this.animOffset - this.animDelay;
 		var aProg = correctedAnimTime / this.animLength - index * this.animCharOffset;
 		if(this.animType == textAnimType.unlimited) return aProg;
-		aProg = aProg > 0 ? aProg % 1 : aProg - (aProg % 1);
 		
 		// if the animation is only supposed to play once
 		if(!this.looping){
@@ -204,15 +203,17 @@ class textAnim{
 			if(Math.abs(aProg) >= 1) return 1; // return 1 if animation is finished
 		}
 		
+		aProg = aProg > 0 ? aProg % 1 : aProg - (aProg % 1);
+		
 		switch(this.animType){
 			case textAnimType.linear:
 				return aProg;
 			case textAnimType.linearBounce:
-				return aProg * 2 - 1;
+				return Math.abs(aProg * 2 - 1);
 			case textAnimType.trigonometric:
-				return Math.sin(aProg * Math.PI);
+				return (Math.cos(aProg * Math.PI) + 1) / 2;
 			case textAnimType.trigonometricCycle:
-				return Math.sin(aProg * Math.PI * 2);
+				return (Math.cos(aProg * Math.PI * 2) + 1) / 2;
 		}
 		
 		return aProg;
@@ -246,18 +247,19 @@ class textAnim_compound extends textAnim{
 }
 
 // an animation that makes the text wave up and down like a sin wave
-class textAnim_sinWave extends textAnim{
-	constructor(animLength = 500, waveMag = 1, charOff = 0.1){
+class textAnim_yOffset extends textAnim{
+	constructor(animLength = 500, range = 5, charOff = 0.1){
 		super();
 		this.animType = textAnimType.trigonometricCycle;
 		this.animLength = animLength;
 		this.animCharOffset = charOff;
-		this.waveMag = waveMag;
+		this.range = range;
+		this.off = range / -2;
 	}
 	
 	applyAnim(pr){
 		for(var i = 0; i < pr.spriteContainers.length; i++){
-			var cy = this.getAnimProgress(i) * this.waveMag;
+			var cy = this.getAnimProgress(i) * this.range + this.off;
 			
 			pr.spriteContainers[i].bounds.pos.y += cy;
 		}
@@ -289,11 +291,12 @@ class textAnim_scale extends textAnim{
 	constructor(animLength = 500, minScale = 0.5, maxScale = 1, charOff = 0.1){
 		super();
 		
-		this.animType = textAnimType.pingPong;
+		this.animType = textAnimType.linear;
 		this.animLength = animLength;
 		this.animCharOffset = charOff;
 		this.minScale = minScale;
 		this.maxScale = maxScale;
+		this.looping = false;
 	}
 	
 	applyAnim(pr){

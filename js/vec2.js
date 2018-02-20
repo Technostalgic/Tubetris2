@@ -5,7 +5,7 @@
 ///	twitter @technostalgicGM
 ///
 
-// enumerates between the 4 sides of a recatangle
+// enumerates between the 4 sides of a rectangle
 var side = {
 	none: 0,
 	left: 1,

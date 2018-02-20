@@ -161,7 +161,7 @@ class state_mainMenu extends gameState{
 		this.titleAnim = tubetrisEntrance;
 		this.titleDeluxeAnim = new textAnim_compound([
 			deluxeEntrance,
-			new textAnim_sinWave(1000 / 3, 5, 1/2),
+			new textAnim_yOffset(2000 / 3, 15, 1/4),
 			new textAnim_rainbow(500, 1/12)
 			]);
 		
