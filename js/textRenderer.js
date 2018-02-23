@@ -176,11 +176,11 @@ class textStyle{
 // an animation that can be applied to text
 class textAnim{
 	constructor(){
-		this.animType = textAnimType.linear; // how the animation will handle repition
-		this.animLength = 500; // the total length in milliseconds of the animation
-		this.animDelay = 0; // the delay in milliseconds before the animation starts
+		this.animType = textAnimType.linear; // how the animation will handle transitioning from its first to last state
+		this.animLength = 500; // total length of the animation in milliseconds
+		this.animDelay = 0; // delay before the animation starts in milliseconds
 		this.animCharOffset = 0.1; // the animation percent offset between each character
-		this.animOffset = gameState.current.timeElapsed; // the offset of the animation from the global gameState's total timeElapsed
+		this.animOffset = 0; // the offset of the animation from the global gameState's total timeElapsed
 		this.looping = true;
 	}
 	

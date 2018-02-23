@@ -62,12 +62,12 @@ class gameState{
 
 // a pressable button in the GUI that the player can interact with
 class menuButton{
-	constructor(text, pos, description = ""){
+	constructor(text, pos, description = "", action = null){
 		// initializes a button
 		this.pos = pos;
 		this.text = text;
 		this.description = description;
-		this.action = null;
+		this.action = action;
 		
 		this.styles = null;
 		this.preRenders = null;
@@ -116,10 +116,10 @@ class menuButton{
 	
 	trigger(args){
 		// called when the button is pressed by the player
-		if(this.action)
-			this.action(args);
-		
 		log("menu button '" + this.text + "' triggered", logType.log);
+		
+		if(this.action)
+			this.action(args);		
 	}
 	
 	draw(selected = false){
@@ -148,92 +148,44 @@ class menuButton{
 	}
 }
 
-// a gameState object that represents the main menu interface
-class state_mainMenu extends gameState{
+// a generic menu gameState that can be used as a blueprint for other menu interfaces
+class state_menuState extends gameState{
 	constructor(){
-		// initializes a main menu gameState
 		super();
-		var tubetrisEntrance = new textAnim_scale(300, 0, 1, 0.4);
-		tubetrisEntrance.animType = textAnimType.bulgeIn;
-		tubetrisEntrance.animDelay = 200;
-		var deluxeEntrance = new textAnim_scale(100, 0, 1, 0);
-		deluxeEntrance.animType = textAnimType.linear;
-		deluxeEntrance.animDelay = 1300;
 		
-		
-		this.titleAnim = tubetrisEntrance;
-		this.titleDeluxeAnim = new textAnim_compound([
-			deluxeEntrance,
-			new textAnim_yOffset(2000 / 3, 15, 1/4),
-			new textAnim_rainbow(500, 1/12)
-			]);
-		
+		// list of menu buttons
 		this.buttons = [];
-		this.addButtons();
 		this.currentSelection = 0;
+		this.addButtons();
 	}
 	
-	addButtons(){
-		// adds the buttons to the interface
-		this.buttons = [];
-		var off = 0;
-		var dif = 55;
-		this.buttons.push(new menuButton("Start Game", screenBounds.center.plus(new vec2(0, off * dif)), "start a new game")); off++;
-		this.buttons.push(new menuButton("Scoreboard", screenBounds.center.plus(new vec2(0, off * dif)), "view the highest scoring players")); off++;
-		this.buttons.push(new menuButton("Options", screenBounds.center.plus(new vec2(0, off * dif)), "configure gameplay and av options")); off++;
-		this.buttons.push(new menuButton("Credits", screenBounds.center.plus(new vec2(0, off * dif)), "see who contributed to making the game!")); off++;
-	}
+	addButtons(){}
 	
 	selectionDown(){
 		// moves the menu cursor down to the next selectable menu item
+		if(this.buttons.length <= 0) return;
 		this.currentSelection += 1;
 		if(this.currentSelection >= this.buttons.length)
 			this.currentSelection = 0;
 	}
 	selectionUp(){
 		// moves the menu cursor up to the previous selectable menu item
+		if(this.buttons.length <= 0) return;
 		this.currentSelection -= 1;
 		if(this.currentSelection < 0)
 			this.currentSelection = this.buttons.length - 1;
 	}
 	get selectedButton(){
+		if(this.buttons.length <= 0) return null;
 		return this.buttons[this.currentSelection];
 	}
 	select(pos = null){
 		// selects the menu item at the specefied position, if no position is specified, the currently selected menu item is triggered
+		if(this.buttons.length <= 0) return;
 		if(!pos){
 			this.buttons[this.currentSelection].trigger();
 			return;
 		}
-	}
-	
-	update(dt){
-		// updates the main menu
-		super.update(dt);
-	}
-	draw(){
-		// draws the the main menu
-		drawBackground();
-		
-		var style = new textStyle(fonts.large, textColor.green, 3);
-		textRenderer.drawText("TUBETRIS", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
-		
-		var animStyle = new textStyle(fonts.large, textColor.green, 2);
-		textRenderer.drawText("DELUXE", new vec2(screenBounds.center.x, screenBounds.top + 180), animStyle, this.titleDeluxeAnim);
-		
-		for(var i = this.buttons.length - 1; i >= 0; i--){
-			var sel = i == this.currentSelection;
-			this.buttons[i].draw(sel);
-		}
-		
-		drawForegroundBorder();
-	}
-	
-	switchFrom(tostate = null){
-		
-	}
-	switchTo(fromstate = null){
-		
 	}
 	
 	controlTap(control = controlAction.none){
@@ -246,11 +198,13 @@ class state_mainMenu extends gameState{
 	}
 	mouseTap(pos){
 		// defines what happens when the mouse is clicked in the main menu
+		if(this.buttons.length <= 0) return;
 		if(this.selectedButton.selectedBounds.overlapsPoint(pos))
 			this.select();
 	}
 	mouseMove(pos){
 		// defines what happens when the mouse is moved in the main menu
+		if(this.buttons.length <= 0) return;
 		if(this.selectedButton.selectedBounds.overlapsPoint(pos))
 			return;
 		
@@ -260,5 +214,128 @@ class state_mainMenu extends gameState{
 				return;
 			}
 		}
+	}
+
+	drawInternals(){}
+	draw(){
+		drawBackground();
+
+		this.drawInternals();
+		
+		for(var i = this.buttons.length - 1; i >= 0; i--){
+			var sel = i == this.currentSelection;
+			this.buttons[i].draw(sel);
+		}
+		
+		drawForegroundBorder();
+	}
+}
+
+// a gameState object that represents the main menu interface
+class state_mainMenu extends state_menuState{
+	constructor(){
+		// initializes a main menu gameState
+		super();
+		var tubetrisEntrance = new textAnim_scale(300, 0, 1, 0.4);
+		tubetrisEntrance.animType = textAnimType.bulgeIn;
+		tubetrisEntrance.animDelay = 200;
+		var deluxeEntrance = new textAnim_scale(100, 0, 1, 0);
+		deluxeEntrance.animType = textAnimType.linear;
+		deluxeEntrance.animDelay = 1300;
+		
+		this.titleAnim = tubetrisEntrance;
+		this.titleDeluxeAnim = new textAnim_compound([
+			deluxeEntrance,
+			new textAnim_yOffset(2000 / 3, 15, 1/4),
+			new textAnim_rainbow(500, 1/12)
+			]);
+		
+	}
+	
+	addButtons(){
+		// adds the buttons to the interface
+		this.buttons = [];
+		var off = 0;
+		var dif = 55;
+		
+		var action_switchToScoreboard = function(){ gameState.switchState(new state_scoreboard()); };
+		var action_switchToOptions = function(){ gameState.switchState(new state_options()); };
+		
+		this.buttons.push(new menuButton("Start Game", screenBounds.center.plus(new vec2(0, off * dif)), "start a new game")); off++;
+		this.buttons.push(new menuButton("Scoreboard", screenBounds.center.plus(new vec2(0, off * dif)), "view the highest scoring players", action_switchToScoreboard)); off++;
+		this.buttons.push(new menuButton("Options", screenBounds.center.plus(new vec2(0, off * dif)), "configure gameplay and av options", action_switchToOptions)); off++;
+		this.buttons.push(new menuButton("Credits", screenBounds.center.plus(new vec2(0, off * dif)), "see who contributed to making the game!")); off++;
+	}
+	
+	drawInternals(){
+		// draws the the main menu
+		var style = new textStyle(fonts.large, textColor.green, 3);
+		textRenderer.drawText("TUBETRIS", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
+		
+		var animStyle = new textStyle(fonts.large, textColor.green, 2);
+		textRenderer.drawText("DELUXE", new vec2(screenBounds.center.x, screenBounds.top + 180), animStyle, this.titleDeluxeAnim);
+	}
+	
+	switchFrom(tostate = null){
+		
+	}
+	switchTo(fromstate = null){
+		
+	}
+}
+// a gameState object that represents the scoreboard screen interface
+class state_scoreboard extends state_menuState{
+	constructor(){
+		super();
+		
+		var titleEntrance = new textAnim_scaleTransform(300, 0, 1, 0);
+		titleEntrance.animType = textAnimType.easeOut;
+		
+		this.titleAnim = titleEntrance;
+	}
+	
+	addButtons(){
+		this.buttons = [];
+		var off = 0;
+		var dif = 55;
+		var tpos = new vec2(screenBounds.center.x, screenBounds.bottom - 200);
+		
+		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
+		
+		this.buttons.push(new menuButton("Reset Scores", tpos.plus(new vec2(0, off * dif)), "erase the scoreboard data")); off++;
+		this.buttons.push(new menuButton("Main Menu", tpos.plus(new vec2(0, off * dif)), "return to the main menu", action_switchToMainMenu)); off++;
+		
+		this.currentSelection = 1;
+	}
+	
+	drawInternals(){
+		var style = new textStyle(fonts.large, textColor.green, 2);
+		textRenderer.drawText("SCOREBOARD", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
+	}
+}
+class state_options extends state_menuState{
+	constructor(){
+		super();		
+		
+		var titleEntrance = new textAnim_scaleTransform(300, 0, 1, 0);
+		titleEntrance.animType = textAnimType.easeOut;
+		
+		this.titleAnim = titleEntrance;
+	}
+	
+	addButtons(){
+		this.buttons = [];
+		var off = 0;
+		var dif = 55;
+		var tpos = new vec2(screenBounds.center.x, screenBounds.bottom - 200);
+		
+		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
+		
+		this.buttons.push(new menuButton("Main Menu", new vec2(screenBounds.center.x, screenBounds.bottom - 150), "return to the main menu", action_switchToMainMenu));
+	}
+	
+	drawInternals(){
+		var style = new textStyle(fonts.large, textColor.green, 2);
+		textRenderer.drawText("OPTIONS", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
 	}
 }
