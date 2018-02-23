@@ -77,8 +77,10 @@ class menuButton{
 		this.preRenders = null;
 		this.setStyles();
 		
-		this.selectAnim = new textAnim_scaleTransform(100, 1, 2, 0);
+		this.selectAnim = new textAnim_scaleTransform(200, 1, 2, 0);
+		this.selectAnim.animType = textAnimType.bulgeIn;
 		this.unselectAnim = new textAnim_scaleTransform(100, 2, 1, 0);
+		this.unselectAnim.animType = textAnimType.easeIn;
 	}
 	
 	calcSize(){
@@ -151,11 +153,12 @@ class state_mainMenu extends gameState{
 	constructor(){
 		// initializes a main menu gameState
 		super();
-		var tubetrisEntrance = new textAnim_scale(200, 0, 1, 0.4);
-		tubetrisEntrance.animType = textAnimType.once;
+		var tubetrisEntrance = new textAnim_scale(300, 0, 1, 0.4);
+		tubetrisEntrance.animType = textAnimType.bulgeIn;
+		tubetrisEntrance.animDelay = 200;
 		var deluxeEntrance = new textAnim_scale(100, 0, 1, 0);
-		deluxeEntrance.animDelay = 1000;
-		deluxeEntrance.animType = textAnimType.once;
+		deluxeEntrance.animType = textAnimType.linear;
+		deluxeEntrance.animDelay = 1300;
 		
 		
 		this.titleAnim = tubetrisEntrance;

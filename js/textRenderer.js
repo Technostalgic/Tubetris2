@@ -23,12 +23,10 @@ var textAnimType = {
 	linearBounce: 1,
 	trigonometric: 2,
 	trigonometricCycle: 3,
-	trigonometricBounceIn: 4,
-	trigonometricBounceOut: 5,
-	easeIn: 6,
-	easeOut: 7,
-	bulgeIn: 8,
-	bulgeOut: 9
+	easeIn: 4,
+	easeOut: 5,
+	bulgeIn: 6,
+	bulgeOut: 7
 }
 
 // a text renderer object, used for storing information about sprite fonts
@@ -205,15 +203,24 @@ class textAnim{
 		
 		aProg = aProg > 0 ? aProg % 1 : aProg - (aProg % 1);
 		
+		console.log(aProg);
 		switch(this.animType){
 			case textAnimType.linear:
 				return aProg;
 			case textAnimType.linearBounce:
 				return Math.abs(aProg * 2 - 1);
 			case textAnimType.trigonometric:
-				return (Math.cos(aProg * Math.PI) + 1) / 2;
+				return 1 - (Math.cos(aProg * Math.PI) + 1) / 2;
 			case textAnimType.trigonometricCycle:
 				return (Math.cos(aProg * Math.PI * 2) + 1) / 2;
+			case textAnimType.easeIn:
+				return 1 - (Math.cos(aProg * (Math.PI / 2)));
+			case textAnimType.easeOut:
+				return (Math.sin(aProg * (Math.PI / 2)));
+			case textAnimType.bulgeIn:
+				return (Math.sin(aProg * (3 * Math.PI / 4))) * Math.sqrt(2);
+			case textAnimType.bulgeOut:
+				return 1 - (Math.cos(-(Math.PI / 4) + aProg * (3 * Math.PI / 4))) * Math.sqrt(2);
 		}
 		
 		return aProg;
