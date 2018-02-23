@@ -69,15 +69,16 @@ class menuButton{
 		this.description = description;
 		this.action = null;
 		
-		this.size = null;
-		this.calcSize();
-		this.selectedLast = false;
-		
 		this.styles = null;
 		this.preRenders = null;
 		this.setStyles();
 		
-		this.selectAnim = new textAnim_scaleTransform(200, 1, 2, 0);
+		this.normalBounds = null;
+		this.selectedBounds = null;
+		this.calcSize();
+		this.selectedLast = false;
+		
+		this.selectAnim = new textAnim_scaleTransform(200, 0.5, 1, 0);
 		this.selectAnim.animType = textAnimType.bulgeIn;
 		this.unselectAnim = new textAnim_scaleTransform(100, 2, 1, 0);
 		this.unselectAnim.animType = textAnimType.easeIn;
@@ -85,8 +86,8 @@ class menuButton{
 	
 	calcSize(){
 		// calculates and sets this.size
-		var w = fonts.large.getStringWidth();
-		this.size = new vec2(w, fonts.large.charSize.y);
+		this.normalBounds = this.preRenders.normal.getBounds();
+		this.selectedBounds = this.preRenders.selected.getBounds();
 	}
 	generatePreRenders(){
 		this.preRenders = {};
@@ -103,7 +104,7 @@ class menuButton{
 		this.preRenders.description = preRenderedText.fromBlock(descBlock);
 	}
 	
-	setStyles(normalStyle = textStyle.getDefault(), selectedStyle = new textStyle(fonts.large, textColor.cyan), descriptionStyle = (new textStyle(fonts.small)).setAlignment(0.5, 1)){
+	setStyles(normalStyle = textStyle.getDefault(), selectedStyle = new textStyle(fonts.large, textColor.cyan, 2), descriptionStyle = (new textStyle(fonts.small)).setAlignment(0.5, 1)){
 		descriptionStyle.hAlign = 0.5;
 		this.styles = {
 			normal: normalStyle,
@@ -195,6 +196,9 @@ class state_mainMenu extends gameState{
 		if(this.currentSelection < 0)
 			this.currentSelection = this.buttons.length - 1;
 	}
+	get selectedButton(){
+		return this.buttons[this.currentSelection];
+	}
 	select(pos = null){
 		// selects the menu item at the specefied position, if no position is specified, the currently selected menu item is triggered
 		if(!pos){
@@ -242,8 +246,19 @@ class state_mainMenu extends gameState{
 	}
 	mouseTap(pos){
 		// defines what happens when the mouse is clicked in the main menu
+		if(this.selectedButton.selectedBounds.overlapsPoint(pos))
+			this.select();
 	}
 	mouseMove(pos){
 		// defines what happens when the mouse is moved in the main menu
+		if(this.selectedButton.selectedBounds.overlapsPoint(pos))
+			return;
+		
+		for(var i = 0; i < this.buttons.length; i ++){
+			if(this.buttons[i].normalBounds.overlapsPoint(pos)){
+				this.currentSelection = i;
+				return;
+			}
+		}
 	}
 }

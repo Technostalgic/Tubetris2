@@ -38,6 +38,7 @@ class controlState{
 	static listenForMouseDown(e){
 		// the event listener that is triggered when the mouse is pressed
 		controlState.mouseDown = true;
+		gameState.current.mouseTap(controlState.mousePos);
 	}
 	static listenForMouseUp(e){
 		// the event listener that is triggered when the mouse is released

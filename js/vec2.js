@@ -157,6 +157,14 @@ class collisionBox{
 		return r;
 	}
 	
+	overlapsPoint(point){
+		return ( 
+			point.x >= this.left &&
+			point.x <= this.right && 
+			point.y >= this.top && 
+			point.y <= this.bottom );
+	}
+	
 	clone(){
 		return new collisionBox(this.pos.clone(), this.size.clone());
 	}

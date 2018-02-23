@@ -581,7 +581,7 @@ class preRenderedText{
 		return this;
 	}
 	getBounds(){
-		// returns a rectangle that encompasses all the spritecontainers(representing ascii characters)
+		// returns a rectangle that encompasses all the text characters' containers
 		// that are to be rendered
 		if(this.spriteContainers.length <= 0) return null;
 		return collisionBox.fromSides(
