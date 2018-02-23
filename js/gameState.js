@@ -93,18 +93,17 @@ class menuButton{
 		this.preRenders.normal = preRenderedText.fromString(this.text, this.pos, this.styles.normal);
 		this.preRenders.selected = preRenderedText.fromString(this.text, this.pos, this.styles.selected);
 		
-		//FIX STYLES.DESCRIPTION
 		var descBlock = new textBlock(this.description, this.styles.description);
 		descBlock.bounds = collisionBox.fromSides(
 			screenBounds.left + 20, 
-			screenBounds.bottom - 46, 
+			screenBounds.bottom - 38, 
 			screenBounds.right - 20, 
-			screenBounds.bottom - 12 );
+			screenBounds.bottom - 6 );
 		descBlock.lineHeight = 16;
 		this.preRenders.description = preRenderedText.fromBlock(descBlock);
 	}
 	
-	setStyles(normalStyle = textStyle.getDefault(), selectedStyle = new textStyle(fonts.large, textColor.green), descriptionStyle = (new textStyle(fonts.small)).setAlignment(0.5, 1)){
+	setStyles(normalStyle = textStyle.getDefault(), selectedStyle = new textStyle(fonts.large, textColor.cyan), descriptionStyle = (new textStyle(fonts.small)).setAlignment(0.5, 1)){
 		descriptionStyle.hAlign = 0.5;
 		this.styles = {
 			normal: normalStyle,

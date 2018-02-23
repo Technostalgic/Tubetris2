@@ -374,8 +374,8 @@ function generateBackground(){
 	bg.width = screenBounds.width;
 	bg.height = screenBounds.height;
 	var bgctx = bg.getContext("2d");
-	var off = new vec2(-bg.width % 32 - 2, -bg.height % 32 - 2);
 	var tilesize = 32;
+	var off = new vec2(-bg.width % tilesize - 2, -bg.height % tilesize - 2);
 	var cX = Math.floor(bg.width / tilesize) + 1;
 	var cY = Math.floor(bg.height / tilesize) + 1;
 	var sbox = new spriteBox(new vec2(32, 0), new vec2(32));
@@ -397,8 +397,8 @@ function generateForeground_border(){
 	fg.width = screenBounds.width;
 	fg.height = screenBounds.height;
 	var fgctx = fg.getContext("2d");
-	var off = new vec2(-fg.width % 32 - 2, -fg.height % 32 - 2);
 	var tilesize = 32;
+	var off = new vec2(-fg.width % tilesize - 2, -fg.height % tilesize - 2);
 	var cX = Math.floor(fg.width / tilesize) + 1;
 	var cY = Math.floor(fg.height / tilesize) + 1;
 	var sbox = new spriteBox(new vec2(0), new vec2(32));
@@ -420,11 +420,11 @@ function generateForeground_overlay(){
 	log("generating foreground overlay texture...", logType.unimportant);
 	
 	var fg = document.createElement("canvas");
-	fg.width = 600;
-	fg.height = 800;
+	fg.width = screenBounds.width;
+	fg.height = screenBounds.height;
 	var fgctx = fg.getContext("2d");
-	var off = new vec2(-20, -16);
 	var tilesize = 32;
+	var off = new vec2(-fg.width % tilesize - 2, -fg.height % tilesize - 2);
 	var cX = Math.floor(fg.width / tilesize) + 1;
 	var cY = Math.floor(fg.height / tilesize);
 	var sbox = new spriteBox(new vec2(), new vec2(32));
