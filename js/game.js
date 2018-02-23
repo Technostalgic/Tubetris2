@@ -371,10 +371,10 @@ function generateBackground(){
 	log("generating background texture...", logType.unimportant);
 	
 	var bg = document.createElement("canvas");
-	bg.width = 600;
-	bg.height = 800;
+	bg.width = screenBounds.width;
+	bg.height = screenBounds.height;
 	var bgctx = bg.getContext("2d");
-	var off = new vec2(-20, -16);
+	var off = new vec2(-bg.width % 32 - 2, -bg.height % 32 - 2);
 	var tilesize = 32;
 	var cX = Math.floor(bg.width / tilesize) + 1;
 	var cY = Math.floor(bg.height / tilesize) + 1;
@@ -394,13 +394,13 @@ function generateForeground_border(){
 	log("generating foreground border texture...", logType.unimportant);
 	
 	var fg = document.createElement("canvas");
-	fg.width = 600;
-	fg.height = 800;
+	fg.width = screenBounds.width;
+	fg.height = screenBounds.height;
 	var fgctx = fg.getContext("2d");
-	var off = new vec2(-20, -16);
+	var off = new vec2(-fg.width % 32 - 2, -fg.height % 32 - 2);
 	var tilesize = 32;
 	var cX = Math.floor(fg.width / tilesize) + 1;
-	var cY = Math.floor(fg.height / tilesize);
+	var cY = Math.floor(fg.height / tilesize) + 1;
 	var sbox = new spriteBox(new vec2(0), new vec2(32));
 	
 	for(var y = 0; y <= cY; y++){
@@ -521,8 +521,8 @@ function getCanvas(){
 	
 	// the rendering canvas is the canvas that everything is rendered to in the game's native resolution, it is then rescaled by the scaling canvas to the desired resolution before being drawn
 	renderTarget = document.createElement("canvas");
-	renderTarget.width = 600;
-	renderTarget.height = 800;
+	renderTarget.width = 500;
+	renderTarget.height = 660;
 	renderContext = renderTarget.getContext("2d");
 	
 	// sets the screen bounds

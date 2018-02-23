@@ -203,7 +203,6 @@ class textAnim{
 		
 		aProg = aProg > 0 ? aProg % 1 : aProg - (aProg % 1);
 		
-		console.log(aProg);
 		switch(this.animType){
 			case textAnimType.linear:
 				return aProg;
