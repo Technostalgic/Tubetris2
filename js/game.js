@@ -426,7 +426,7 @@ function generateForeground_overlay(){
 	var tilesize = 32;
 	var off = new vec2(-fg.width % tilesize - 2, -fg.height % tilesize - 2);
 	var cX = Math.floor(fg.width / tilesize) + 1;
-	var cY = Math.floor(fg.height / tilesize);
+	var cY = Math.floor(fg.height / tilesize) + 1;
 	var sbox = new spriteBox(new vec2(), new vec2(32));
 	
 	// border foreground tiles
@@ -440,8 +440,8 @@ function generateForeground_overlay(){
 		}
 	}
 	// foreground tiles to the left of next piece area
-	for(var y = 1; y <= 4; y++){
-		for(var x = 1; x < 12; x++){
+	for(var y = 2; y <= 3; y++){
+		for(var x = 11; x < 12; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
 			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
@@ -449,13 +449,6 @@ function generateForeground_overlay(){
 	// foreground above next piece area
 	for(var y = 1; y <= 1; y++){
 		for(var x = 11; x < cX; x++){
-			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
-			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
-		}
-	}
-	// foreground tiles to the right of next piece area
-	for(var y = 1; y <= 3; y++){
-		for(var x = cX - 1; x < cX; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
 			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
@@ -469,26 +462,26 @@ function generateForeground_overlay(){
 	}
 	
 	// tileboard righthand shadow
-	var spos1 = off.plus(new vec2(tilesize * 11 - 1, tilesize * 5));
+	var spos1 = off.plus(new vec2(tilesize * 11 - 1, tilesize * 1));
 	var ssize1 = new vec2(1, tilesize * 20);
 	fgctx.fillStyle = "rgba(0, 0, 0, 0.8)";
 	fgctx.fillRect(spos1.x, spos1.y, ssize1.x, ssize1.y);
 	
 	// tileboard top shadow
-	var spos2 = off.plus(new vec2(tilesize * 1, tilesize * 5));
+	var spos2 = off.plus(new vec2(tilesize * 1, tilesize * 1));
 	var ssize2 = new vec2(tilesize * 10, 1);
 	fgctx.fillStyle = "rgba(0, 0, 0, 0.8)";
 	fgctx.fillRect(spos2.x, spos2.y, ssize2.x, ssize2.y);
 	
 	// next piece righthand shadow
-	var spos1 = off.plus(new vec2(tilesize * (cX - 1) - 1, tilesize * 2));
+	var spos1 = off.plus(new vec2(tilesize * (cX) - 1, tilesize * 2));
 	var ssize1 = new vec2(1, tilesize * 2);
 	fgctx.fillStyle = "rgba(0, 0, 0, 0.8)";
 	fgctx.fillRect(spos1.x, spos1.y, ssize1.x, ssize1.y);
 	
 	// next piece top shadow
 	var spos2 = off.plus(new vec2(tilesize * 12, tilesize * 2));
-	var ssize2 = new vec2(tilesize * 6, 1);
+	var ssize2 = new vec2(tilesize * 4, 1);
 	fgctx.fillStyle = "rgba(0, 0, 0, 0.8)";
 	fgctx.fillRect(spos2.x, spos2.y, ssize2.x, ssize2.y);
 	
