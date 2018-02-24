@@ -355,6 +355,9 @@ function preventKeyScrolling(){
 			e.preventDefault();
 		}
 	}, false);
+	window.addEventListener("touchmove", function(e) {
+		e.preventDefault();
+	}, false);
 }
 
 function generateDynamicTextures(){
