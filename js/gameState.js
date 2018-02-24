@@ -171,7 +171,7 @@ class settingButton extends menuButton{
 		this.setValue = null;
 		this.navRight = this.increment;
 		this.navLeft = this.decrement;
-		this.action = this.increment;
+		this.action = this.cycle;
 		
 		this.selectAnim = new textAnim_scale(200, 1.5, 1, 0);
 		this.selectAnim.animType = textAnimType.trigonometricCycle;
@@ -218,11 +218,15 @@ class settingButton extends menuButton{
 		if(this.mode == buttonSwitchMode.bool)
 			m = !m;
 		else {
-			m += this.deltaVal;
-			if(m > this.maxVal){
+			if(m >= this.maxVal){
 				if(this.mode == buttonSwitchMode.percentInfinite)
 					m = Infinity;
 				else 
+					m = this.maxVal;
+			}
+			else{
+				m += this.deltaVal;
+				if(m > this.maxVal)
 					m = this.maxVal;
 			}
 		}
@@ -244,6 +248,33 @@ class settingButton extends menuButton{
 			if(m == Infinity) m = this.maxVal;
 			if(m < this.minVal)
 				m = this.minVal;
+		}
+		
+		this.changeValue(m);
+	}
+	cycle(){
+		if(!this.getValue) {
+			log("getValue function not set for settingButton '" + this.text + "'", logType.error);
+			return;
+		}
+		
+		var m = this.getValue();
+		if(this.mode == buttonSwitchMode.bool)
+			m = !m;
+		else{
+			if(m >= this.maxVal){
+				if(this.mode == buttonSwitchMode.percentInfinite){
+					if(m == Infinity)
+						m = this.minVal;
+					else m = Infinity;
+				}
+				else m = this.minVal;
+			}
+			else{
+				m += this.deltaVal;
+				if(m > this.maxVal)
+					m = this.maxVal;
+			}
 		}
 		
 		this.changeValue(m);
