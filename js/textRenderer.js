@@ -171,6 +171,10 @@ class textStyle{
 		this.vAlign = vertical;
 		return this;
 	}
+	setColor(col = textColor.green){
+		this.color = col;
+		return this;
+	}
 }
 
 // an animation that can be applied to text
@@ -388,13 +392,15 @@ class textBlock{
 				spanStart = -1;
 			}
 		}
-		var curChar = this.text[this.text.length - 1];
-		var spanStr = this.text.substr(spanStart, this.text.length - spanStart);
-		var spanStyle = (seChars).indexOf(curChar);
-		spanStyle = spanStyle > 0 ? this.altStyles[spanStyle] : this.style;
-		
-		var m = {text: spanStr, style: spanStyle};
-		this.textSpans.push(m);
+		if(spanStart >= 0){
+			var curChar = this.text[this.text.length - 1];
+			var spanStr = this.text.substr(spanStart, this.text.length - spanStart);
+			var spanStyle = (seChars).indexOf(curChar);
+			spanStyle = spanStyle >= 0 ? this.altStyles[spanStyle] : this.style;
+			
+			var m = {text: spanStr, style: spanStyle};
+			this.textSpans.push(m);
+		}
 	}
 	
 	draw(){
@@ -566,7 +572,7 @@ class preRenderedText{
 		var maxYOff = yMax - endPos;
 		var minYOff = yMin - startPos;
 		var yOff = maxYOff * this.mainStyle.vAlign + minYOff;
-			
+		
 		for(var i0 = 0; i0 < this.lines.length; i0++){
 			var charSprites = this.lines[i0];
 			if(charSprites.length <= 0) continue;

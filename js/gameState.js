@@ -5,6 +5,14 @@
 ///	twitter @technostalgicGM
 ///
 
+// enumerates all the different ways buttons can be switched
+var buttonSwitchMode = {
+	bool: 0,
+	percent: 1,
+	percentInfinite: 2,
+	integer: 3
+}
+
 // the current gameMode object (to reference, it's recommended to use the 'gameState.current' static field)
 var gameMode;
 
@@ -68,6 +76,8 @@ class menuButton{
 		this.text = text;
 		this.description = description;
 		this.action = action;
+		this.navLeft = null;
+		this.navRight = null;
 		
 		this.styles = null;
 		this.preRenders = null;
@@ -97,7 +107,7 @@ class menuButton{
 		var descBlock = new textBlock(this.description, this.styles.description);
 		descBlock.bounds = collisionBox.fromSides(
 			screenBounds.left + 20, 
-			screenBounds.bottom - 38, 
+			screenBounds.bottom - 6, 
 			screenBounds.right - 20, 
 			screenBounds.bottom - 6 );
 		descBlock.lineHeight = 16;
@@ -107,9 +117,9 @@ class menuButton{
 	setStyles(normalStyle = textStyle.getDefault(), selectedStyle = new textStyle(fonts.large, textColor.cyan, 2), descriptionStyle = (new textStyle(fonts.small)).setAlignment(0.5, 1)){
 		descriptionStyle.hAlign = 0.5;
 		this.styles = {
-			normal: normalStyle,
-			selected: selectedStyle,
-			description: descriptionStyle
+			normal: normalStyle || this.styles.normalStyle,
+			selected: selectedStyle || this.styles.selectedStyle,
+			description: descriptionStyle || this.styles.descriptionStyle
 			};
 		this.generatePreRenders();
 	}
@@ -147,6 +157,153 @@ class menuButton{
 		this.selectedLast = selected;
 	}
 }
+class settingButton extends menuButton{
+	constructor(text, pos, description = ""){
+		super(text, pos, description);
+		this.setStyles(textStyle.getDefault(), textStyle.getDefault().setColor(textColor.cyan));
+		
+		this.mode = buttonSwitchMode.bool;
+		this.minVal = 0;
+		this.maxVal = 1;
+		this.deltaVal = 0.1;
+		
+		this.getValue = null;
+		this.setValue = null;
+		this.navRight = this.increment;
+		this.navLeft = this.decrement;
+		this.action = this.increment;
+		
+		this.selectAnim = new textAnim_scale(200, 1.5, 1, 0);
+		this.selectAnim.animType = textAnimType.trigonometricCycle;
+		this.unselectAnim = new textAnim_scale(100, 1, 1, 0);
+		this.unselectAnim.animType = textAnimType.trigonometricCycle;
+		
+		this.generateSettingPreRenders();
+	}
+	
+	static generateGetValueFunc(optionVarName){
+		return function(){
+			return config[optionVarName];
+		}
+	}
+	static generateSetValueFunc(optionVarName){
+		return function(val){
+			config[optionVarName] = val;
+		}
+	}
+	
+	setValueBounds(min, max, delta, switchMode){
+		this.minVal = min || this.minVal;
+		this.maxVal = max || this.maxVal;
+		this.deltaVal = delta || this.deltaVal;
+		this.mode = switchMode || this.mode;
+		this.generateSettingPreRenders();
+		return this;
+	}
+	setGettersAndSetters(getter, setter){
+		this.getValue = getter || this.getValue;
+		this.setValue = setter || this.setValue;
+		this.generateSettingPreRenders();
+		return this;
+	}
+	
+	increment(){
+		if(!this.getValue) {
+			log("getValue function not set for settingButton '" + this.text + "'", logType.error);
+			return;
+		}
+		
+		var m = this.getValue();
+		
+		if(this.mode == buttonSwitchMode.bool)
+			m = !m;
+		else {
+			m += this.deltaVal;
+			if(m > this.maxVal){
+				if(this.mode == buttonSwitchMode.percentInfinite)
+					m = Infinity;
+				else 
+					m = this.maxVal;
+			}
+		}
+		
+		this.changeValue(m);
+	}
+	decrement(){
+		if(!this.getValue) {
+			log("getValue function not set for settingButton '" + this.text + "'", logType.error);
+			return;
+		}
+		
+		var m = this.getValue();
+		
+		if(this.mode == buttonSwitchMode.bool)
+			m = !m;
+		else {
+			m -= this.deltaVal;
+			if(m == Infinity) m = this.maxVal;
+			if(m < this.minVal)
+				m = this.minVal;
+		}
+		
+		this.changeValue(m);
+	}
+	changeValue(value){
+		if(!this.setValue) {
+			log("setValue function not set for settingButton '" + this.text + "'", logType.error);
+			return;
+		}
+		this.setValue(value);
+		this.generateSettingPreRenders();
+	}
+	
+	getFullString(){
+		return this.getFullText() + this.getValueString();
+	}
+	getFullText(){
+		return this.text + ": ";
+	}
+	getValueString(){
+		if(!this.getValue) {
+			log("getValue function not set for settingButton '" + this.text + "'", logType.error);
+			return "null";
+		}
+		var m = this.getValue();
+		switch(this.mode){
+			case buttonSwitchMode.bool: return m ? "on" : "off";
+			case buttonSwitchMode.percent: return Math.round(m * 100).toString();
+			case buttonSwitchMode.percentInfinite: return Math.round(m * 100).toString();
+			case buttonSwitchMode.integer: return Math.round(m).toString();
+		}
+		return m.toString();
+	}
+	generateSettingPreRenders(){
+		this.preRenders = {};
+		
+		var normBlock = new textBlock(
+			this.getFullText()+ "(" + this.getValueString() + ")", 
+			this.styles.normal.setAlignment(0.5, 0.5), collisionBox.fromSides(screenBounds.left, this.pos.y, screenBounds.right, this.pos.y), 
+			[textStyle.getDefault().setColor(textColor.yellow)]
+			);
+		this.preRenders.normal = preRenderedText.fromBlock(normBlock);
+		
+		var selBlock = new textBlock(
+			this.getFullText()+ "(" + this.getValueString() + ")", 
+			this.styles.selected.setAlignment(0.5, 0.5), collisionBox.fromSides(screenBounds.left, this.pos.y, screenBounds.right, this.pos.y),
+			[textStyle.getDefault().setColor(textColor.yellow)]
+			);
+		this.preRenders.selected = preRenderedText.fromBlock(selBlock);
+		
+		var descBlock = new textBlock(this.description, this.styles.description);
+		descBlock.bounds = collisionBox.fromSides(
+			screenBounds.left + 20, 
+			screenBounds.bottom - 6, 
+			screenBounds.right - 20, 
+			screenBounds.bottom - 6 );
+		descBlock.lineHeight = 16;
+		this.preRenders.description = preRenderedText.fromBlock(descBlock);
+	}
+}
 
 // a generic menu gameState that can be used as a blueprint for other menu interfaces
 class state_menuState extends gameState{
@@ -175,6 +332,15 @@ class state_menuState extends gameState{
 		if(this.currentSelection < 0)
 			this.currentSelection = this.buttons.length - 1;
 	}
+	navigateLeft(){
+		if(this.selectedButton.navLeft)
+			this.selectedButton.navLeft();
+	}
+	navigateRight(){
+		if(this.selectedButton.navRight)
+			this.selectedButton.navRight();
+	}
+	
 	get selectedButton(){
 		if(this.buttons.length <= 0) return null;
 		return this.buttons[this.currentSelection];
@@ -193,6 +359,8 @@ class state_menuState extends gameState{
 		switch(control){
 			case controlAction.up: this.selectionUp(); break;
 			case controlAction.down: this.selectionDown(); break;
+			case controlAction.left: this.navigateLeft(); break;
+			case controlAction.right: this.navigateRight(); break;
 			case controlAction.select: this.select(); break;
 		}
 	}
@@ -313,6 +481,7 @@ class state_scoreboard extends state_menuState{
 		textRenderer.drawText("SCOREBOARD", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
 	}
 }
+// a gameState object that represents the options screen interface
 class state_options extends state_menuState{
 	constructor(){
 		super();		
@@ -326,11 +495,16 @@ class state_options extends state_menuState{
 	addButtons(){
 		this.buttons = [];
 		var off = 0;
-		var dif = 55;
-		var tpos = new vec2(screenBounds.center.x, screenBounds.bottom - 200);
+		var dif = 45;
+		var tpos = new vec2(screenBounds.center.x, screenBounds.center.y - 100);
+		
+		this.buttons.push(new settingButton("Animated Text", tpos.plus(new vec2(0, off * dif)), "whether or not animated text is enabled - may increase performance if disabled"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("animText"), settingButton.generateSetValueFunc("animText")) ); off++;
+		this.buttons.push(new settingButton("Animation Speed", tpos.plus(new vec2(0, off * dif)), "how quickly the in-game animations are played"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("animSpeed"), settingButton.generateSetValueFunc("animSpeed")
+			).setValueBounds(0.5, 2.5, 0.5, buttonSwitchMode.percentInfinite) ); off++;
 		
 		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
-		
 		this.buttons.push(new menuButton("Main Menu", new vec2(screenBounds.center.x, screenBounds.bottom - 150), "return to the main menu", action_switchToMainMenu));
 	}
 	

@@ -317,10 +317,9 @@ function setDefaultConfig(){
 	// sets the default game configuration settings
 	config = {
 		animText: true,
-		animSpeed: 100,
-		music: true,
-		sound: true,
-		canvasSize: 800,
+		animSpeed: 1,
+		music: 1,
+		sound: 1,
 		imageSmoothing: false,
 	};
 }
