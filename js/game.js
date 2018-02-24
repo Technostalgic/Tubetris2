@@ -318,8 +318,8 @@ function setDefaultConfig(){
 	config = {
 		animText: true,
 		animSpeed: 1,
-		music: 1,
-		sound: 1,
+		volume_music: 1,
+		volume_sound: 1,
 		imageSmoothing: false,
 	};
 }

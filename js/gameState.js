@@ -158,7 +158,7 @@ class menuButton{
 	}
 }
 class settingButton extends menuButton{
-	constructor(text, pos, description = ""){
+	constructor(text, pos, description = "", applyOnChange = false){
 		super(text, pos, description);
 		this.setStyles(textStyle.getDefault(), textStyle.getDefault().setColor(textColor.cyan));
 		
@@ -166,6 +166,8 @@ class settingButton extends menuButton{
 		this.minVal = 0;
 		this.maxVal = 1;
 		this.deltaVal = 0.1;
+		
+		this.applyOnChange = applyOnChange;
 		
 		this.getValue = null;
 		this.setValue = null;
@@ -208,6 +210,7 @@ class settingButton extends menuButton{
 	}
 	
 	increment(){
+		// increments the option's value by deltaValue until it reaches the max value
 		if(!this.getValue) {
 			log("getValue function not set for settingButton '" + this.text + "'", logType.error);
 			return;
@@ -234,6 +237,7 @@ class settingButton extends menuButton{
 		this.changeValue(m);
 	}
 	decrement(){
+		// decrements the option's value by deltaValue until it reaches the min value
 		if(!this.getValue) {
 			log("getValue function not set for settingButton '" + this.text + "'", logType.error);
 			return;
@@ -253,6 +257,7 @@ class settingButton extends menuButton{
 		this.changeValue(m);
 	}
 	cycle(){
+		// cycles the value between the specified min and max value
 		if(!this.getValue) {
 			log("getValue function not set for settingButton '" + this.text + "'", logType.error);
 			return;
@@ -286,6 +291,7 @@ class settingButton extends menuButton{
 		}
 		this.setValue(value);
 		this.generateSettingPreRenders();
+		if(this.applyOnChange) applyConfig();
 	}
 	
 	getFullString(){
@@ -531,9 +537,18 @@ class state_options extends state_menuState{
 		
 		this.buttons.push(new settingButton("Animated Text", tpos.plus(new vec2(0, off * dif)), "whether or not animated text is enabled - may increase performance if disabled"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("animText"), settingButton.generateSetValueFunc("animText")) ); off++;
+		this.buttons.push(new settingButton("Image Smoothing", tpos.plus(new vec2(0, off * dif)), "enable if you want ugly blurs or keep disabled for nice crispy pixel graphics", true
+			).setGettersAndSetters(settingButton.generateGetValueFunc("imageSmoothing"), settingButton.generateSetValueFunc("imageSmoothing")) ); off++;
 		this.buttons.push(new settingButton("Animation Speed", tpos.plus(new vec2(0, off * dif)), "how quickly the in-game animations are played"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("animSpeed"), settingButton.generateSetValueFunc("animSpeed")
 			).setValueBounds(0.5, 2.5, 0.5, buttonSwitchMode.percentInfinite) ); off++;
+		
+		this.buttons.push(new settingButton("Sound", tpos.plus(new vec2(0, off * dif)), "the volume level of the sound effects"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_sound"), settingButton.generateSetValueFunc("volume_sound")
+			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent) ); off++;
+		this.buttons.push(new settingButton("Music", tpos.plus(new vec2(0, off * dif)), "the volume level of the music"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_music"), settingButton.generateSetValueFunc("volume_music")
+			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent) ); off++;
 		
 		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
 		this.buttons.push(new menuButton("Main Menu", new vec2(screenBounds.center.x, screenBounds.bottom - 150), "return to the main menu", action_switchToMainMenu));
