@@ -554,6 +554,11 @@ class state_options extends state_menuState{
 		this.buttons.push(new menuButton("Main Menu", new vec2(screenBounds.center.x, screenBounds.bottom - 150), "return to the main menu", action_switchToMainMenu));
 	}
 	
+	switchFrom(tostate = null){
+		applyConfig();
+		saveConfig();
+	}
+	
 	drawInternals(){
 		var style = new textStyle(fonts.large, textColor.green, 2);
 		textRenderer.drawText("OPTIONS", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);

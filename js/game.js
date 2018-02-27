@@ -23,6 +23,13 @@ var renderTarget,
 var renderContext,
 	scalingContext;
 var screenBounds;
+
+// sets the keys that are used to retrieve saved information in localStorage
+var storageKeys = {
+	config: "technostalgic_tubetris2_config",
+	controls: "technostalgic_tubetris2_keybind",
+	scoreboard: "technostalgic_tubetris2_scores"
+};
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global enumerators{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 // enumerates the different styles that console logs can be
@@ -40,7 +47,7 @@ function log(obj, type = logType.log){
 	if(!debug) return;
 	var ob = obj || "console logged @" + timeElapsed + "ms";
 	
-	// sets the console styling if the object is stylable (aka if it's a string)
+	// sets the console styling if the object is stylable (if it's a string)
 	var style;
 	if(ob.constructor.name == "String"){
 		ob = "%c" + ob;
@@ -305,12 +312,62 @@ function loadSFX(){
 function loadConfig(){
 	// loads the game configuration from localStorage
 	log("loading game configuration... ");
+	
 	setDefaultConfig();
+	if(!localStorageEnabled)
+		return;
+	
+	var cStr = localStorage.getItem(storageKeys.config);
+	var splCStr = cStr.split('\n');
+	for(var i = splCStr.length - 1; i >= 0; i--){
+		var splOp = splCStr[i].split(':');
+		if(splOp.length <= 1) continue;
+		switch(splOp[0]){
+			case "animText":
+				config.animText = splOp[1][0] == 't';
+				break;
+			case "animSpeed": 
+				config.animSpeed = Number.parseFloat(splOp[1]);
+				break;
+			case "volume_music": 
+				config.volume_music = Number.parseFloat(splOp[1]);
+				break;
+			case "volume_sound": 
+				config.volume_sound = Number.parseFloat(splOp[1]);
+				break;
+			case "imageSmoothing": 
+				config.imageSmoothing = splOp[1][0] == 't';
+				break;
+			case "saving": 
+				config.saving = splOp[1][0] == 't';
+				break;
+		}
+		log(splOp[0] + " = " + config[splOp[0]], logType.unimportant);
+	}
+	log("loaded!", logType.success);
 }
 function loadControls(){
 	// loads the controlState.controls from localStorage
 	log("loading controls... ");
 	setDefaultControls();
+}
+
+function saveConfig(){
+	// saves the game configuration to localStorage
+	log("saving game configuration... ", logType.notify);
+	if(!localStorageEnabled){
+		log("localStorage is not enabled", logType.error);
+		return;
+	}
+	
+	var cStr = "";
+	for(var i in config){
+		var op = i + ":" + config[i].toString();
+		cStr += op + "\n";
+	}
+	localStorage.setItem(storageKeys.config, cStr);
+	
+	log("saved!", logType.success);
 }
 
 function setDefaultConfig(){
@@ -321,6 +378,7 @@ function setDefaultConfig(){
 		volume_music: 1,
 		volume_sound: 1,
 		imageSmoothing: false,
+		saving: true
 	};
 }
 function setDefaultControls(){
