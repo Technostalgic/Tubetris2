@@ -473,11 +473,11 @@ class state_mainMenu extends state_menuState{
 	}
 	
 	drawInternals(){
-		// draws the the main menu
+		// draws the the main menu title
 		var style = new textStyle(fonts.large, textColor.green, 3);
 		textRenderer.drawText("TUBETRIS", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
 		
-		var animStyle = new textStyle(fonts.large, textColor.green, 2);
+		var animStyle = new textStyle(fonts.large, textColor.yellow, 2);
 		textRenderer.drawText("DELUXE", new vec2(screenBounds.center.x, screenBounds.top + 180), animStyle, this.titleDeluxeAnim);
 	}
 	

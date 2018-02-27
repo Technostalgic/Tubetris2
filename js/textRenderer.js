@@ -136,8 +136,7 @@ class textRenderer{
 	}
 	
 	static drawText(text, pos, style, animation = null){
-		if(animation) animation.drawText(text, pos, style);
-		else preRenderedText.fromString(text, pos, style).draw();
+		preRenderedText.fromString(text, pos, style).animated(animation).draw();
 	}
 }
 
@@ -599,6 +598,7 @@ class preRenderedText{
 	
 	// returns a new instance of the preRender with an animation applied
 	animated(anim){
+		if(!config.animText) return this;
 		var c = this.clone();
 		
 		anim.applyAnim(c);
