@@ -201,6 +201,8 @@ function init(){
 	// initializes the game
 	log("initializing game @" + performance.now().toString() + "ms...", logType.notify);
 	
+	localStorageCheck();
+	
 	getCanvas();
 	addInputEventListeners();
 	
@@ -314,10 +316,17 @@ function loadConfig(){
 	log("loading game configuration... ");
 	
 	setDefaultConfig();
-	if(!localStorageEnabled)
+	if(!localStorageEnabled){
+		log("localStorage is not enabled", logType.error);
 		return;
+	}
 	
 	var cStr = localStorage.getItem(storageKeys.config);
+	if(!cStr) {
+		log("no configuration settings found, using default", logType.notify);
+		return;
+	}
+	
 	var splCStr = cStr.split('\n');
 	for(var i = splCStr.length - 1; i >= 0; i--){
 		var splOp = splCStr[i].split(':');
@@ -344,14 +353,50 @@ function loadConfig(){
 		}
 		log(splOp[0] + " = " + config[splOp[0]], logType.unimportant);
 	}
+	applyConfig();
 	log("loaded!", logType.success);
 }
 function loadControls(){
 	// loads the controlState.controls from localStorage
 	log("loading controls... ");
 	setDefaultControls();
+	
+	setDefaultControls();
+	if(!localStorageEnabled){
+		log("localStorage is not enabled", logType.error);
+		return;
+	}
+	
+	var cStr = localStorage.getItem(storageKeys.controls);
+	if(!cStr) {
+		log("no controls settings found, using default", logType.notify);
+		return;
+	}
+	
+	var c = {};
+	var splCStr = cStr.split('\n');
+	for(var i = splCStr.length - 1; i >= 0; i--){
+		var splOp = splCStr[i].split(':');
+		if(splOp.length <= 1) continue;
+		c[splOp[0]] = Number.parseInt(splOp[1]);
+	}
+	
+	controlState.setControls(c);
+	log(splCStr.length - 1 + " controls loaded");
 }
 
+function localStorageCheck(){
+	log("testing to see if localStorage is enabled...", logType.notify);
+	try{
+		localStorage.setItem("technostalgic_test", true);
+		localStorageEnabled = localStorage.getItem("technostalgic_test");
+		log("browser localStorage is enabled!", logType.success);
+	}
+	catch(e){
+		localStorageEnabled = false;
+		log("browser localStorage is disabled by user", logType.error);
+	}
+}
 function saveConfig(){
 	// saves the game configuration to localStorage
 	log("saving game configuration... ", logType.notify);
@@ -366,6 +411,22 @@ function saveConfig(){
 		cStr += op + "\n";
 	}
 	localStorage.setItem(storageKeys.config, cStr);
+	
+	log("saved!", logType.success);
+}
+function saveControls(){
+	log("saving game controls... ", logType.notify);
+	if(!localStorageEnabled){
+		log("localStorage is not enabled", logType.error);
+		return;
+	}
+	
+	var cStr = "";
+	for(var i in controlState.controls){
+		var op = i + ":" + controlState.controls[i];
+		cStr += op + "\n";
+	}
+	localStorage.setItem(storageKeys.controls, cStr);
 	
 	log("saved!", logType.success);
 }
