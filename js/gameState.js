@@ -70,29 +70,7 @@ class gameState{
 
 // a pressable button in the GUI that the player can interact with
 class menuButton{
-	constructor(text, pos, description = "", action = null){
-		// initializes a button
-		this.pos = pos;
-		this.text = text;
-		this.description = description;
-		this.action = action;
-		this.navLeft = null;
-		this.navRight = null;
-		
-		this.styles = null;
-		this.preRenders = null;
-		this.setStyles();
-		
-		this.normalBounds = null;
-		this.selectedBounds = null;
-		this.calcSize();
-		this.selectedLast = false;
-		
-		this.selectAnim = new textAnim_scaleTransform(200, 0.5, 1, 0);
-		this.selectAnim.animType = textAnimType.bulgeIn;
-		this.unselectAnim = new textAnim_scaleTransform(100, 2, 1, 0);
-		this.unselectAnim.animType = textAnimType.easeIn;
-	}
+	constructor(){ }
 	
 	calcSize(){
 		// calculates and sets this.size
@@ -114,6 +92,31 @@ class menuButton{
 		this.preRenders.description = preRenderedText.fromBlock(descBlock);
 	}
 	
+	construct(text, pos, description = "", action = null){
+		// initializes a button
+		this.pos = pos;
+		this.text = text;
+		this.description = description;
+		this.action = action;
+		this.navLeft = null;
+		this.navRight = null;
+		
+		this.styles = null;
+		this.preRenders = null;
+		this.setStyles();
+		
+		this.normalBounds = null;
+		this.selectedBounds = null;
+		this.calcSize();
+		this.selectedLast = false;
+		
+		this.selectAnim = new textAnim_scaleTransform(200, 0.5, 1, 0);
+		this.selectAnim.animType = textAnimType.bulgeIn;
+		this.unselectAnim = new textAnim_scaleTransform(100, 2, 1, 0);
+		this.unselectAnim.animType = textAnimType.easeIn;
+		
+		return this;
+	}
 	setStyles(normalStyle = textStyle.getDefault(), selectedStyle = new textStyle(fonts.large, textColor.cyan, 2), descriptionStyle = (new textStyle(fonts.small)).setAlignment(0.5, 1)){
 		descriptionStyle.hAlign = 0.5;
 		this.styles = {
@@ -134,6 +137,7 @@ class menuButton{
 	
 	draw(selected = false){
 		// renders the button on screen
+		if(!this.preRenders) return;
 		var fSel = selected != this.selectedLast;
 		
 		if(selected){
@@ -159,8 +163,36 @@ class menuButton{
 }
 class settingButton extends menuButton{
 	constructor(text, pos, description = "", applyOnChange = false){
-		super(text, pos, description);
-		this.setStyles(textStyle.getDefault(), textStyle.getDefault().setColor(textColor.cyan));
+		super();
+	}
+	
+	static generateGetValueFunc(optionVarName){
+		return function(){
+			return config[optionVarName];
+		}
+	}
+	static generateSetValueFunc(optionVarName){
+		return function(val){
+			config[optionVarName] = val;
+		}
+	}
+	
+	construct(text, pos, description = "", applyOnChange = false){
+		this.pos = pos;
+		this.text = text;
+		this.description = description;
+		
+		this.selectAnim = new textAnim_scaleTransform(200, 0.5, 1, 0);
+		this.selectAnim.animType = textAnimType.bulgeIn;
+		this.unselectAnim = new textAnim_scaleTransform(100, 2, 1, 0);
+		this.unselectAnim.animType = textAnimType.easeIn;
+		
+		this.styles = null;
+		this.preRenders = null;
+		
+		this.normalBounds = null;
+		this.selectedBounds = null;
+		this.selectedLast = false;
 		
 		this.mode = buttonSwitchMode.bool;
 		this.minVal = 0;
@@ -180,18 +212,8 @@ class settingButton extends menuButton{
 		this.unselectAnim = new textAnim_scale(100, 1, 1, 0);
 		this.unselectAnim.animType = textAnimType.trigonometricCycle;
 		
-		this.generateSettingPreRenders();
-	}
-	
-	static generateGetValueFunc(optionVarName){
-		return function(){
-			return config[optionVarName];
-		}
-	}
-	static generateSetValueFunc(optionVarName){
-		return function(val){
-			config[optionVarName] = val;
-		}
+		return this;
+		
 	}
 	
 	setValueBounds(min, max, delta, switchMode){
@@ -205,7 +227,8 @@ class settingButton extends menuButton{
 	setGettersAndSetters(getter, setter){
 		this.getValue = getter || this.getValue;
 		this.setValue = setter || this.setValue;
-		this.generateSettingPreRenders();
+		this.setStyles(textStyle.getDefault(), textStyle.getDefault().setColor(textColor.cyan));
+		this.calcSize();
 		return this;
 	}
 	
@@ -347,16 +370,22 @@ class state_menuState extends gameState{
 	constructor(){
 		super();
 		
+		this.initialized = false;
+	}
+	
+	initialize(){
 		// list of menu buttons
 		this.buttons = [];
 		this.currentSelection = 0;
 		this.addButtons();
+
+		this.initialized = true;
 	}
-	
 	addButtons(){}
 	
 	selectionDown(){
 		// moves the menu cursor down to the next selectable menu item
+		if(!this.initialized) this.initialize();
 		if(this.buttons.length <= 0) return;
 		this.currentSelection += 1;
 		if(this.currentSelection >= this.buttons.length)
@@ -364,26 +393,31 @@ class state_menuState extends gameState{
 	}
 	selectionUp(){
 		// moves the menu cursor up to the previous selectable menu item
+		if(!this.initialized) this.initialize();
 		if(this.buttons.length <= 0) return;
 		this.currentSelection -= 1;
 		if(this.currentSelection < 0)
 			this.currentSelection = this.buttons.length - 1;
 	}
 	navigateLeft(){
+		if(!this.initialized) this.initialize();
 		if(this.selectedButton.navLeft)
 			this.selectedButton.navLeft();
 	}
 	navigateRight(){
+		if(!this.initialized) this.initialize();
 		if(this.selectedButton.navRight)
 			this.selectedButton.navRight();
 	}
 	
 	get selectedButton(){
+		if(!this.initialized) this.initialize();
 		if(this.buttons.length <= 0) return null;
 		return this.buttons[this.currentSelection];
 	}
 	select(pos = null){
 		// selects the menu item at the specefied position, if no position is specified, the currently selected menu item is triggered
+		if(!this.initialized) this.initialize();
 		if(this.buttons.length <= 0) return;
 		if(!pos){
 			this.buttons[this.currentSelection].trigger();
@@ -393,6 +427,7 @@ class state_menuState extends gameState{
 	
 	controlTap(control = controlAction.none){
 		// defines the what the controls do when you press them, used for menu navigation in the main menu
+		if(!this.initialized) this.initialize();
 		switch(control){
 			case controlAction.up: this.selectionUp(); break;
 			case controlAction.down: this.selectionDown(); break;
@@ -403,12 +438,14 @@ class state_menuState extends gameState{
 	}
 	mouseTap(pos){
 		// defines what happens when the mouse is clicked in the main menu
+		if(!this.initialized) this.initialize();
 		if(this.buttons.length <= 0) return;
 		if(this.selectedButton.selectedBounds.overlapsPoint(pos))
 			this.select();
 	}
 	mouseMove(pos){
 		// defines what happens when the mouse is moved in the main menu
+		if(!this.initialized) this.initialize();
 		if(this.buttons.length <= 0) return;
 		if(this.selectedButton.selectedBounds.overlapsPoint(pos))
 			return;
@@ -423,6 +460,7 @@ class state_menuState extends gameState{
 
 	drawInternals(){}
 	draw(){
+		if(!this.initialized) this.initialize();
 		drawBackground();
 
 		this.drawInternals();
@@ -451,25 +489,24 @@ class state_confirmationDialogue extends state_menuState{
 		this.titleAnim = new textAnim_compound([titleAnim, titleBlink]);
 		
 		var ths = this;
-		this.action_confirm = function(){ confirmAction(); gameState.switchState(ths.lastState); };
-		this.action_deny = function(){ denyAction(); gameState.switchState(ths.lastState); };
+		this.action_confirm = function(){ log("confirmation accepted", logType.unimportant); confirmAction(); gameState.switchState(ths.lastState); };
+		this.action_deny = function(){ log("confirmation denied", logType.unimportant); denyAction(); gameState.switchState(ths.lastState); };
 		
-		this.addButtons();
 		this.currentSelection = 1;
 	}
 	
 	addButtons(){
 		this.buttons = [
-			new menuButton(
+			new menuButton().construct(
 				"Yes", 
 				new vec2(screenBounds.center.x, screenBounds.bottom - 200), 
 				"confirm your choice", 
 				this.action_confirm),
-			new menuButton(
+			new menuButton().construct(
 				"No", 
 				new vec2(screenBounds.center.x, screenBounds.bottom - 145), 
 				"cancel and return",
-				this.action_confirm)
+				this.action_deny)
 		];
 	}
 	
@@ -486,6 +523,7 @@ class state_confirmationDialogue extends state_menuState{
 	
 	switchTo(fromstate = null){
 		this.lastState = fromstate;
+		log("gameState '" + this.lastState.constructor.name + "' asking for confirmation", logType.notify);
 	}
 }
 
@@ -519,10 +557,10 @@ class state_mainMenu extends state_menuState{
 		var action_switchToScoreboard = function(){ gameState.switchState(new state_scoreboard()); };
 		var action_switchToOptions = function(){ gameState.switchState(new state_options()); };
 		
-		this.buttons.push(new menuButton("Start Game", screenBounds.center.plus(new vec2(0, off * dif)), "start a new game")); off++;
-		this.buttons.push(new menuButton("Scoreboard", screenBounds.center.plus(new vec2(0, off * dif)), "view the highest scoring players", action_switchToScoreboard)); off++;
-		this.buttons.push(new menuButton("Options", screenBounds.center.plus(new vec2(0, off * dif)), "configure gameplay and av options", action_switchToOptions)); off++;
-		this.buttons.push(new menuButton("Credits", screenBounds.center.plus(new vec2(0, off * dif)), "see who contributed to making the game!")); off++;
+		this.buttons.push(new menuButton().construct("Start Game", screenBounds.center.plus(new vec2(0, off * dif)), "start a new game")); off++;
+		this.buttons.push(new menuButton().construct("Scoreboard", screenBounds.center.plus(new vec2(0, off * dif)), "view the highest scoring players", action_switchToScoreboard)); off++;
+		this.buttons.push(new menuButton().construct("Options", screenBounds.center.plus(new vec2(0, off * dif)), "configure gameplay and av options", action_switchToOptions)); off++;
+		this.buttons.push(new menuButton().construct("Credits", screenBounds.center.plus(new vec2(0, off * dif)), "see who contributed to making the game!")); off++;
 	}
 	
 	drawInternals(){
@@ -560,7 +598,7 @@ class state_scoreboard extends state_menuState{
 		
 		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
 		
-		this.buttons.push(new menuButton("Main Menu", tpos.plus(new vec2(0, off * dif)), "return to the main menu", action_switchToMainMenu)); off++;
+		this.buttons.push(new menuButton().construct("Main Menu", tpos.plus(new vec2(0, off * dif)), "return to the main menu", action_switchToMainMenu)); off++;
 		
 		this.currentSelection = 1;
 	}
@@ -591,21 +629,21 @@ class state_options extends state_menuState{
 		// Animated Text
 		// Image Smoothing
 		// Animation Speed
-		this.buttons.push(new settingButton("Animated Text", tpos.plus(new vec2(0, off * dif)), "whether or not animated text is enabled - may increase performance if disabled"
+		this.buttons.push(new settingButton().construct("Animated Text", tpos.plus(new vec2(0, off * dif)), "whether or not animated text is enabled - may increase performance if disabled"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("animText"), settingButton.generateSetValueFunc("animText")) ); off++;
-		this.buttons.push(new settingButton("Image Smoothing", tpos.plus(new vec2(0, off * dif)), "enable if you want ugly blurs or keep disabled for nice crispy pixel graphics", true
+		this.buttons.push(new settingButton().construct("Image Smoothing", tpos.plus(new vec2(0, off * dif)), "enable if you want ugly blurs or keep disabled for nice crispy pixel graphics", true
 			).setGettersAndSetters(settingButton.generateGetValueFunc("imageSmoothing"), settingButton.generateSetValueFunc("imageSmoothing")) ); off++;
-		this.buttons.push(new settingButton("Animation Speed", tpos.plus(new vec2(0, off * dif)), "how quickly the in-game animations are played"
+		this.buttons.push(new settingButton().construct("Animation Speed", tpos.plus(new vec2(0, off * dif)), "how quickly the in-game animations are played"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("animSpeed"), settingButton.generateSetValueFunc("animSpeed")
 			).setValueBounds(0.5, 2.5, 0.5, buttonSwitchMode.percentInfinite) ); off++;
 		
 		// audio ops:
 		// Sound Volume
 		// Music Volume
-		this.buttons.push(new settingButton("Sound", tpos.plus(new vec2(0, off * dif)), "the volume level of the sound effects"
+		this.buttons.push(new settingButton().construct("Sound", tpos.plus(new vec2(0, off * dif)), "the volume level of the sound effects"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_sound"), settingButton.generateSetValueFunc("volume_sound")
 			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent) ); off++;
-		this.buttons.push(new settingButton("Music", tpos.plus(new vec2(0, off * dif)), "the volume level of the music"
+		this.buttons.push(new settingButton().construct("Music", tpos.plus(new vec2(0, off * dif)), "the volume level of the music"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_music"), settingButton.generateSetValueFunc("volume_music")
 			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent) ); off++;
 		
@@ -613,18 +651,18 @@ class state_options extends state_menuState{
 		// Enable Saving
 		// Set Controls
 		// Reset Scores
-		this.buttons.push(new settingButton("Save Data", tpos.plus(new vec2(0, off * dif)), "if disabled new high scores or changes to settings will not be saved", true
+		this.buttons.push(new settingButton().construct("Save Data", tpos.plus(new vec2(0, off * dif)), "if disabled new high scores or changes to settings will not be saved", true
 			).setGettersAndSetters(settingButton.generateGetValueFunc("saving"), settingButton.generateSetValueFunc("saving")) ); 
 		off += 1.5;
 		
 		var action_gotoControlSettings = function(){ };
 		var action_resetScores = function(){ gameState.switchState(new state_confirmationDialogue(function(){})); };
-		this.buttons.push(new menuButton("Set Controls", tpos.plus(new vec2(0, off * dif)), "customize the controls", action_gotoControlSettings)); off += 1.1;
-		this.buttons.push(new menuButton("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_resetScores));
+		this.buttons.push(new menuButton().construct("Set Controls", tpos.plus(new vec2(0, off * dif)), "customize the controls", action_gotoControlSettings)); off += 1.1;
+		this.buttons.push(new menuButton().construct("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_resetScores));
 		
 		// main menu button
 		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
-		this.buttons.push(new menuButton("Main Menu", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to the main menu", action_switchToMainMenu));
+		this.buttons.push(new menuButton().construct("Main Menu", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to the main menu", action_switchToMainMenu));
 	}
 	
 	switchFrom(tostate = null){
