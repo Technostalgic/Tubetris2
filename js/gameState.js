@@ -237,7 +237,6 @@ class settingButton extends menuButton{
 		this.unselectAnim.animType = textAnimType.trigonometricCycle;
 		
 		return this;
-		
 	}
 	
 	setValueBounds(min, max, delta, switchMode){
@@ -391,9 +390,9 @@ class settingButton extends menuButton{
 		// generates the preRenderedText that represents the button's description
 		var descBlock = new textBlock(this.description, this.styles.description);
 		descBlock.bounds = collisionBox.fromSides(
-			screenBounds.left + 20, 
-			screenBounds.bottom - 6, 
-			screenBounds.right - 20, 
+			screenBounds.left + 20,
+			screenBounds.bottom - 6,
+			screenBounds.right - 20,
 			screenBounds.bottom - 6 );
 		descBlock.lineHeight = 16;
 		this.preRenders.description = preRenderedText.fromBlock(descBlock);
@@ -690,7 +689,7 @@ class state_options extends state_menuState{
 			).setGettersAndSetters(settingButton.generateGetValueFunc("saving"), settingButton.generateSetValueFunc("saving")) ); 
 		off += 1.5;
 		
-		var action_gotoControlSettings = function(){ };
+		var action_gotoControlSettings = function(){ gameState.switchState(new state_controlSettings()); };
 		var action_resetScores = function(){ gameState.switchState(new state_confirmationDialogue(function(){})); };
 		this.buttons.push(new menuButton().construct("Set Controls", tpos.plus(new vec2(0, off * dif)), "customize the controls", action_gotoControlSettings)); off += 1.1;
 		this.buttons.push(new menuButton().construct("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_resetScores));
@@ -708,5 +707,50 @@ class state_options extends state_menuState{
 	drawInternals(){
 		var style = new textStyle(fonts.large, textColor.green, 2);
 		textRenderer.drawText("OPTIONS", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
+	}
+}
+// a control configuration screen
+class state_controlSettings extends state_menuState{
+	constructor(){
+		super();
+		
+		var titleEntrance = new textAnim_scaleTransform(300, 0, 1, 0);
+		titleEntrance.animType = textAnimType.easeOut;
+		
+		this.titleAnim = titleEntrance;
+	}
+	
+	addButtons(){
+		this.controls = this.getControls();
+		this.buttons = [];
+		var off = 0;
+		var dif = 35;
+		var tpos = new vec2(screenBounds.left + 100, screenBounds.top + 175);
+		var c = this.controls;
+		
+		// control mapping buttons
+		for(var i in c){
+			var action = function(){ };
+			var btn = new menuButton();
+			btn.construct(i, tpos.plus(new vec2(0, off * dif)), "change input for " + i, action);
+			
+			this.buttons.push(btn);
+			off++;
+		}
+		
+		// main menu button
+		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
+		this.buttons.push(new menuButton().construct("Main Menu", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to the main menu", action_switchToMainMenu));
+	}
+	getControls(){
+		var c = {};
+		for(var i in controlState.controls)
+			c[i] = controlState.controls[i];
+		return c;
+	}
+	
+	drawInternals(){
+		var style = new textStyle(fonts.large, textColor.green, 2);
+		textRenderer.drawText("CONTROLS", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
 	}
 }
