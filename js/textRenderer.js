@@ -295,6 +295,28 @@ class textAnim_rainbow extends textAnim{
 		}
 	}
 }
+// an animation where the text blinks between its stylized color and a defined color
+class textAnim_blink extends textAnim{
+	constructor(animLength = 500, charOff = 0.1, color = textColor.dark, charHeight = fonts.large.charSize.y){
+		super();
+		this.animType = textAnimType.linear;
+		this.animCharOffset = charOff;
+		this.animLength = animLength;
+		this.charHeight = charHeight;
+		this.color = color;
+	}
+	
+	applyAnim(pr){
+		for(var i = 0; i < pr.spriteContainers.length; i++){
+			if(this.getAnimProgress(i) < 0.5) continue;
+			var colOff = this.color * this.charHeight * 3;
+			var sy = pr.spriteContainers[i].sprite.pos.y % (this.charHeight * 3);
+			sy += colOff;
+			
+			pr.spriteContainers[i].sprite.pos.y = sy;
+		}
+	}
+}
 // an animation that changes the text's size
 class textAnim_scale extends textAnim{
 	constructor(animLength = 500, minScale = 0.5, maxScale = 1, charOff = 0.1){
