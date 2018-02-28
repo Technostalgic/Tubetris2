@@ -73,15 +73,19 @@ class menuButton{
 	constructor(){ }
 	
 	calcSize(){
-		// calculates and sets this.size
+		// calculates and sets the selected and unselected boundaries based on the text and font styles
 		this.normalBounds = this.preRenders.normal.getBounds();
 		this.selectedBounds = this.preRenders.selected.getBounds();
 	}
 	generatePreRenders(){
+		// generates the preRenderedTexts for the the selected and unselected states as well as the 
+		// preRenderedText for the button's description text
 		this.preRenders = {};
 		this.preRenders.normal = preRenderedText.fromString(this.text, this.pos, this.styles.normal);
 		this.preRenders.selected = preRenderedText.fromString(this.text, this.pos, this.styles.selected);
 		
+		// the description can be multiple lines so we need to use a textBlock to generate the preRenderedText
+		// which will break the paragraph into multiple lines and apply vertical alignment rules
 		var descBlock = new textBlock(this.description, this.styles.description);
 		descBlock.bounds = collisionBox.fromSides(
 			screenBounds.left + 20, 
@@ -93,7 +97,8 @@ class menuButton{
 	}
 	
 	construct(text, pos, description = "", action = null){
-		// initializes a button
+		// used in lue of a functional contstructor in order to prevent deriving classes from needing to
+		// call performance intensive code more than one time
 		this.pos = pos;
 		this.text = text;
 		this.description = description;
@@ -101,15 +106,19 @@ class menuButton{
 		this.navLeft = null;
 		this.navRight = null;
 		
+		// generates the preRenders based on provided styles
 		this.styles = null;
 		this.preRenders = null;
 		this.setStyles();
 		
+		// calculates the normal and selected boundaries of the button
 		this.normalBounds = null;
 		this.selectedBounds = null;
 		this.calcSize();
+		// used for a check to see if the animation should be reset
 		this.selectedLast = false;
 		
+		// defines the animations that play when the button is selected or unselected
 		this.selectAnim = new textAnim_scaleTransform(200, 0.5, 1, 0);
 		this.selectAnim.animType = textAnimType.bulgeIn;
 		this.unselectAnim = new textAnim_scaleTransform(100, 2, 1, 0);
@@ -118,12 +127,14 @@ class menuButton{
 		return this;
 	}
 	setStyles(normalStyle = textStyle.getDefault(), selectedStyle = new textStyle(fonts.large, textColor.cyan, 2), descriptionStyle = (new textStyle(fonts.small)).setAlignment(0.5, 1)){
+		// sets the text styles for the normal and unselected states of the button
 		descriptionStyle.hAlign = 0.5;
 		this.styles = {
 			normal: normalStyle || this.styles.normalStyle,
 			selected: selectedStyle || this.styles.selectedStyle,
 			description: descriptionStyle || this.styles.descriptionStyle
 			};
+		// when the styles are changed, the preRenderedTexts must be regenerated
 		this.generatePreRenders();
 	}
 	
@@ -137,11 +148,15 @@ class menuButton{
 	
 	draw(selected = false){
 		// renders the button on screen
-		if(!this.preRenders) return;
+		if(!this.preRenders) return; // returns if the button's graphics haven't been generated
+		
+		// determines if this button's selected state is different than it was last frame
 		var fSel = selected != this.selectedLast;
 		
 		if(selected){
+			// reset's the button's animation if there is a change in it's state
 			if(fSel) this.selectAnim.resetAnim();
+			// applys the animation for the button's selected state
 			this.preRenders.selected.animated(this.selectAnim).draw();
 			
 			// draws arrows to the left and right of the button
@@ -155,29 +170,36 @@ class menuButton{
 			this.preRenders.description.draw();
 		}
 		else {
+			// reset's the button's animation if there is a change in it's state
 			if(fSel) this.unselectAnim.resetAnim();
+			// applys the animation for the button's unselected state
 			this.preRenders.normal.animated(this.unselectAnim).draw();
 		}
+		
+		// sets a flag so that the button knows if it was selected on the previous frame or not
 		this.selectedLast = selected;
 	}
 }
 class settingButton extends menuButton{
-	constructor(text, pos, description = "", applyOnChange = false){
-		super();
-	}
+	constructor(){ super(); }
 	
 	static generateGetValueFunc(optionVarName){
+		// generates a getter function that will get the value of the specified variable as long
+		// as it is a part of the 'config' object
 		return function(){
 			return config[optionVarName];
 		}
 	}
 	static generateSetValueFunc(optionVarName){
+		// generates a setter function that will set the value of the specified variable as long
+		// as it is a part of the 'config' object
 		return function(val){
 			config[optionVarName] = val;
 		}
 	}
 	
 	construct(text, pos, description = "", applyOnChange = false){
+		// see super.construct() for info ony why this is used in lue of a constructor
 		this.pos = pos;
 		this.text = text;
 		this.description = description;
@@ -199,6 +221,8 @@ class settingButton extends menuButton{
 		this.maxVal = 1;
 		this.deltaVal = 0.1;
 		
+		// a flag that tells the button whether or not the configuration settings should be applied when
+		// the value is changed
 		this.applyOnChange = applyOnChange;
 		
 		this.getValue = null;
@@ -217,6 +241,7 @@ class settingButton extends menuButton{
 	}
 	
 	setValueBounds(min, max, delta, switchMode){
+		// sets the upper and lower bounds for the value that is being set by getter and setter functions
 		this.minVal = min || this.minVal;
 		this.maxVal = max || this.maxVal;
 		this.deltaVal = delta || this.deltaVal;
@@ -225,6 +250,8 @@ class settingButton extends menuButton{
 		return this;
 	}
 	setGettersAndSetters(getter, setter){
+		// sets the getter and setter functions for the setting button
+		// this is VITAL and MUST BE CALLED for every settingButton instance that is created
 		this.getValue = getter || this.getValue;
 		this.setValue = setter || this.setValue;
 		this.setStyles(textStyle.getDefault(), textStyle.getDefault().setColor(textColor.cyan));
@@ -308,6 +335,7 @@ class settingButton extends menuButton{
 		this.changeValue(m);
 	}
 	changeValue(value){
+		// changes the value of the config option that is being modified by the settingButton
 		if(!this.setValue) {
 			log("setValue function not set for settingButton '" + this.text + "'", logType.error);
 			return;
@@ -318,12 +346,15 @@ class settingButton extends menuButton{
 	}
 	
 	getFullString(){
+		// returns the full string that will be drawn when the settingButton is drawn
 		return this.getFullText() + this.getValueString();
 	}
 	getFullText(){
+		// gets the full non-stylized text that will be drawn
 		return this.text + ": ";
 	}
 	getValueString(){
+		// gets the string that represents the value of the option that this settingButton is modifying
 		if(!this.getValue) {
 			log("getValue function not set for settingButton '" + this.text + "'", logType.error);
 			return "null";
@@ -338,8 +369,10 @@ class settingButton extends menuButton{
 		return m.toString();
 	}
 	generateSettingPreRenders(){
+		// generates the preRenderedText that will be drawn to the screen when this.draw() is called
 		this.preRenders = {};
 		
+		// generates the preRenderedText that represents the unselected button
 		var normBlock = new textBlock(
 			this.getFullText()+ "(" + this.getValueString() + ")", 
 			this.styles.normal.setAlignment(0.5, 0.5), collisionBox.fromSides(screenBounds.left, this.pos.y, screenBounds.right, this.pos.y), 
@@ -347,6 +380,7 @@ class settingButton extends menuButton{
 			);
 		this.preRenders.normal = preRenderedText.fromBlock(normBlock);
 		
+		// generates the preRenderedText that represents the selected button
 		var selBlock = new textBlock(
 			this.getFullText()+ "(" + this.getValueString() + ")", 
 			this.styles.selected.setAlignment(0.5, 0.5), collisionBox.fromSides(screenBounds.left, this.pos.y, screenBounds.right, this.pos.y),
@@ -354,6 +388,7 @@ class settingButton extends menuButton{
 			);
 		this.preRenders.selected = preRenderedText.fromBlock(selBlock);
 		
+		// generates the preRenderedText that represents the button's description
 		var descBlock = new textBlock(this.description, this.styles.description);
 		descBlock.bounds = collisionBox.fromSides(
 			screenBounds.left + 20, 
