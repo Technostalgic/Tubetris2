@@ -203,8 +203,8 @@ class textAnim{
 			if(aProg < 0) return 0; // return 0 if animation hasn't started
 			if(Math.abs(aProg) >= 1) return 1; // return 1 if animation is finished
 		}
-		
-		aProg = aProg > 0 ? aProg % 1 : aProg - (aProg % 1);
+		else
+			aProg = aProg > 0 ? aProg % 1 : 1 + (aProg % 1);
 		
 		switch(this.animType){
 			case textAnimType.linear:
@@ -598,7 +598,7 @@ class preRenderedText{
 	
 	// returns a new instance of the preRender with an animation applied
 	animated(anim){
-		if(!config.animText) return this;
+		if(!config.animText || !anim) return this;
 		var c = this.clone();
 		
 		anim.applyAnim(c);
