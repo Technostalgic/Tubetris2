@@ -76,7 +76,7 @@ function log(obj, type = logType.log){
 	else console.log(ob);
 }
 function loadFont(assetname, filename, charsize, colorVariants = 8){
-	// downloads the specified font image and puts it into a textRenderer container with the specified data
+	// downloads the specified font image to the client and puts it into a textRenderer container with the specified data
 	
 	var out = "load font '" + filename + "'... ";
 	
@@ -93,7 +93,7 @@ function loadFont(assetname, filename, charsize, colorVariants = 8){
 	return r;
 }
 function loadGraphic(assetname, filename){
-	// downloads the specified image asset
+	// downloads the specified image asset to the client
 	
 	var out = "load graphic '" + filename + "'... ";
 	
@@ -108,7 +108,7 @@ function loadGraphic(assetname, filename){
 	return r;
 }
 function loadSound(assetname, filename){
-	// downloads the specified sound asset
+	// downloads the specified sound asset to the client
 	
 	var out = "load sound '" + filename + "'... ";
 	

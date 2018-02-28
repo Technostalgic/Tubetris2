@@ -507,7 +507,6 @@ class state_scoreboard extends state_menuState{
 		
 		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
 		
-		this.buttons.push(new menuButton("Reset Scores", tpos.plus(new vec2(0, off * dif)), "erase the scoreboard data")); off++;
 		this.buttons.push(new menuButton("Main Menu", tpos.plus(new vec2(0, off * dif)), "return to the main menu", action_switchToMainMenu)); off++;
 		
 		this.currentSelection = 1;
@@ -532,9 +531,13 @@ class state_options extends state_menuState{
 	addButtons(){
 		this.buttons = [];
 		var off = 0;
-		var dif = 45;
-		var tpos = new vec2(screenBounds.center.x, screenBounds.center.y - 100);
+		var dif = 40;
+		var tpos = new vec2(screenBounds.center.x, screenBounds.top + 175);
 		
+		// vid ops:
+		// Animated Text
+		// Image Smoothing
+		// Animation Speed
 		this.buttons.push(new settingButton("Animated Text", tpos.plus(new vec2(0, off * dif)), "whether or not animated text is enabled - may increase performance if disabled"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("animText"), settingButton.generateSetValueFunc("animText")) ); off++;
 		this.buttons.push(new settingButton("Image Smoothing", tpos.plus(new vec2(0, off * dif)), "enable if you want ugly blurs or keep disabled for nice crispy pixel graphics", true
@@ -543,6 +546,9 @@ class state_options extends state_menuState{
 			).setGettersAndSetters(settingButton.generateGetValueFunc("animSpeed"), settingButton.generateSetValueFunc("animSpeed")
 			).setValueBounds(0.5, 2.5, 0.5, buttonSwitchMode.percentInfinite) ); off++;
 		
+		// audio ops:
+		// Sound Volume
+		// Music Volume
 		this.buttons.push(new settingButton("Sound", tpos.plus(new vec2(0, off * dif)), "the volume level of the sound effects"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_sound"), settingButton.generateSetValueFunc("volume_sound")
 			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent) ); off++;
@@ -550,8 +556,22 @@ class state_options extends state_menuState{
 			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_music"), settingButton.generateSetValueFunc("volume_music")
 			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent) ); off++;
 		
+		// game ops:
+		// Enable Saving
+		// Set Controls
+		// Reset Scores
+		this.buttons.push(new settingButton("Save Data", tpos.plus(new vec2(0, off * dif)), "if disabled new high scores or changes to settings will not be saved", true
+			).setGettersAndSetters(settingButton.generateGetValueFunc("saving"), settingButton.generateSetValueFunc("saving")) ); 
+		off += 1.5;
+		
+		var action_gotoControlSettings = function(){};
+		var action_resetScores = function(){};
+		this.buttons.push(new menuButton("Set Controls", tpos.plus(new vec2(0, off * dif)), "customize the controls", action_gotoControlSettings)); off += 1.1;
+		this.buttons.push(new menuButton("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_switchToMainMenu));
+		
+		// main menu button
 		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
-		this.buttons.push(new menuButton("Main Menu", new vec2(screenBounds.center.x, screenBounds.bottom - 150), "return to the main menu", action_switchToMainMenu));
+		this.buttons.push(new menuButton("Main Menu", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to the main menu", action_switchToMainMenu));
 	}
 	
 	switchFrom(tostate = null){
