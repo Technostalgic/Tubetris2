@@ -436,6 +436,59 @@ class state_menuState extends gameState{
 	}
 }
 
+// a simple confirmation dialogue
+class state_confirmationDialogue extends state_menuState{
+	constructor(confirmAction, denyAction = function(){}){
+		super();
+		this.title = "Warning";
+		this.description = "this action cannot be undone";
+		this.prompt = "are you sure";
+		
+		var titleAnim = new textAnim_scale(200, 1, 1.25, 0.5);
+		titleAnim.looping = true;
+		titleAnim.animType = textAnimType.linearBounce;
+		var titleBlink = new textAnim_blink(400, 0.5, textColor.pink);
+		this.titleAnim = new textAnim_compound([titleAnim, titleBlink]);
+		
+		var ths = this;
+		this.action_confirm = function(){ confirmAction(); gameState.switchState(ths.lastState); };
+		this.action_deny = function(){ denyAction(); gameState.switchState(ths.lastState); };
+		
+		this.addButtons();
+		this.currentSelection = 1;
+	}
+	
+	addButtons(){
+		this.buttons = [
+			new menuButton(
+				"Yes", 
+				new vec2(screenBounds.center.x, screenBounds.bottom - 200), 
+				"confirm your choice", 
+				this.action_confirm),
+			new menuButton(
+				"No", 
+				new vec2(screenBounds.center.x, screenBounds.bottom - 145), 
+				"cancel and return",
+				this.action_confirm)
+		];
+	}
+	
+	drawInternals(){
+		var warnStyle = new textStyle(fonts.large, textColor.red, 2);
+		textRenderer.drawText(this.title, new vec2(screenBounds.center.x, screenBounds.top + 100), warnStyle, this.titleAnim);
+		
+		var descStyle = new textStyle(fonts.large, textColor.green, 1);
+		textRenderer.drawText(this.description, new vec2(screenBounds.center.x, screenBounds.top + 150), descStyle);
+		
+		var promptStyle = new textStyle(fonts.large, textColor.green, 1);
+		textRenderer.drawText(this.prompt, new vec2(screenBounds.center.x, screenBounds.bottom - 250), promptStyle);
+	}
+	
+	switchTo(fromstate = null){
+		this.lastState = fromstate;
+	}
+}
+
 // a gameState object that represents the main menu interface
 class state_mainMenu extends state_menuState{
 	constructor(){
@@ -564,10 +617,10 @@ class state_options extends state_menuState{
 			).setGettersAndSetters(settingButton.generateGetValueFunc("saving"), settingButton.generateSetValueFunc("saving")) ); 
 		off += 1.5;
 		
-		var action_gotoControlSettings = function(){};
-		var action_resetScores = function(){};
+		var action_gotoControlSettings = function(){ };
+		var action_resetScores = function(){ gameState.switchState(new state_confirmationDialogue(function(){})); };
 		this.buttons.push(new menuButton("Set Controls", tpos.plus(new vec2(0, off * dif)), "customize the controls", action_gotoControlSettings)); off += 1.1;
-		this.buttons.push(new menuButton("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_switchToMainMenu));
+		this.buttons.push(new menuButton("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_resetScores));
 		
 		// main menu button
 		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
