@@ -422,17 +422,20 @@ class state_menuState extends gameState{
 			this.currentSelection = this.buttons.length - 1;
 	}
 	navigateLeft(){
+		// calls navLeft() on the currently selected button
 		if(!this.initialized) this.initialize();
 		if(this.selectedButton.navLeft)
 			this.selectedButton.navLeft();
 	}
 	navigateRight(){
+		// calls navRight() on the currently selected button
 		if(!this.initialized) this.initialize();
 		if(this.selectedButton.navRight)
 			this.selectedButton.navRight();
 	}
 	
 	get selectedButton(){
+		// returns the button that is currently selected
 		if(!this.initialized) this.initialize();
 		if(this.buttons.length <= 0) return null;
 		return this.buttons[this.currentSelection];
@@ -482,16 +485,21 @@ class state_menuState extends gameState{
 
 	drawInternals(){}
 	draw(){
+		// draws the menuState
 		if(!this.initialized) this.initialize();
-		drawBackground();
+		// renders tiled background
+		drawBackground(); 
 
+		// draws all the user-defined graphics that aren't buttons
 		this.drawInternals();
 		
+		// renders all the buttons
 		for(var i = this.buttons.length - 1; i >= 0; i--){
 			var sel = i == this.currentSelection;
 			this.buttons[i].draw(sel);
 		}
 		
+		// renders the foreground border
 		drawForegroundBorder();
 	}
 }

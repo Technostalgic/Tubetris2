@@ -143,13 +143,15 @@ class textRenderer{
 // holds information about how to style text when trying to render it
 class textStyle{
 	constructor(font, color = textColor.light, scale = 1, horizontalAlign = 0.5){
-		this.font = font;
-		this.color = color;
-		this.scale = scale;
-		this.hAlign = horizontalAlign;
-		this.vAlign = 0.5;
+		// initializes a textStyle object
+		this.font = font; // the font (textRenderer) object that the text will be drawn with
+		this.color = color; // the textColor for the color to be rendered as
+		this.scale = scale; // the multiplier for the size of the text, 1 = native size
+		this.hAlign = horizontalAlign; // how the text should be aligned horizontally, 0 = left, 0.5 = centered, 1 = right, etc
+		this.vAlign = 0.5; // how the text should be aligned vertically
 	}
 	static fromAlignment(horizontal = 0.5, vertical = 0.5){
+		// sets the h and v alignment of the default style and returns it
 		var r = textStyle.getDefault();
 		
 		r.hAlign = horizontal;
@@ -158,6 +160,7 @@ class textStyle{
 		return r;
 	}
 	static getDefault(){
+		// gets the default text style
 		var r = new textStyle(fonts.large, textColor.light, 1, 0.5);
 		
 		r.vAlign = 0.5;
@@ -207,21 +210,21 @@ class textAnim{
 			aProg = aProg > 0 ? aProg % 1 : 1 + (aProg % 1);
 		
 		switch(this.animType){
-			case textAnimType.linear:
+			case textAnimType.linear: // progresses from 0 to 1 at a constant speed
 				return aProg;
-			case textAnimType.linearBounce:
+			case textAnimType.linearBounce: // progresses from 0 to 1 and then back to 0 at a constant speed
 				return Math.abs(aProg * 2 - 1);
-			case textAnimType.trigonometric:
+			case textAnimType.trigonometric: // progresses from 0 to 1 starting slow, speeding up and then ending slowly
 				return 1 - (Math.cos(aProg * Math.PI) + 1) / 2;
-			case textAnimType.trigonometricCycle:
+			case textAnimType.trigonometricCycle: // progresses from 0 to 1 back to 0 increasing and decreasing speed gradually
 				return (Math.cos(aProg * Math.PI * 2) + 1) / 2;
-			case textAnimType.easeIn:
+			case textAnimType.easeIn: // 0 to 1 starting slowly and speeding up as it approaches 1
 				return 1 - (Math.cos(aProg * (Math.PI / 2)));
-			case textAnimType.easeOut:
+			case textAnimType.easeOut: // 0 to 1 starting at full speed and slowing down as it approaches 1
 				return (Math.sin(aProg * (Math.PI / 2)));
-			case textAnimType.bulgeIn:
+			case textAnimType.bulgeIn: // 0 to 1.25ish back to 1 starting at full speed and slowing down and reversing as it peaks
 				return (Math.sin(aProg * (3 * Math.PI / 4))) * Math.sqrt(2);
-			case textAnimType.bulgeOut:
+			case textAnimType.bulgeOut: //0 to -0.25ish up to 1 starting at a low speed and accelerating as it peaks
 				return 1 - (Math.cos(-(Math.PI / 4) + aProg * (3 * Math.PI / 4))) * Math.sqrt(2);
 		}
 		
@@ -232,6 +235,7 @@ class textAnim{
 	applyAnim(prerender){ }
 	
 	drawText(text, pos, style){
+		// draws the specified text at the specified position with the specified style
 		var pr = preRenderedText.fromString(text, pos, style);
 		this.applyAnim(pr);
 		pr.draw();

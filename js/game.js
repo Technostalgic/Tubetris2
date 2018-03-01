@@ -235,6 +235,7 @@ function loadFonts(){
 	loadFont("small", "font_small.png", new vec2(12, 8), 8);
 	loadFont("large", "font_large.png", new vec2(18, 32), 8);
 	
+	// set individual character widths for each font
 	fonts.large.setSpecificCharacterWidths({
 		'1': 14,
 		'!': 12,
@@ -386,6 +387,7 @@ function loadControls(){
 }
 
 function localStorageCheck(){
+	// checks to see if the browser is able to store and load data from localStorage
 	log("testing to see if localStorage is enabled...", logType.notify);
 	try{
 		localStorage.setItem("technostalgic_test", true);
@@ -415,6 +417,7 @@ function saveConfig(){
 	log("saved!", logType.success);
 }
 function saveControls(){
+	// saves the game controls to the browser's localStorage
 	log("saving game controls... ", logType.notify);
 	if(!localStorageEnabled){
 		log("localStorage is not enabled", logType.error);
@@ -479,6 +482,7 @@ function preventKeyScrolling(){
 }
 
 function generateDynamicTextures(){
+	// generates all the textures that need to be created dynamically
 	log("generating dynamic textures...");
 	
 	generateBackground();
@@ -712,6 +716,7 @@ function step(){
 	timeElapsed = performance.now();
 }
 function update(dt){
+	// handles game logic that doesn't have to do with rendering
 	gameState.current.update(dt);
 }
 function draw(){
@@ -735,12 +740,15 @@ function draw(){
 }
 
 function drawBackground(){
+	// draws the tiled backgroumd image onto the canvas
 	drawImage(renderContext, gfx.background, new vec2());
 }
 function drawForegroundBorder(){
+	// draws the border around inside of the canvas
 	drawImage(renderContext, gfx.foreground_border, new vec2());
 }
 function drawForegroundOverlay(){
+	// draws the overlay for the HUD to be displayed on while in game
 	drawImage(renderContext, gfx.foreground_overlay, new vec2());
 }
 
