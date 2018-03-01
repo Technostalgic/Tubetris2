@@ -708,12 +708,12 @@ function startGameLoop(){
 function step(){
 	// a game step occurs, update logic is applied and the game is rendered
 	var dt = performance.now() - timeElapsed;
+	timeElapsed = performance.now();
 	
 	update(dt);
 	draw();
 	
 	window.requestAnimationFrame(step);
-	timeElapsed = performance.now();
 }
 function update(dt){
 	// handles game logic that doesn't have to do with rendering
