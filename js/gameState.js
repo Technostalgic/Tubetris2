@@ -313,23 +313,11 @@ class settingButton extends menuButton{
 		}
 		
 		var m = this.getValue();
-		if(this.mode == buttonSwitchMode.bool)
-			m = !m;
-		else{
-			if(m >= this.maxVal){
-				if(this.mode == buttonSwitchMode.percentInfinite){
-					if(m == Infinity)
-						m = this.minVal;
-					else m = Infinity;
-				}
-				else m = this.minVal;
-			}
-			else{
-				m += this.deltaVal;
-				if(m > this.maxVal)
-					m = this.maxVal;
-			}
-		}
+		this.increment();
+		var n = this.getValue();
+		if(m == n)
+			m = this.minVal;
+		else m = n;
 		
 		this.changeValue(m);
 	}
