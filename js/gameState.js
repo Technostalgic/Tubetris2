@@ -137,6 +137,14 @@ class menuButton{
 		// when the styles are changed, the preRenderedTexts must be regenerated
 		this.generatePreRenders();
 	}
+	settingStylize(){
+		this.setStyles(null, new textStyle(fonts.large, textColor.cyan, 1));
+		
+		this.selectAnim = new textAnim_scale(200, 1.5, 1, 0);
+		this.selectAnim.animType = textAnimType.trigonometricCycle;
+		this.unselectAnim = new textAnim_scale(100, 1, 1, 0);
+		this.unselectAnim.animType = textAnimType.trigonometricCycle;
+	}
 	
 	trigger(args){
 		// called when the button is pressed by the player
@@ -721,7 +729,7 @@ class state_controlSettings extends state_menuState{
 		this.buttons = [];
 		var off = 0;
 		var dif = 35;
-		var tpos = new vec2(screenBounds.left + 100, screenBounds.top + 175);
+		var tpos = new vec2(screenBounds.center.x, screenBounds.top + 175);
 		var c = this.controls;
 		
 		// control mapping buttons
@@ -729,6 +737,7 @@ class state_controlSettings extends state_menuState{
 			var action = function(){ };
 			var btn = new menuButton();
 			btn.construct(i, tpos.plus(new vec2(0, off * dif)), "change input for " + i, action);
+			btn.settingStylize();
 			
 			this.buttons.push(btn);
 			off++;
