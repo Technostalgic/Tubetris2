@@ -82,6 +82,37 @@ class controlState{
 		return false;
 	}
 	
+	static keyCodeToName(code){
+		//parses a keyCode and converts it into understandable text, used to display player controls
+		if(code >= 65 && code <= 90)
+			return String.fromCharCode(code);
+		if(code >= 48 && code <= 57)
+			return (code - 48).toString();
+		if(code >= 96 && code <= 105)
+			return "kp " + (code - 96).toString();
+		switch(code){
+			case -1: return ":::";
+			case 0: return "none";
+			case 8: return "backspc";
+			case 13: return "enter";
+			case 37: return "left arw";
+			case 39: return "right arw";
+			case 40: return "down arw";
+			case 38: return "up arw";
+			case 17: return "ctrl";
+			case 16: return "shift";
+			case 32: return "space";
+			case 219: return "l brckt";
+			case 221: return "r brckt";
+			case 191: return "backslash";
+			case 220: return "fwdslash";
+			case 190: return "period";
+			case 186: return "semicolon";
+			case 222: return "apstrophe";
+			case 188: return "comma";
+		}
+		return "key" + code.toString();
+	}
 	static setControls(controls){
 		// sets the control bindings
 		controlState.controls = controls;
