@@ -121,6 +121,7 @@ class controlState{
 	static resetControlChangeListener(){
 		window.removeEventListener("keydown", controlState.controlChangeListener);
 		gameState.current.selectionFocus = false;
+		//gameState.current.addButtons();
 	}
 	
 	static getAllControls(){

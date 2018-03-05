@@ -740,27 +740,25 @@ class state_controlSettings extends state_menuState{
 		var c = this.controls;
 		
 		// control mapping buttons
-		// FIX: Needs callback dereferencer
 		for(var i in c){
-			var action = function(){ };
-			var btn = new settingButton();
-			btn.construct(i, tpos.plus(new vec2(0, off * dif)), "change input for " + i, action);
+			let btn = new settingButton();
+			btn.construct(i, tpos.plus(new vec2(0, off * dif)), "change input for " + i);
 			btn.mode = buttonSwitchMode.directValue;
 			btn.setGettersAndSetters(
 				function(){ return controlState.keyCodeToName(c[i]); },
 				function(val){ c[i] = val; }
 			);
-			var listener = function(e){
+			let listener = function(e){
 				btn.changeValue(e.keyCode);
 				log("temp list control '" + i + "' changed to key '" + controlState.keyCodeToName(c[i]) + "'", logType.notify);
 				controlState.resetControlChangeListener();
 			}
-			controlState.controlChangeListener = listener;
 			
-			var ths = this;
+			let ths = this;
 			btn.action = function(){ 
 				ths.selectionFocus = true;
 				window.addEventListener("keydown", listener);
+				controlState.controlChangeListener = listener;
 			}
 			
 			btn.increment = null;
@@ -771,8 +769,8 @@ class state_controlSettings extends state_menuState{
 		}
 		
 		// main menu button
-		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
-		this.buttons.push(new menuButton().construct("Main Menu", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to the main menu", action_switchToMainMenu));
+		var action_switchToMainMenu = function(){ gameState.switchState(new state_options()); };
+		this.buttons.push(new menuButton().construct("Back", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to the main menu", action_switchToMainMenu));
 	}
 	getControls(){
 		var c = {};
