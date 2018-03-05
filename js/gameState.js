@@ -10,7 +10,8 @@ var buttonSwitchMode = {
 	bool: 0,
 	percent: 1,
 	percentInfinite: 2,
-	integer: 3
+	integer: 3,
+	directValue: 4
 }
 
 // the current gameMode object (to reference, it's recommended to use the 'gameState.current' static field)
@@ -392,6 +393,8 @@ class settingButton extends menuButton{
 			screenBounds.bottom - 6 );
 		descBlock.lineHeight = 16;
 		this.preRenders.description = preRenderedText.fromBlock(descBlock);
+		
+		return this;
 	}
 }
 
@@ -401,6 +404,7 @@ class state_menuState extends gameState{
 		super();
 		
 		this.initialized = false;
+		this.selectionFocus = false;
 	}
 	
 	initialize(){
@@ -461,6 +465,7 @@ class state_menuState extends gameState{
 	controlTap(control = controlAction.none){
 		// defines the what the controls do when you press them, used for menu navigation in the main menu
 		if(!this.initialized) this.initialize();
+		if(this.selectionFocus) return;
 		switch(control){
 			case controlAction.up: this.selectionUp(); break;
 			case controlAction.down: this.selectionDown(); break;
@@ -471,6 +476,7 @@ class state_menuState extends gameState{
 	}
 	mouseTap(pos){
 		// defines what happens when the mouse is clicked in the main menu
+		if(this.selectionFocus) return;
 		if(!this.initialized) this.initialize();
 		if(this.buttons.length <= 0) return;
 		if(this.selectedButton.selectedBounds.overlapsPoint(pos))
@@ -478,6 +484,7 @@ class state_menuState extends gameState{
 	}
 	mouseMove(pos){
 		// defines what happens when the mouse is moved in the main menu
+		if(this.selectionFocus) return;
 		if(!this.initialized) this.initialize();
 		if(this.buttons.length <= 0) return;
 		if(this.selectedButton.selectedBounds.overlapsPoint(pos))
@@ -668,29 +675,29 @@ class state_options extends state_menuState{
 		// Image Smoothing
 		// Animation Speed
 		this.buttons.push(new settingButton().construct("Animated Text", tpos.plus(new vec2(0, off * dif)), "whether or not animated text is enabled - may increase performance if disabled"
-			).setGettersAndSetters(settingButton.generateGetValueFunc("animText"), settingButton.generateSetValueFunc("animText")) ); off++;
+			).setGettersAndSetters(settingButton.generateGetValueFunc("animText"), settingButton.generateSetValueFunc("animText")).generateSettingPreRenders() ); off++;
 		this.buttons.push(new settingButton().construct("Image Smoothing", tpos.plus(new vec2(0, off * dif)), "enable if you want ugly blurs or keep disabled for nice crispy pixel graphics", true
-			).setGettersAndSetters(settingButton.generateGetValueFunc("imageSmoothing"), settingButton.generateSetValueFunc("imageSmoothing")) ); off++;
+			).setGettersAndSetters(settingButton.generateGetValueFunc("imageSmoothing"), settingButton.generateSetValueFunc("imageSmoothing")).generateSettingPreRenders() ); off++;
 		this.buttons.push(new settingButton().construct("Animation Speed", tpos.plus(new vec2(0, off * dif)), "how quickly the in-game animations are played"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("animSpeed"), settingButton.generateSetValueFunc("animSpeed")
-			).setValueBounds(0.5, 2.5, 0.5, buttonSwitchMode.percentInfinite) ); off++;
+			).setValueBounds(0.5, 2.5, 0.5, buttonSwitchMode.percentInfinite).generateSettingPreRenders() ); off++;
 		
 		// audio ops:
 		// Sound Volume
 		// Music Volume
 		this.buttons.push(new settingButton().construct("Sound", tpos.plus(new vec2(0, off * dif)), "the volume level of the sound effects"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_sound"), settingButton.generateSetValueFunc("volume_sound")
-			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent) ); off++;
+			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off++;
 		this.buttons.push(new settingButton().construct("Music", tpos.plus(new vec2(0, off * dif)), "the volume level of the music"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_music"), settingButton.generateSetValueFunc("volume_music")
-			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent) ); off++;
+			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off++;
 		
 		// game ops:
 		// Enable Saving
 		// Set Controls
 		// Reset Scores
 		this.buttons.push(new settingButton().construct("Save Data", tpos.plus(new vec2(0, off * dif)), "if disabled new high scores or changes to settings will not be saved", true
-			).setGettersAndSetters(settingButton.generateGetValueFunc("saving"), settingButton.generateSetValueFunc("saving")) ); 
+			).setGettersAndSetters(settingButton.generateGetValueFunc("saving"), settingButton.generateSetValueFunc("saving")).generateSettingPreRenders() ); 
 		off += 1.5;
 		
 		var action_gotoControlSettings = function(){ gameState.switchState(new state_controlSettings()); };
@@ -735,11 +742,30 @@ class state_controlSettings extends state_menuState{
 		// control mapping buttons
 		for(var i in c){
 			var action = function(){ };
-			var btn = new menuButton();
+			var btn = new settingButton();
 			btn.construct(i, tpos.plus(new vec2(0, off * dif)), "change input for " + i, action);
-			btn.settingStylize();
+			btn.mode = buttonSwitchMode.directValue;
+			btn.setGettersAndSetters(
+				function(){ return controlState.keyCodeToName(c[i]); },
+				function(val){ c[i] = val; }
+			);
+			var listener = function(e){
+				btn.changeValue(e.keyCode);
+				log("temp list control '" + i + "' changed to key '" + controlState.keyCodeToName(c[i]) + "'", logType.notify);
+				controlState.resetControlChangeListener();
+			}
+			controlState.controlChangeListener = listener;
 			
-			this.buttons.push(btn);
+			var ths = this;
+			btn.action = function(){ 
+				ths.selectionFocus = true;
+				window.addEventListener("keydown", listener);
+			}
+			
+			btn.increment = null;
+			btn.decrement = null;
+			
+			this.buttons.push(btn.generateSettingPreRenders());
 			off++;
 		}
 		

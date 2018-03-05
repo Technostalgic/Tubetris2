@@ -28,6 +28,7 @@ class controlState{
 		controlState.mouseDown = false;
 		controlState.mousePos = new vec2();
 		controlState.controls = {};
+		controlState.controlChangeListener = null;
 	}
 	
 	static listenForMouseMove(e){
@@ -117,7 +118,11 @@ class controlState{
 		// sets the control bindings
 		controlState.controls = controls;
 	}
-
+	static resetControlChangeListener(){
+		window.removeEventListener("keydown", controlState.controlChangeListener);
+		gameState.current.selectionFocus = false;
+	}
+	
 	static getAllControls(){
 		// returns a list of all the keys currently bound to control actions
 		return [
