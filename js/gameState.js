@@ -737,24 +737,23 @@ class state_controlSettings extends state_menuState{
 		var off = 0;
 		var dif = 35;
 		var tpos = new vec2(screenBounds.center.x, screenBounds.top + 175);
-		var c = this.controls;
 		
 		// control mapping buttons
-		for(var i in c){
+		for(let i in this.controls){
+			let ths = this;
 			let btn = new settingButton();
 			btn.construct(i, tpos.plus(new vec2(0, off * dif)), "change input for " + i);
 			btn.mode = buttonSwitchMode.directValue;
 			btn.setGettersAndSetters(
-				function(){ return controlState.keyCodeToName(c[i]); },
-				function(val){ c[i] = val; }
+				function(){ return controlState.keyCodeToName(ths.controls[i]); },
+				function(val){ ths.controls[i] = val; }
 			);
 			let listener = function(e){
 				btn.changeValue(e.keyCode);
-				log("temp list control '" + i + "' changed to key '" + controlState.keyCodeToName(c[i]) + "'", logType.notify);
+				log("temp list control '" + i + "' changed to key '" + controlState.keyCodeToName(ths.controls[i]) + "'", logType.notify);
 				controlState.resetControlChangeListener();
 			}
 			
-			let ths = this;
 			btn.action = function(){ 
 				ths.selectionFocus = true;
 				window.addEventListener("keydown", listener);
@@ -782,5 +781,9 @@ class state_controlSettings extends state_menuState{
 	drawInternals(){
 		var style = new textStyle(fonts.large, textColor.green, 2);
 		textRenderer.drawText("CONTROLS", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
+	}
+
+	switchFrom(tostate = null){
+		controlState.setControls(this.controls);
 	}
 }
