@@ -740,6 +740,7 @@ class state_controlSettings extends state_menuState{
 		var c = this.controls;
 		
 		// control mapping buttons
+		// FIX: Needs callback dereferencer
 		for(var i in c){
 			var action = function(){ };
 			var btn = new settingButton();
