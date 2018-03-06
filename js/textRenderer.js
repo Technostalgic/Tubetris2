@@ -52,7 +52,7 @@ class textRenderer{
 	}
 	setSpecificCharacterWidths(cwidths){
 		// sets an individual width for each character in the spritesheet to provide more accurate spacing
-		for(var i in cwidths){
+		for(let i in cwidths){
 			var j = i.toLowerCase().charCodeAt(0);
 			this.specCharWidths[j] = cwidths[i];
 		}
@@ -98,7 +98,7 @@ class textRenderer{
 			(col >= this.colors ? 0 : col) * 
 			(this.charSize.y * 3);
 			
-		for(var i = 0; i < str.length; i++){
+		for(let i = 0; i < str.length; i++){
 			var s = this.getCharSprite(str[i]);
 			s.pos.y += colOffset;
 			sprites.push(s);
@@ -109,7 +109,7 @@ class textRenderer{
 		// returns the width in pixels that the string will be when it's drawn
 		var sprites = this.getStringSprites(str);
 		var w = 0;
-		for(var i = sprites.length - 1; i >= 0; i--)
+		for(let i = sprites.length - 1; i >= 0; i--)
 			w += sprites[i].width * style.scale;
 		return w * this.defaultStyle.scale;
 	}
@@ -120,12 +120,12 @@ class textRenderer{
 		var scl = style.scale;
 		
 		var swidth = 0;
-		for(var i = sprites.length - 1; i >= 0; i--)
+		for(let i = sprites.length - 1; i >= 0; i--)
 			swidth += sprites[i].width;
 		var alignOffset = style.hAlign * (swidth * scl);
 		
 		var xoff = 0;
-		for(var i = 0; i < sprites.length; i++){
+		for(let i = 0; i < sprites.length; i++){
 			var box = sprites[i];
 			if(box.height > 0){
 				var tpos = pos.plus(new vec2(xoff - alignOffset, 0));
@@ -254,7 +254,7 @@ class textAnim_compound extends textAnim{
 	}
 	// applies all the animations to a preRenderedText object
 	applyAnim(pr){
-		for(var i = 0; i < this.anims.length; i++)
+		for(let i = 0; i < this.anims.length; i++)
 			this.anims[i].applyAnim(pr);
 	}
 }
@@ -271,7 +271,7 @@ class textAnim_yOffset extends textAnim{
 	}
 	
 	applyAnim(pr){
-		for(var i = 0; i < pr.spriteContainers.length; i++){
+		for(let i = 0; i < pr.spriteContainers.length; i++){
 			var cy = this.getAnimProgress(i) * this.range + this.off;
 			
 			pr.spriteContainers[i].bounds.pos.y += cy;
@@ -289,7 +289,7 @@ class textAnim_rainbow extends textAnim{
 	}
 	
 	applyAnim(pr){
-		for(var i = 0; i < pr.spriteContainers.length; i++){
+		for(let i = 0; i < pr.spriteContainers.length; i++){
 			var col = Math.floor(2 + this.getAnimProgress(i) * 6);
 			var colOff = col * this.charHeight * 3;
 			var sy = pr.spriteContainers[i].sprite.pos.y % (this.charHeight * 3);
@@ -311,7 +311,7 @@ class textAnim_blink extends textAnim{
 	}
 	
 	applyAnim(pr){
-		for(var i = 0; i < pr.spriteContainers.length; i++){
+		for(let i = 0; i < pr.spriteContainers.length; i++){
 			if(this.getAnimProgress(i) < 0.5) continue;
 			var colOff = this.color * this.charHeight * 3;
 			var sy = pr.spriteContainers[i].sprite.pos.y % (this.charHeight * 3);
@@ -335,7 +335,7 @@ class textAnim_scale extends textAnim{
 	}
 	
 	applyAnim(pr){
-		for(var i = 0; i < pr.spriteContainers.length; i++){
+		for(let i = 0; i < pr.spriteContainers.length; i++){
 			var cRange = this.maxScale - this.minScale;
 			var cs = this.minScale + this.getAnimProgress(i) * cRange;
 			var oc = pr.spriteContainers[i].bounds.center.clone();
@@ -360,7 +360,7 @@ class textAnim_scaleTransform extends textAnim{
 	
 	applyAnim(pr){
 		var prCenter = pr.findCenter();
-		for(var i = 0; i < pr.spriteContainers.length; i++){
+		for(let i = 0; i < pr.spriteContainers.length; i++){
 			var cRange = this.maxScale - this.minScale;
 			var cs = this.minScale + this.getAnimProgress(i) * cRange;
 			var rc = pr.spriteContainers[i].bounds.center.minus(prCenter);
@@ -385,7 +385,7 @@ class textBlock{
 	
 	setStylesHAlign(hAlign = 0){
 		this.style.hAlign = hAlign;
-		for(var i in this.altStyles)
+		for(let i in this.altStyles)
 			this.altStyles[i].hAlign = hAlign;
 	}
 	setText(text){
@@ -399,7 +399,7 @@ class textBlock{
 		var ssChars = "([{<";
 		var seChars = ")]}>";
 		var spanStart = 0;
-		for(var i = 0; i < this.text.length; i++){
+		for(let i = 0; i < this.text.length; i++){
 			var curChar = this.text[i];
 			
 			if(spanStart < 0)
@@ -458,12 +458,12 @@ class preRenderedText{
 		var cPos = txtBlock.bounds.topLeft; 
 		
 		// iterate through each span in the textBlock
-		for(var i0 = 0; i0 < txtBlock.textSpans.length; i0++){
+		for(let i0 = 0; i0 < txtBlock.textSpans.length; i0++){
 			var span = txtBlock.textSpans[i0]; // current span
 			var words = span.text.split(' '); // array of words in span
 			
 			// iterate through each word in the span
-			for(var i1 = 0; i1 < words.length; i1++){
+			for(let i1 = 0; i1 < words.length; i1++){
 				var word = words[i1];
 				var charsprites = span.style.font.getStringSprites(word, span.style.color);
 				
@@ -478,7 +478,7 @@ class preRenderedText{
 				}
 				
 				// iterate through each spritebox that represents a character in the word
-				for(var i2 = 0; i2 < charsprites.length; i2++){
+				for(let i2 = 0; i2 < charsprites.length; i2++){
 					// offsets the cursor's y-position to account for vertical alignment styling
 					var maxYOff = txtBlock.lineHeight - (span.style.font.charSize.y * span.style.scale);
 					var yOff = maxYOff * r.mainStyle.vAlign;
@@ -522,7 +522,7 @@ class preRenderedText{
 		// gets all the sprite information from each text character, applies styling and stores it for
 		// later rendering
 		var sChars = style.font.getStringSprites(str, style.color);
-		for(var i = 0; i < sChars.length; i++){
+		for(let i = 0; i < sChars.length; i++){
 			var sprCont = new spriteContainer(
 				style.font.spritesheet,
 				sChars[i],
@@ -547,7 +547,7 @@ class preRenderedText{
 		
 		var curline = [];
 		var lastX = this.spriteContainers[0].bounds.left - 1;
-		for(var i = 0; i < this.spriteContainers.length; i++){
+		for(let i = 0; i < this.spriteContainers.length; i++){
 			var sc = this.spriteContainers[i];
 			if(sc.bounds.left <= lastX){
 				this.lines.push(curline);
@@ -568,7 +568,7 @@ class preRenderedText{
 	applyHorizontalAlignment(minLeft, maxRight = minLeft){
 		// applies the horizontal alignment according to the mainStyle rules
 		// iterate through each line of text
-		for(var i0 = 0; i0 < this.lines.length; i0++){
+		for(let i0 = 0; i0 < this.lines.length; i0++){
 			var charSprites = this.lines[i0];
 			if(charSprites.length <= 0) continue;
 			
@@ -580,7 +580,7 @@ class preRenderedText{
 			var xOff = maxXOff * this.mainStyle.hAlign + minXOff;
 			
 			// iterate through each character in the line
-			for(var i1 = 0; i1 < charSprites.length; i1++){
+			for(let i1 = 0; i1 < charSprites.length; i1++){
 				// apply the x-offset to each character
 				var sprCont = charSprites[i1];
 				sprCont.bounds.pos.x += xOff;
@@ -598,12 +598,12 @@ class preRenderedText{
 		var minYOff = yMin - startPos;
 		var yOff = maxYOff * this.mainStyle.vAlign + minYOff;
 		
-		for(var i0 = 0; i0 < this.lines.length; i0++){
+		for(let i0 = 0; i0 < this.lines.length; i0++){
 			var charSprites = this.lines[i0];
 			if(charSprites.length <= 0) continue;
 			
 			// iterate through each character in the line
-			for(var i1 = 0; i1 < charSprites.length; i1++){
+			for(let i1 = 0; i1 < charSprites.length; i1++){
 				// apply the y-offset to each character
 				var sprCont = charSprites[i1];
 				sprCont.bounds.pos.y += yOff;
@@ -648,7 +648,7 @@ class preRenderedText{
 	
 	draw(){
 		// renders all the spritecontainers, making a line of bitmap ascii characters
-		for(var i = 0; i < this.spriteContainers.length; i++)
+		for(let i = 0; i < this.spriteContainers.length; i++)
 			this.spriteContainers[i].draw();
 	}
 }

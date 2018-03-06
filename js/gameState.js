@@ -490,7 +490,8 @@ class state_menuState extends gameState{
 		if(this.selectedButton.selectedBounds.overlapsPoint(pos))
 			return;
 		
-		for(var i = 0; i < this.buttons.length; i ++){
+		// checks mouse collision with each button
+		for(let i = 0; i < this.buttons.length; i ++){
 			if(this.buttons[i].normalBounds.overlapsPoint(pos)){
 				this.currentSelection = i;
 				return;
@@ -509,10 +510,11 @@ class state_menuState extends gameState{
 		this.drawInternals();
 		
 		// renders all the buttons
-		for(var i = this.buttons.length - 1; i >= 0; i--){
-			var sel = i == this.currentSelection;
-			this.buttons[i].draw(sel);
-		}
+		var ths = this;
+		this.buttons.forEach(function(btn, i){
+			let sel = i == ths.currentSelection;
+			btn.draw(sel);
+		});
 		
 		// renders the foreground border
 		drawForegroundBorder();
@@ -776,8 +778,9 @@ class state_controlSettings extends state_menuState{
 	}
 	getControls(){
 		var c = {};
-		for(var i in controlState.controls)
-			c[i] = controlState.controls[i];
+		Object.keys(controlState.controls).forEach(function(key){
+			c[key] = controlState.controls[key];
+		});
 		return c;
 	}
 	

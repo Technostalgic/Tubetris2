@@ -51,9 +51,9 @@ class controlState{
 		controlState.keys[e.keyCode] = true;
 		
 		var a = controlState.getControlsForKey(e.keyCode);
-		for(var i = a.length - 1; i >= 0; i--){
-			gameState.current.controlTap(a[i]);
-		}
+		a.forEach(function(ctrl){
+			gameState.current.controlTap(ctrl);
+		});
 	}
 	static listenForKeyUp(e){
 		// the event listener that is triggered when a keyboard key is released
@@ -145,10 +145,11 @@ class controlState{
 		// returns all the control actions currently bound to a specified key
 		var r = [];
 		
-		for(var i in controlState.controls)
-			if(controlState.controls[i] == keycode)
-				r.push(controlAction[i]);
-			
+		Object.keys(controlState.controls).forEach(function(key){
+			if(controlState.controls[key] == keycode)
+				r.push(controlAction[key]);
+		});
+		
 		return r;
 	}
 }

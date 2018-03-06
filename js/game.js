@@ -329,9 +329,9 @@ function loadConfig(){
 	}
 	
 	var splCStr = cStr.split('\n');
-	for(var i = splCStr.length - 1; i >= 0; i--){
-		var splOp = splCStr[i].split(':');
-		if(splOp.length <= 1) continue;
+	splCStr.forEach(function(cOp){
+		let splOp = cOp.split(':');
+		if(splOp.length <= 1) return;
 		switch(splOp[0]){
 			case "animText":
 				config.animText = splOp[1][0] == 't';
@@ -353,7 +353,7 @@ function loadConfig(){
 				break;
 		}
 		log(splOp[0] + " = " + config[splOp[0]], logType.unimportant);
-	}
+	});
 	applyConfig();
 	log("loaded!", logType.success);
 }
@@ -376,14 +376,14 @@ function loadControls(){
 	
 	var c = {};
 	var splCStr = cStr.split('\n');
-	for(var i = splCStr.length - 1; i >= 0; i--){
-		var splOp = splCStr[i].split(':');
-		if(splOp.length <= 1) continue;
+	splCStr.forEach(function(cOp){
+		let splOp = cOp.split(':');
+		if(splOp.length <= 1) return;
 		c[splOp[0]] = Number.parseInt(splOp[1]);
-	}
+	});
 	
 	controlState.setControls(c);
-	log(splCStr.length - 1 + " controls loaded");
+	log(splCStr.length - 1 + " controls loaded", logType.unimportant);
 }
 
 function localStorageCheck(){
@@ -408,10 +408,10 @@ function saveConfig(){
 	}
 	
 	var cStr = "";
-	for(var i in config){
-		var op = i + ":" + config[i].toString();
+	Object.keys(config).forEach(function(key){
+		var op = key + ":" + config[key].toString();
 		cStr += op + "\n";
-	}
+	});
 	localStorage.setItem(storageKeys.config, cStr);
 	
 	log("saved!", logType.success);
@@ -425,10 +425,10 @@ function saveControls(){
 	}
 	
 	var cStr = "";
-	for(var i in controlState.controls){
-		var op = i + ":" + controlState.controls[i];
+	Object.keys(controlState.controls).forEach(function(key){
+		var op = key + ":" + controlState.controls[key];
 		cStr += op + "\n";
-	}
+	});
 	localStorage.setItem(storageKeys.controls, cStr);
 	
 	log("saved!", logType.success);
@@ -505,8 +505,8 @@ function generateBackground(){
 	var cY = Math.floor(bg.height / tilesize) + 1;
 	var sbox = new spriteBox(new vec2(32, 0), new vec2(32));
 	
-	for(var y = 0; y <= cY; y++){
-		for(var x = 0; x <= cX; x++){
+	for(let y = 0; y <= cY; y++){
+		for(let x = 0; x <= cX; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
 			printImage(bgctx, gfx.tiles_empty, tpos, sbox);
 		}
@@ -528,8 +528,8 @@ function generateForeground_border(){
 	var cY = Math.floor(fg.height / tilesize) + 1;
 	var sbox = new spriteBox(new vec2(0), new vec2(32));
 	
-	for(var y = 0; y <= cY; y++){
-		for(var x = 0; x <= cX;
+	for(let y = 0; y <= cY; y++){
+		for(let x = 0; x <= cX;
 			x += (y == 0 || y == cY) ?
 			1 : cX
 			){
@@ -555,8 +555,8 @@ function generateForeground_overlay(){
 	var sbox = new spriteBox(new vec2(), new vec2(32));
 	
 	// border foreground tiles
-	for(var y = 0; y <= cY; y++){
-		for(var x = 0; x <= cX;
+	for(let y = 0; y <= cY; y++){
+		for(let x = 0; x <= cX;
 			x += (y == 0 || y == cY) ?
 			1 : cX
 			){
@@ -565,22 +565,22 @@ function generateForeground_overlay(){
 		}
 	}
 	// foreground tiles to the left of next piece area
-	for(var y = 2; y <= 3; y++){
-		for(var x = 11; x < 12; x++){
+	for(let y = 2; y <= 3; y++){
+		for(let x = 11; x < 12; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
 			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	// foreground above next piece area
-	for(var y = 1; y <= 1; y++){
-		for(var x = 11; x < cX; x++){
+	for(let y = 1; y <= 1; y++){
+		for(let x = 11; x < cX; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
 			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	// foreground tiles on the right side of the screen
-	for(var y = 4; y < cY; y++){
-		for(var x = 11; x < cX; x++){
+	for(let y = 4; y < cY; y++){
+		for(let x = 11; x < cX; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
 			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
@@ -651,7 +651,7 @@ function assetLoadingFinishCheck(){
 	// checks to see if the assets are done downloading, if not, it sets a callback to itself and returns empty
 	
 	var errs = [];
-	for(var i in fonts){
+	for(let i in fonts){
 		if(!fonts[i].spritesheet.loadedState){
 			setTimeout(assetLoadingFinishCheck, 100);
 			return false;
@@ -660,7 +660,7 @@ function assetLoadingFinishCheck(){
 		else if (fonts[i].spritesheet.loadedState != 1)
 			errs.push({ obj: fonts[i], varName: "fonts." + i });
 	}
-	for(var i in gfx){
+	for(let i in gfx){
 		if(!gfx[i].loadedState){
 			setTimeout(assetLoadingFinishCheck, 100);
 			return false;
@@ -669,7 +669,7 @@ function assetLoadingFinishCheck(){
 		else if (gfx[i].loadedState != 1)
 			errs.push({ obj: gfx[i], varName: "gfx." + i });
 	}
-	for(var i in sfx){
+	for(let i in sfx){
 		if(!sfx[i].loadedState){
 			setTimeout(assetLoadingFinishCheck, 100);
 			return false;
@@ -684,12 +684,12 @@ function assetLoadingFinishCheck(){
 }
 function handleAssetLoadingErrors(errors){
 	// logs the errors in the console
-	for(var i in errors){
+	Object.keys(errors).forEach(function(key){
 		// the problem variable
-		log("*** error loading '" + errors[i].obj.constructor.name + "' @ var: " + errors[i].varName, logType.error);
+		log("*** error loading '" + errors[key].obj.constructor.name + "' @ var: " + errors[key].varName, logType.error);
 		// the error object
-		log(errors[i].obj.loadedState);
-	}
+		log(errors[key].obj.loadedState);
+	});
 }
 function finishLoading(errors = []){
 	// called after all assets are done downloading
