@@ -529,10 +529,10 @@ class state_confirmationDialogue extends state_menuState{
 		this.description = "this action cannot be undone";
 		this.prompt = "are you sure";
 		
-		var titleAnim = new textAnim_scale(200, 1, 1.25, 0.5);
+		var titleAnim = new textAnim_scaleTransform(350, 1, 1.15, 0);
 		titleAnim.looping = true;
-		titleAnim.animType = textAnimType.linearBounce;
-		var titleBlink = new textAnim_blink(400, 0.5, textColor.pink);
+		titleAnim.animType = textAnimType.trigonometricCycle;
+		var titleBlink = new textAnim_blink(400, 0.025, textColor.yellow);
 		this.titleAnim = new textAnim_compound([titleAnim, titleBlink]);
 		
 		var ths = this;
