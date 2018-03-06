@@ -737,35 +737,38 @@ class state_controlSettings extends state_menuState{
 		var off = 0;
 		var dif = 35;
 		var tpos = new vec2(screenBounds.center.x, screenBounds.top + 175);
+		var ths = this;
 		
-		// control mapping buttons
-		for(let i in this.controls){
-			let ths = this;
+		// create control mapping button for each control
+		Object.keys(this.controls).forEach(function(key){
 			let btn = new settingButton();
-			btn.construct(i, tpos.plus(new vec2(0, off * dif)), "change input for " + i);
+			btn.construct(key, tpos.plus(new vec2(0, off * dif)), "change input for " + key);
 			btn.mode = buttonSwitchMode.directValue;
 			btn.setGettersAndSetters(
-				function(){ return controlState.keyCodeToName(ths.controls[i]); },
-				function(val){ ths.controls[i] = val; }
+				function(){ return controlState.keyCodeToName(ths.controls[key]); },
+				function(val){ ths.controls[key] = val; }
 			);
+			
+			// sets the button's action to rebind the control to the next key that the player presses
 			let listener = function(e){
 				btn.changeValue(e.keyCode);
-				log("temp list control '" + i + "' changed to key '" + controlState.keyCodeToName(ths.controls[i]) + "'", logType.notify);
+				log("temp list control '" + key + "' changed to key '" + controlState.keyCodeToName(ths.controls[key]) + "'", logType.notify);
 				controlState.resetControlChangeListener();
-			}
-			
+			};
 			btn.action = function(){ 
 				ths.selectionFocus = true;
 				window.addEventListener("keydown", listener);
 				controlState.controlChangeListener = listener;
-			}
+			};
 			
+			// so menu navigate left/right doesn't do anything
 			btn.increment = null;
 			btn.decrement = null;
 			
-			this.buttons.push(btn.generateSettingPreRenders());
+			// adds the button to the button array and increments the offset
+			ths.buttons.push(btn.generateSettingPreRenders());
 			off++;
-		}
+		});
 		
 		// main menu button
 		var action_switchToMainMenu = function(){ gameState.switchState(new state_options()); };

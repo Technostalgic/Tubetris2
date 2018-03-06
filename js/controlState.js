@@ -115,13 +115,15 @@ class controlState{
 		return "key" + code.toString();
 	}
 	static setControls(controls){
-		// sets the control bindings
+		// sets the key bindings to the specified controls
 		controlState.controls = controls;
 	}
 	static resetControlChangeListener(){
+		// used when the player presses a key to change a keybinding
+		// removes the controlChangeListener from 'keydown' so that future keypresses are not binded
 		window.removeEventListener("keydown", controlState.controlChangeListener);
+		// resets the focus on the gamestate so the user can navigate the menu again
 		gameState.current.selectionFocus = false;
-		//gameState.current.addButtons();
 	}
 	
 	static getAllControls(){
