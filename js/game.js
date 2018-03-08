@@ -636,7 +636,7 @@ function getCanvas(){
 	log("retrieving canvas data... ");
 	
 	// the scaling canvas is what is displayed on the webpage
-	scalingTarget = document.getElementById("canvas");
+	scalingTarget = document.getElementById("gameCanvas");
 	scalingContext = scalingTarget.getContext("2d");
 	
 	// the rendering canvas is the canvas that everything is rendered to in the game's native resolution, it is then rescaled by the scaling canvas to the desired resolution before being drawn
