@@ -127,7 +127,7 @@ class menuButton{
 		
 		return this;
 	}
-	setStyles(normalStyle = textStyle.getDefault(), selectedStyle = new textStyle(fonts.large, textColor.cyan, 2), descriptionStyle = (new textStyle(fonts.small)).setAlignment(0.5, 1)){
+	setStyles(normalStyle = textStyle.getDefault(), selectedStyle = new textStyle(fonts.large, textColor.green, 2), descriptionStyle = (new textStyle(fonts.small)).setAlignment(0.5, 1)){
 		// sets the text styles for the normal and unselected states of the button
 		descriptionStyle.hAlign = 0.5;
 		this.styles = {
@@ -262,7 +262,7 @@ class settingButton extends menuButton{
 		// this is VITAL and MUST BE CALLED for every settingButton instance that is created
 		this.getValue = getter || this.getValue;
 		this.setValue = setter || this.setValue;
-		this.setStyles(textStyle.getDefault(), textStyle.getDefault().setColor(textColor.cyan));
+		this.setStyles(textStyle.getDefault(), textStyle.getDefault().setColor(textColor.green));
 		this.calcSize();
 		return this;
 	}
@@ -394,6 +394,7 @@ class settingButton extends menuButton{
 		descBlock.lineHeight = 16;
 		this.preRenders.description = preRenderedText.fromBlock(descBlock);
 		
+		this.calcSize();
 		return this;
 	}
 }
@@ -737,8 +738,8 @@ class state_controlSettings extends state_menuState{
 		this.controls = this.getControls();
 		this.buttons = [];
 		var off = 0;
-		var dif = 35;
-		var tpos = new vec2(screenBounds.center.x, screenBounds.top + 175);
+		var dif = 32;
+		var tpos = new vec2(screenBounds.center.x, screenBounds.top + 155);
 		var ths = this;
 		
 		// create control mapping button for each control
@@ -772,9 +773,22 @@ class state_controlSettings extends state_menuState{
 			off++;
 		});
 		
-		// main menu button
+		// defaults button
+		var action_setDefaultControls = function(){ 
+			ths.controls = getDefaultControls(); // sets the controls to the default controls
+			gameState.switchState(new state_controlSettings()); // instantiates a new controlSettings screen so the button's texts are refreshed
+			gameState.current.initialize(); // preinitializes so that the currentSelection field is not overriden when the gameState is initialized
+			gameState.current.currentSelection = gameState.current.buttons.length - 2; // sets the currently selected button to be on the defaults button
+		};
+		this.buttons.push(new menuButton().construct(
+			"Defaults", 
+			new vec2(screenBounds.center.x, screenBounds.bottom - 144), 
+			"reset keys to the default configuration", 
+			action_setDefaultControls));
+		
+		// back button
 		var action_switchToMainMenu = function(){ gameState.switchState(new state_options()); };
-		this.buttons.push(new menuButton().construct("Back", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to the main menu", action_switchToMainMenu));
+		this.buttons.push(new menuButton().construct("Back", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to previous menu", action_switchToMainMenu));
 	}
 	getControls(){
 		var c = {};
@@ -791,5 +805,6 @@ class state_controlSettings extends state_menuState{
 
 	switchFrom(tostate = null){
 		controlState.setControls(this.controls);
+		saveControls();
 	}
 }

@@ -447,7 +447,10 @@ function setDefaultConfig(){
 }
 function setDefaultControls(){
 	// sets the default game controlState.controls
-	var c = {
+	controlState.setControls(getDefaultControls());
+}
+function getDefaultControls(){
+	return {
 		left: 37,
 		right: 39,
 		up: 38,
@@ -459,7 +462,6 @@ function setDefaultControls(){
 		select: 32,
 		pause: 13
 	};
-	controlState.setControls(c);
 }
 function addInputEventListeners(){
 	//window.addEventListener('keydown', function(e){ log("key '" + e.key + "'(" + e.keyCode + ") pressed", logType.notify); });
