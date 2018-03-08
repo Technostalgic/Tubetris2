@@ -776,9 +776,8 @@ class state_controlSettings extends state_menuState{
 		// defaults button
 		var action_setDefaultControls = function(){ 
 			ths.controls = getDefaultControls(); // sets the controls to the default controls
-			gameState.switchState(new state_controlSettings()); // instantiates a new controlSettings screen so the button's texts are refreshed
-			gameState.current.initialize(); // preinitializes so that the currentSelection field is not overriden when the gameState is initialized
-			gameState.current.currentSelection = gameState.current.buttons.length - 2; // sets the currently selected button to be on the defaults button
+			ths.addButtons(); // refresh the buttons
+			ths.currentSelection = ths.buttons.length - 2; // sets the currently selected button to be on the defaults button
 		};
 		this.buttons.push(new menuButton().construct(
 			"Defaults", 
