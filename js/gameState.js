@@ -603,7 +603,7 @@ class state_mainMenu extends state_menuState{
 		var dif = 55;
 		
 		var action_switchToScoreboard = function(){ gameState.switchState(new state_scoreboard()); };
-		var action_switchToOptions = function(){ gameState.switchState(new state_options()); };
+		var action_switchToOptions = function(){ gameState.switchState(new state_optionsMenu()); };
 		
 		this.buttons.push(new menuButton().construct("Start Game", screenBounds.center.plus(new vec2(0, off * dif)), "start a new game")); off++;
 		this.buttons.push(new menuButton().construct("Scoreboard", screenBounds.center.plus(new vec2(0, off * dif)), "view the highest scoring players", action_switchToScoreboard)); off++;
@@ -657,9 +657,9 @@ class state_scoreboard extends state_menuState{
 	}
 }
 // a gameState object that represents the options screen interface
-class state_options extends state_menuState{
+class state_optionsMenu extends state_menuState{
 	constructor(){
-		super();		
+		super();
 		
 		var titleEntrance = new textAnim_scaleTransform(300, 0, 1, 0);
 		titleEntrance.animType = textAnimType.easeOut;
@@ -670,43 +670,27 @@ class state_options extends state_menuState{
 	addButtons(){
 		this.buttons = [];
 		var off = 0;
-		var dif = 40;
-		var tpos = new vec2(screenBounds.center.x, screenBounds.top + 175);
+		var dif = 45;
+		var tpos = new vec2(screenBounds.center.x, screenBounds.top + 200);
 		
-		// vid ops:
-		// Animated Text
-		// Image Smoothing
-		// Animation Speed
-		this.buttons.push(new settingButton().construct("Animated Text", tpos.plus(new vec2(0, off * dif)), "whether or not animated text is enabled - may increase performance if disabled"
-			).setGettersAndSetters(settingButton.generateGetValueFunc("animText"), settingButton.generateSetValueFunc("animText")).generateSettingPreRenders() ); off++;
-		this.buttons.push(new settingButton().construct("Image Smoothing", tpos.plus(new vec2(0, off * dif)), "enable if you want ugly blurs or keep disabled for nice crispy pixel graphics", true
-			).setGettersAndSetters(settingButton.generateGetValueFunc("imageSmoothing"), settingButton.generateSetValueFunc("imageSmoothing")).generateSettingPreRenders() ); off++;
-		this.buttons.push(new settingButton().construct("Animation Speed", tpos.plus(new vec2(0, off * dif)), "how quickly the in-game animations are played"
-			).setGettersAndSetters(settingButton.generateGetValueFunc("animSpeed"), settingButton.generateSetValueFunc("animSpeed")
-			).setValueBounds(0.5, 2.5, 0.5, buttonSwitchMode.percentInfinite).generateSettingPreRenders() ); off++;
-		
-		// audio ops:
-		// Sound Volume
-		// Music Volume
-		this.buttons.push(new settingButton().construct("Sound", tpos.plus(new vec2(0, off * dif)), "the volume level of the sound effects"
-			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_sound"), settingButton.generateSetValueFunc("volume_sound")
-			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off++;
-		this.buttons.push(new settingButton().construct("Music", tpos.plus(new vec2(0, off * dif)), "the volume level of the music"
-			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_music"), settingButton.generateSetValueFunc("volume_music")
-			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off++;
-		
-		// game ops:
-		// Enable Saving
-		// Set Controls
-		// Reset Scores
+		// saving 
 		this.buttons.push(new settingButton().construct("Save Data", tpos.plus(new vec2(0, off * dif)), "if disabled new high scores or changes to settings will not be saved", true
 			).setGettersAndSetters(settingButton.generateGetValueFunc("saving"), settingButton.generateSetValueFunc("saving")).generateSettingPreRenders() ); 
 		off += 1.5;
 		
-		var action_gotoControlSettings = function(){ gameState.switchState(new state_controlSettings()); };
+		// audio, video, game options
+		var action_gotoAudioOps = function(){ gameState.switchState(new state_audioOptions()); };
+		this.buttons.push(new menuButton().construct("Audio", tpos.plus(new vec2(0, off * dif)), "configure audio settings", action_gotoAudioOps)); off++;
+		var action_gotoVideoOps = function(){ gameState.switchState(new state_videoOptions()); };
+		this.buttons.push(new menuButton().construct("Video", tpos.plus(new vec2(0, off * dif)), "configure video settings", action_gotoVideoOps)); off++;
+		var action_gotoGameOps = function(){ gameState.switchState(new state_videoOptions()); };
+		this.buttons.push(new menuButton().construct("Gameplay", tpos.plus(new vec2(0, off * dif)), "configure game settings", action_gotoGameOps)); off++;
+		
 		var action_resetScores = function(){ gameState.switchState(new state_confirmationDialogue(function(){})); };
-		this.buttons.push(new menuButton().construct("Set Controls", tpos.plus(new vec2(0, off * dif)), "customize the controls", action_gotoControlSettings)); off += 1.1;
-		this.buttons.push(new menuButton().construct("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_resetScores));
+		this.buttons.push(new menuButton().construct("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_resetScores));off += 1.1;
+		var action_gotoControlSettings = function(){ gameState.switchState(new state_controlSettings()); };
+		this.buttons.push(new menuButton().construct("Set Controls", tpos.plus(new vec2(0, off * dif)), "customize the controls", action_gotoControlSettings)); 
+		off++;
 		
 		// main menu button
 		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
@@ -721,6 +705,137 @@ class state_options extends state_menuState{
 	drawInternals(){
 		var style = new textStyle(fonts.large, textColor.green, 2);
 		textRenderer.drawText("OPTIONS", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
+	}
+}
+//
+class state_optionsSubMenu extends state_menuState{
+	constructor(){
+		super();
+		
+		this.titleAnim = new textAnim_scaleTransform(300, 0, 1, 0);
+		this.titleAnim.animType = textAnimType.easeOut;
+		this.TitleText = "SUBMENU";
+		
+		this.buttonStartPos = screenBounds.top + 200;
+	}
+	
+	addButtons(){
+		this.addSubMenuButtions();
+		
+		// back button
+		var action_backToOptions = function(){ gameState.switchState(new state_optionsMenu()); };
+		this.buttons.push(new menuButton().construct("Back", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to previous menu", action_backToOptions));
+	}
+	addSubMenuButtions(){}
+	
+	switchFrom(tostate = null){
+		applyConfig();
+		saveConfig();
+	}
+	
+	drawInternals(){
+		var style = new textStyle(fonts.large, textColor.green, 2);
+		textRenderer.drawText(this.TitleText, new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
+	}
+}
+//
+class state_audioOptions extends state_optionsSubMenu{
+	constructor(){
+		super();
+		
+		var titleEntrance = new textAnim_scaleTransform(300, 0, 1, 0);
+		titleEntrance.animType = textAnimType.easeOut;
+		
+		this.titleAnim = titleEntrance;
+		
+	}
+	
+	addSubMenuButtions(){
+		var off = 0;
+		var dif = 40;
+		var tpos = new vec2(screenBounds.center.x, this.buttonStartPos);
+		
+		// audio ops:
+		// Sound Volume
+		// Music Volume
+		this.buttons.push(new settingButton().construct("Sound", tpos.plus(new vec2(0, off * dif)), "the volume level of the sound effects"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_sound"), settingButton.generateSetValueFunc("volume_sound")
+			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off++;
+		this.buttons.push(new settingButton().construct("Music", tpos.plus(new vec2(0, off * dif)), "the volume level of the music"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_music"), settingButton.generateSetValueFunc("volume_music")
+			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off++;
+	}
+	
+	drawInternals(){
+		var style = new textStyle(fonts.large, textColor.green, 2);
+		textRenderer.drawText("AUDIO", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
+	}
+}
+//
+class state_videoOptions extends state_optionsSubMenu{
+	constructor(){
+		super();
+		
+		var titleEntrance = new textAnim_scaleTransform(300, 0, 1, 0);
+		titleEntrance.animType = textAnimType.easeOut;
+		
+		this.titleAnim = titleEntrance;
+		
+	}
+	
+	addSubMenuButtions(){
+		var off = 0;
+		var dif = 40;
+		var tpos = new vec2(screenBounds.center.x, this.buttonStartPos);
+		
+		// Animated Text
+		// Image Smoothing
+		// Animation Speed
+		this.buttons.push(new settingButton().construct("Animated Text", tpos.plus(new vec2(0, off * dif)), "whether or not animated text is enabled - may increase performance if disabled"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("animText"), settingButton.generateSetValueFunc("animText")).generateSettingPreRenders() ); off++;
+		this.buttons.push(new settingButton().construct("Image Smoothing", tpos.plus(new vec2(0, off * dif)), "enable if you want ugly blurs or keep disabled for nice crispy pixel graphics", true
+			).setGettersAndSetters(settingButton.generateGetValueFunc("imageSmoothing"), settingButton.generateSetValueFunc("imageSmoothing")).generateSettingPreRenders() ); off++;
+		this.buttons.push(new settingButton().construct("Animation Speed", tpos.plus(new vec2(0, off * dif)), "how quickly the in-game animations are played"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("animSpeed"), settingButton.generateSetValueFunc("animSpeed")
+			).setValueBounds(0.5, 2.5, 0.5, buttonSwitchMode.percentInfinite).generateSettingPreRenders() ); off++;
+	}
+	
+	drawInternals(){
+		var style = new textStyle(fonts.large, textColor.green, 2);
+		textRenderer.drawText("VIDEO", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
+	}
+}
+//
+class state_gameOptions extends state_optionsSubMenu{
+	constructor(){
+		super();
+		
+		var titleEntrance = new textAnim_scaleTransform(300, 0, 1, 0);
+		titleEntrance.animType = textAnimType.easeOut;
+		
+		this.titleAnim = titleEntrance;
+		
+	}
+	
+	addSubMenuButtions(){
+		var off = 0;
+		var dif = 40;
+		var tpos = new vec2(screenBounds.center.x, this.buttonStartPos);
+		
+		// game ops:
+		// Enable Saving
+		// Reset Scores
+		this.buttons.push(new settingButton().construct("Save Data", tpos.plus(new vec2(0, off * dif)), "if disabled new high scores or changes to settings will not be saved", true
+			).setGettersAndSetters(settingButton.generateGetValueFunc("saving"), settingButton.generateSetValueFunc("saving")).generateSettingPreRenders() ); 
+		off++;
+		
+		var action_resetScores = function(){ gameState.switchState(new state_confirmationDialogue(function(){})); };
+		this.buttons.push(new menuButton().construct("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_resetScores));
+	}
+	
+	drawInternals(){
+		var style = new textStyle(fonts.large, textColor.green, 2);
+		textRenderer.drawText("GAME", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
 	}
 }
 // a control configuration screen
@@ -786,8 +901,8 @@ class state_controlSettings extends state_menuState{
 			action_setDefaultControls));
 		
 		// back button
-		var action_switchToMainMenu = function(){ gameState.switchState(new state_options()); };
-		this.buttons.push(new menuButton().construct("Back", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to previous menu", action_switchToMainMenu));
+		var action_backToOptions = function(){ gameState.switchState(new state_options()); };
+		this.buttons.push(new menuButton().construct("Back", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to previous menu", action_backToOptions));
 	}
 	getControls(){
 		var c = {};

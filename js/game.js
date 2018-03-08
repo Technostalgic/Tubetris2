@@ -619,17 +619,17 @@ function applyConfig(){
 	// applies the game configuration settings
 	var smoothing = config.imageSmoothing;
 	
-	renderContext.mozImageSmoothingEnabled    = smoothing;
-	renderContext.oImageSmoothingEnabled      = smoothing;
-	renderContext.webkitImageSmoothingEnabled = smoothing;
-	renderContext.msImageSmoothingEnabled     = smoothing;
-	renderContext.imageSmoothingEnabled       = smoothing;
-	
-	scalingContext.mozImageSmoothingEnabled    = smoothing;
-	scalingContext.oImageSmoothingEnabled      = smoothing;
-	scalingContext.webkitImageSmoothingEnabled = smoothing;
-	scalingContext.msImageSmoothingEnabled     = smoothing;
-	scalingContext.imageSmoothingEnabled       = smoothing;
+	renderContext.mozImageSmoothingEnabled    	= smoothing;
+	renderContext.oImageSmoothingEnabled      	= smoothing;
+	renderContext.webkitImageSmoothingEnabled 	= smoothing;
+	renderContext.msImageSmoothingEnabled     	= smoothing;
+	renderContext.imageSmoothingEnabled       	= smoothing;
+
+	scalingContext.mozImageSmoothingEnabled    	= smoothing;
+	scalingContext.oImageSmoothingEnabled      	= smoothing;
+	scalingContext.webkitImageSmoothingEnabled	= smoothing;
+	scalingContext.msImageSmoothingEnabled     	= smoothing;
+	scalingContext.imageSmoothingEnabled       	= smoothing;
 }
 function getCanvas(){
 	// gets or creates the canvas and canvas contexts from the webpage and sets them to the global variables
