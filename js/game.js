@@ -673,6 +673,7 @@ function generateForeground_overlay(){
 	gfx.foreground_overlay = fg;
 }
 
+
 function applyConfig(){
 	// applies the game configuration settings
 	var smoothing = config.imageSmoothing;

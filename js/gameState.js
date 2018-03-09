@@ -637,6 +637,10 @@ class state_scoreboard extends state_menuState{
 		titleEntrance.animType = textAnimType.easeOut;
 		
 		this.titleAnim = titleEntrance;
+		
+		this.scoreNames = [];
+		this.scoreValues = [];
+		this.addScoreboardText();
 	}
 	
 	addButtons(){
@@ -646,12 +650,44 @@ class state_scoreboard extends state_menuState{
 		var tpos = new vec2(screenBounds.center.x, screenBounds.bottom - 200);
 		
 		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
-		this.buttons.push(new menuButton().construct("Main Menu", tpos.plus(new vec2(0, off * dif)), "return to the main menu", action_switchToMainMenu)); off++;
+		this.buttons.push(new menuButton().construct("Main Menu", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to the main menu", action_switchToMainMenu));
+	}
+	addScoreboardText(){
+		var off = new vec2(-screenBounds.width % 32 - 2, -screenBounds.height % 32 - 2);
+		var padding = 50;
+		for(let i = 0; i < 5 && i < scores.length; i++){
+			let ypos = screenBounds.top + off.y + 192 + i * 64;
+			let txtBounds = collisionBox.fromSides(screenBounds.left + padding, ypos, screenBounds.right - padding, ypos + 32);
+			let block = new textBlock("", textStyle.getDefault(), txtBounds);
+			
+			// generate score name text graphic
+			block.setStylesHAlign(0);
+			block.setText(scores[i].name);
+			let nameText = preRenderedText.fromBlock(block);
+			
+			// generate score value text graphic
+			block.setStylesHAlign(1);
+			block.setText(scores[i].score.toString());
+			let scoreText = preRenderedText.fromBlock(block);
+			
+			this.scoreNames.push(nameText);
+			this.scoreValues.push(scoreText);
+		}
 	}
 	
 	drawInternals(){
+		// draw the scoreboard text
+		this.scoreNames.forEach(function(name){
+			name.draw();
+		});
+		this.scoreValues.forEach(function(score){
+			score.draw();
+		});
+		
+		// draws the title
 		var style = new textStyle(fonts.large, textColor.green, 2);
 		textRenderer.drawText("SCOREBOARD", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
+		
 	}
 }
 
@@ -704,7 +740,7 @@ class state_optionsMenu extends state_menuState{
 		textRenderer.drawText("OPTIONS", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
 	}
 }
-//
+// generic options submenu that will be inherited from submenus of the the options menu
 class state_optionsSubMenu extends state_menuState{
 	constructor(){
 		super();
