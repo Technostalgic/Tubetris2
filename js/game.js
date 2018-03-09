@@ -560,14 +560,14 @@ function generateBackground(){
 	bg.width = screenBounds.width;
 	bg.height = screenBounds.height;
 	var bgctx = bg.getContext("2d");
-	var tilesize = 32;
+	var tilesize = tile.tilesize;
 	var off = tile.offset;
 	var cX = Math.floor(bg.width / tilesize) + 1;
 	var cY = Math.floor(bg.height / tilesize) + 1;
-	var sbox = new spriteBox(new vec2(32, 0), new vec2(32));
+	var sbox = new spriteBox(new vec2(tile.tilesize, 0), new vec2(tile.tilesize));
 	
-	for(let y = 0; y <= cY; y++){
-		for(let x = 0; x <= cX; x++){
+	for(let y = -1; y <= cY; y++){
+		for(let x = -1; x <= cX; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
 			printImage(bgctx, gfx.tiles_empty, tpos, sbox);
 		}
@@ -583,15 +583,15 @@ function generateForeground_border(){
 	fg.width = screenBounds.width;
 	fg.height = screenBounds.height;
 	var fgctx = fg.getContext("2d");
-	var tilesize = 32;
+	var tilesize = tile.tilesize;
 	var off = tile.offset;
 	var cX = Math.floor(fg.width / tilesize) + 1;
-	var cY = Math.floor(fg.height / tilesize) + 1;
-	var sbox = new spriteBox(new vec2(0), new vec2(32));
+	var cY = Math.floor(fg.height / tilesize);
+	var sbox = new spriteBox(new vec2(0), new vec2(tile.tilesize));
 	
-	for(let y = 0; y <= cY; y++){
-		for(let x = 0; x <= cX;
-			x += (y == 0 || y == cY) ?
+	for(let y = -1; y <= cY; y++){
+		for(let x = -1; x <= cX;
+			x += (y == -1 || y == cY) ?
 			1 : cX
 			){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
@@ -609,11 +609,11 @@ function generateForeground_overlay(){
 	fg.width = screenBounds.width;
 	fg.height = screenBounds.height;
 	var fgctx = fg.getContext("2d");
-	var tilesize = 32;
-	var off = tile.offset;
+	var tilesize = tile.tilesize;
+	var off = tile.offset.minus(new vec2(tilesize));
 	var cX = Math.floor(fg.width / tilesize) + 1;
 	var cY = Math.floor(fg.height / tilesize) + 1;
-	var sbox = new spriteBox(new vec2(), new vec2(32));
+	var sbox = new spriteBox(new vec2(), new vec2(tile.tilesize));
 	
 	// border foreground tiles
 	for(let y = 0; y <= cY; y++){
