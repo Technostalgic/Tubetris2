@@ -11,7 +11,8 @@ var buttonSwitchMode = {
 	percent: 1,
 	percentInfinite: 2,
 	integer: 3,
-	directValue: 4
+	directValue: 4,
+	enumeration: 5
 }
 
 // the current gameMode object (to reference, it's recommended to use the 'gameState.current' static field)
@@ -683,11 +684,9 @@ class state_optionsMenu extends state_menuState{
 		this.buttons.push(new menuButton().construct("Audio", tpos.plus(new vec2(0, off * dif)), "configure audio settings", action_gotoAudioOps)); off++;
 		var action_gotoVideoOps = function(){ gameState.switchState(new state_videoOptions()); };
 		this.buttons.push(new menuButton().construct("Video", tpos.plus(new vec2(0, off * dif)), "configure video settings", action_gotoVideoOps)); off++;
-		var action_gotoGameOps = function(){ gameState.switchState(new state_videoOptions()); };
+		var action_gotoGameOps = function(){ gameState.switchState(new state_gameOptions()); };
 		this.buttons.push(new menuButton().construct("Gameplay", tpos.plus(new vec2(0, off * dif)), "configure game settings", action_gotoGameOps)); off++;
 		
-		var action_resetScores = function(){ gameState.switchState(new state_confirmationDialogue(function(){})); };
-		this.buttons.push(new menuButton().construct("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_resetScores));off += 1.1;
 		var action_gotoControlSettings = function(){ gameState.switchState(new state_controlSettings()); };
 		this.buttons.push(new menuButton().construct("Set Controls", tpos.plus(new vec2(0, off * dif)), "customize the controls", action_gotoControlSettings)); 
 		off++;
@@ -756,14 +755,19 @@ class state_audioOptions extends state_optionsSubMenu{
 		var tpos = new vec2(screenBounds.center.x, this.buttonStartPos);
 		
 		// audio ops:
-		// Sound Volume
+		// Track
 		// Music Volume
-		this.buttons.push(new settingButton().construct("Sound", tpos.plus(new vec2(0, off * dif)), "the volume level of the sound effects"
-			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_sound"), settingButton.generateSetValueFunc("volume_sound")
-			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off++;
+		// Sound Volume
+		this.buttons.push(new settingButton().construct("track", tpos.plus(new vec2(0, off * dif)), "choose the song that plays during the game"
+			).setGettersAndSetters(null, null
+			).setValueBounds(0, 1, 0.1, buttonSwitchMode.enumeration).generateSettingPreRenders() ); 
+			off += 1.5;
 		this.buttons.push(new settingButton().construct("Music", tpos.plus(new vec2(0, off * dif)), "the volume level of the music"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_music"), settingButton.generateSetValueFunc("volume_music")
-			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off++;
+			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off ++;
+		this.buttons.push(new settingButton().construct("Sound", tpos.plus(new vec2(0, off * dif)), "the volume level of the sound effects"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_sound"), settingButton.generateSetValueFunc("volume_sound")
+			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() );
 	}
 	
 	drawInternals(){
@@ -823,12 +827,12 @@ class state_gameOptions extends state_optionsSubMenu{
 		var tpos = new vec2(screenBounds.center.x, this.buttonStartPos);
 		
 		// game ops:
-		// Enable Saving
-		// Reset Scores
-		this.buttons.push(new settingButton().construct("Save Data", tpos.plus(new vec2(0, off * dif)), "if disabled new high scores or changes to settings will not be saved", true
-			).setGettersAndSetters(settingButton.generateGetValueFunc("saving"), settingButton.generateSetValueFunc("saving")).generateSettingPreRenders() ); 
-		off++;
+		// Reset Scores 
 		
+		off += 1.5;
+		var action_resetConfig = function(){ gameState.switchState(new state_confirmationDialogue(function(){ setDefaultConfig(); saveConfig(); })); };
+		this.buttons.push(new menuButton().construct("Reset Config", tpos.plus(new vec2(0, off * dif)), "resets the game configuration and settings back to default", action_resetConfig));
+		off += 1.2;
 		var action_resetScores = function(){ gameState.switchState(new state_confirmationDialogue(function(){})); };
 		this.buttons.push(new menuButton().construct("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_resetScores));
 	}
@@ -901,7 +905,7 @@ class state_controlSettings extends state_menuState{
 			action_setDefaultControls));
 		
 		// back button
-		var action_backToOptions = function(){ gameState.switchState(new state_options()); };
+		var action_backToOptions = function(){ gameState.switchState(new state_optionsMenu()); };
 		this.buttons.push(new menuButton().construct("Back", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to previous menu", action_backToOptions));
 	}
 	getControls(){
