@@ -11,7 +11,8 @@ var debug = true;
 	localStorageEnabled = true;
 	timeElapsed = 0;
 	
-var config = {};
+var config = {},
+	scores = {};
 	
 var fonts = {},
 	gfx = {},
@@ -88,7 +89,6 @@ function loadFont(assetname, filename, charsize, colorVariants = 8){
 	r.src = "gfx/" + filename;
 	
 	fonts[assetname] = f;
-	out += "success!";
 	log(out, logType.unimportant);
 	return r;
 }
@@ -103,7 +103,6 @@ function loadGraphic(assetname, filename){
 	r.src = "gfx/" + filename;
 	gfx[assetname] = r;
 	
-	out += "success!";
 	log(out, logType.unimportant);
 	return r;
 }
@@ -117,7 +116,6 @@ function loadSound(assetname, filename){
 	r.onerror = function(e){ this.loadedState = e; };
 	sfx[assetname] = r;
 	
-	out += "success!";
 	log(out, logType.unimportant);
 	return r;
 }
@@ -208,9 +206,10 @@ function init(){
 	
 	controlState.init();
 	
+	loadAssets();
 	loadConfig();
 	loadControls();
-	loadAssets();
+	loadScores();
 
 	gameState.switchState(new state_mainMenu());	
 	log("intitialized game!");
@@ -362,7 +361,6 @@ function loadControls(){
 	log("loading controls... ");
 	setDefaultControls();
 	
-	setDefaultControls();
 	if(!localStorageEnabled){
 		log("localStorage is not enabled", logType.error);
 		return;
@@ -384,6 +382,37 @@ function loadControls(){
 	
 	controlState.setControls(c);
 	log(splCStr.length - 1 + " controls loaded", logType.unimportant);
+}
+function loadScores(){
+	// loads the scoreboard data from localStorage
+	log("loading scores... ");
+	
+	var r = [];
+	if(!localStorageEnabled){
+		log("localStorage is not enabled", logType.error);
+		setDefaultScores();
+		return;
+	}
+	
+	var data = localStorage.getItem(storageKeys.scoreboard);
+	if(!data){
+		// returns if there is no score data
+		log("no score data found, reverting to default", logType.unimportant);
+		setDefaultScores();
+		return;
+	}
+	
+	var splData = data.split('\n');
+	splData.forEach(function(score, i){
+		let splScore = score.split(':');
+		if(splScore.length < 2) return;
+		
+		let sCap = { name: splScore[0], score: parseInt(splScore[1]) };
+		r.push(sCap);
+	});
+	
+	scores = r;
+	log(r.length + " scores loaded", logType.unimportant);
 }
 
 function localStorageCheck(){
@@ -433,6 +462,23 @@ function saveControls(){
 	
 	log("saved!", logType.success);
 }
+function saveScores(){
+	// saves the scoreboard data to localStorage
+	log("saving scoreboard scores...", logType.notify);	
+	if(!localStorageEnabled){
+		log("localStorage is not enabled", logType.error);
+		return;
+	}
+	
+	var dataStr = ""; 
+	scores.forEach(function(score, i){
+		let sStr = score.name + ":" + score.score.toString();
+		dataStr += sStr + '\n';
+	});
+	localStorage.setItem(storageKeys.scoreboard, dataStr);
+	
+	log("saved!", logType.success);
+}
 
 function setDefaultConfig(){
 	// sets the default game configuration settings
@@ -462,6 +508,18 @@ function getDefaultControls(){
 		select: 32,
 		pause: 13
 	};
+}
+function setDefaultScores(){
+	scores = getDefaultScores();
+}
+function getDefaultScores(){
+	return [
+		{name: "Top Dog", score: 250000},
+		{name: "Harry", score: 100000},
+		{name: "Middle Dog", score: 50000},
+		{name: "Greg", score: 10000},
+		{name: "Bottom Dog", score: 1000}
+	];
 }
 function addInputEventListeners(){
 	//window.addEventListener('keydown', function(e){ log("key '" + e.key + "'(" + e.keyCode + ") pressed", logType.notify); });

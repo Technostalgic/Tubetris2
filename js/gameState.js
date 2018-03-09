@@ -646,10 +646,7 @@ class state_scoreboard extends state_menuState{
 		var tpos = new vec2(screenBounds.center.x, screenBounds.bottom - 200);
 		
 		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
-		
 		this.buttons.push(new menuButton().construct("Main Menu", tpos.plus(new vec2(0, off * dif)), "return to the main menu", action_switchToMainMenu)); off++;
-		
-		this.currentSelection = 1;
 	}
 	
 	drawInternals(){
@@ -657,6 +654,7 @@ class state_scoreboard extends state_menuState{
 		textRenderer.drawText("SCOREBOARD", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
 	}
 }
+
 // a gameState object that represents the options screen interface
 class state_optionsMenu extends state_menuState{
 	constructor(){
@@ -827,13 +825,14 @@ class state_gameOptions extends state_optionsSubMenu{
 		var tpos = new vec2(screenBounds.center.x, this.buttonStartPos);
 		
 		// game ops:
+		// Reset Config
 		// Reset Scores 
 		
 		off += 1.5;
 		var action_resetConfig = function(){ gameState.switchState(new state_confirmationDialogue(function(){ setDefaultConfig(); saveConfig(); })); };
 		this.buttons.push(new menuButton().construct("Reset Config", tpos.plus(new vec2(0, off * dif)), "resets the game configuration and settings back to default", action_resetConfig));
 		off += 1.2;
-		var action_resetScores = function(){ gameState.switchState(new state_confirmationDialogue(function(){})); };
+		var action_resetScores = function(){ gameState.switchState(new state_confirmationDialogue(function(){ setDefaultScores(); localStorage.setItem(storageKeys.scoreboard, null); })); };
 		this.buttons.push(new menuButton().construct("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_resetScores));
 	}
 	
