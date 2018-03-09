@@ -205,6 +205,7 @@ function init(){
 	addInputEventListeners();
 	
 	controlState.init();
+	tile.init();
 	
 	loadAssets();
 	loadConfig();
@@ -560,7 +561,7 @@ function generateBackground(){
 	bg.height = screenBounds.height;
 	var bgctx = bg.getContext("2d");
 	var tilesize = 32;
-	var off = new vec2(-bg.width % tilesize - 2, -bg.height % tilesize - 2);
+	var off = tile.offset;
 	var cX = Math.floor(bg.width / tilesize) + 1;
 	var cY = Math.floor(bg.height / tilesize) + 1;
 	var sbox = new spriteBox(new vec2(32, 0), new vec2(32));
@@ -583,7 +584,7 @@ function generateForeground_border(){
 	fg.height = screenBounds.height;
 	var fgctx = fg.getContext("2d");
 	var tilesize = 32;
-	var off = new vec2(-fg.width % tilesize - 2, -fg.height % tilesize - 2);
+	var off = tile.offset;
 	var cX = Math.floor(fg.width / tilesize) + 1;
 	var cY = Math.floor(fg.height / tilesize) + 1;
 	var sbox = new spriteBox(new vec2(0), new vec2(32));
@@ -609,7 +610,7 @@ function generateForeground_overlay(){
 	fg.height = screenBounds.height;
 	var fgctx = fg.getContext("2d");
 	var tilesize = 32;
-	var off = new vec2(-fg.width % tilesize - 2, -fg.height % tilesize - 2);
+	var off = tile.offset;
 	var cX = Math.floor(fg.width / tilesize) + 1;
 	var cY = Math.floor(fg.height / tilesize) + 1;
 	var sbox = new spriteBox(new vec2(), new vec2(32));
