@@ -22,8 +22,10 @@ class tile{
 		// constructs a tile grid full of empty tiles
 		tile.grid = [];
 		for(let x = tile.gridBounds.left; x <= tile.gridBounds.right; x++){
+			// creates an empty array for each valid iteration of the horizontal grid bounds
 			tile.grid[x] = [];
 			for(let y = tile.gridBounds.top; y <= tile.gridBounds.bottom; y++){
+				// adds an empty tile at each available location inside the grid bounds
 				tile.grid[x][y] = tile.getEmpty(new vec2(x, y));
 			}
 		}
@@ -61,7 +63,7 @@ class tile{
 		return r;
 	}
 	static at(pos, ypos = null){
-		// returns the tile at pos
+		// returns the tile at the specified pos
 		if(ypos) return tile.at(new vec2(pos, ypos));
 		
 		// returns a full tile if the position is below the tile grid (if the tile at pos is undefined)
