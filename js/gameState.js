@@ -635,11 +635,31 @@ class state_scoreboard extends state_menuState{
 		
 		var titleEntrance = new textAnim_scaleTransform(300, 0, 1, 0);
 		titleEntrance.animType = textAnimType.easeOut;
-		
 		this.titleAnim = titleEntrance;
+		
+		this.anim_value1 = new textAnim_rainbow();
+		var anim_p1 = new textAnim_scale(500, 0.75, 1.25, 0.1);
+		anim_p1.looping = true;
+		anim_p1.animType = textAnimType.trigonometricCycle;
+		this.anim_place1 = new textAnim_compound([
+			this.anim_value1,
+			anim_p1
+		]);
+		this.anim_value2 = new textAnim_blink(500, 0.5, textColor.yellow);
+		var anim_p2 = new textAnim_yOffset(500, 3, 0.5);
+		this.anim_place2 = new textAnim_compound([
+			this.anim_value2,
+			anim_p2
+		]);
 		
 		this.scoreNames = [];
 		this.scoreValues = [];
+		this.scoreStyles = [
+			textStyle.getDefault().setColor(textColor.yellow),
+			textStyle.getDefault().setColor(textColor.green),
+			textStyle.getDefault().setColor(textColor.cyan),
+			textStyle.getDefault()
+		];
 		this.addScoreboardText();
 	}
 	
@@ -658,7 +678,8 @@ class state_scoreboard extends state_menuState{
 		for(let i = 0; i < 5 && i < scores.length; i++){
 			let ypos = screenBounds.top + off.y + 192 + i * 64;
 			let txtBounds = collisionBox.fromSides(screenBounds.left + padding, ypos, screenBounds.right - padding, ypos + 32);
-			let block = new textBlock("", textStyle.getDefault(), txtBounds);
+			let style = i < this.scoreStyles.length ? this.scoreStyles[i] : this.scoreStyles[this.scoreStyles.length - 1];
+			let block = new textBlock("", style, txtBounds);
 			
 			// generate score name text graphic
 			block.setStylesHAlign(0);
@@ -676,12 +697,23 @@ class state_scoreboard extends state_menuState{
 	}
 	
 	drawInternals(){
+		var ths = this;
 		// draw the scoreboard text
-		this.scoreNames.forEach(function(name){
-			name.draw();
+		this.scoreNames.forEach(function(name, i){
+			var n = name;
+			switch(i){
+				case 0: n = n.animated(ths.anim_place1); break;
+				case 1: n = n.animated(ths.anim_place2); break;
+			}
+			n.draw();
 		});
-		this.scoreValues.forEach(function(score){
-			score.draw();
+		this.scoreValues.forEach(function(score, i){
+			var s = score;
+			switch(i){
+				case 0: s = s.animated(ths.anim_value1); break;
+				case 1: s = s.animated(ths.anim_value2); break;
+			}
+			s.draw();
 		});
 		
 		// draws the title
