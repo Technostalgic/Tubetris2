@@ -204,6 +204,7 @@ function init(){
 	getCanvas();
 	addInputEventListeners();
 	
+	audioMgr.init();
 	controlState.init();
 	tile.init();
 	
