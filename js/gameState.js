@@ -751,7 +751,7 @@ class state_optionsMenu extends state_menuState{
 		var action_gotoVideoOps = function(){ gameState.switchState(new state_videoOptions()); };
 		this.buttons.push(new menuButton().construct("Video", tpos.plus(new vec2(0, off * dif)), "configure video settings", action_gotoVideoOps)); off++;
 		var action_gotoGameOps = function(){ gameState.switchState(new state_gameOptions()); };
-		this.buttons.push(new menuButton().construct("Gameplay", tpos.plus(new vec2(0, off * dif)), "configure game settings", action_gotoGameOps)); off++;
+		this.buttons.push(new menuButton().construct("Game", tpos.plus(new vec2(0, off * dif)), "configure game settings", action_gotoGameOps)); off++;
 		
 		var action_gotoControlSettings = function(){ gameState.switchState(new state_controlSettings()); };
 		this.buttons.push(new menuButton().construct("Set Controls", tpos.plus(new vec2(0, off * dif)), "customize the controls", action_gotoControlSettings)); 
@@ -785,6 +785,7 @@ class state_optionsSubMenu extends state_menuState{
 	}
 	
 	addButtons(){
+		this.buttons = [];
 		this.addSubMenuButtions();
 		
 		// back button
@@ -803,7 +804,6 @@ class state_optionsSubMenu extends state_menuState{
 		textRenderer.drawText(this.TitleText, new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
 	}
 }
-//
 class state_audioOptions extends state_optionsSubMenu{
 	constructor(){
 		super();
@@ -841,7 +841,6 @@ class state_audioOptions extends state_optionsSubMenu{
 		textRenderer.drawText("AUDIO", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
 	}
 }
-//
 class state_videoOptions extends state_optionsSubMenu{
 	constructor(){
 		super();
@@ -875,7 +874,6 @@ class state_videoOptions extends state_optionsSubMenu{
 		textRenderer.drawText("VIDEO", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
 	}
 }
-//
 class state_gameOptions extends state_optionsSubMenu{
 	constructor(){
 		super();
@@ -891,13 +889,20 @@ class state_gameOptions extends state_optionsSubMenu{
 		var off = 0;
 		var dif = 40;
 		var tpos = new vec2(screenBounds.center.x, this.buttonStartPos);
+		var ths = this;
 		
 		// game ops:
 		// Reset Config
 		// Reset Scores 
 		
+		this.buttons.push(new settingButton().construct("Arrow Indicators", tpos.plus(new vec2(0, off * dif)), "arrows appear while you are placing a ball to suggest possible tube entrances for the ball"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("arrowIndicators"), settingButton.generateSetValueFunc("arrowIndicators")
+			).generateSettingPreRenders() ); off ++;
+		this.buttons.push(new settingButton().construct("Path Indicators", tpos.plus(new vec2(0, off * dif)), "projected paths of the ball will be shown when deciding which direction to go at an intersection"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("pathIndicators"), settingButton.generateSetValueFunc("pathIndicators")
+			).generateSettingPreRenders() );
 		off += 1.5;
-		var action_resetConfig = function(){ gameState.switchState(new state_confirmationDialogue(function(){ setDefaultConfig(); saveConfig(); })); };
+		var action_resetConfig = function(){ gameState.switchState(new state_confirmationDialogue(function(){ setDefaultConfig(); saveConfig(); ths.addButtons() })); };
 		this.buttons.push(new menuButton().construct("Reset Config", tpos.plus(new vec2(0, off * dif)), "resets the game configuration and settings back to default", action_resetConfig));
 		off += 1.2;
 		var action_resetScores = function(){ gameState.switchState(new state_confirmationDialogue(function(){ setDefaultScores(); localStorage.setItem(storageKeys.scoreboard, null); })); };

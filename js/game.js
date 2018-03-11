@@ -351,6 +351,12 @@ function loadConfig(){
 			case "saving": 
 				config.saving = splOp[1][0] == 't';
 				break;
+			case "arrowIndicators":
+				config.arrowIndicators = splOp[1][0] == 't';
+				break;
+			case "pathIndicators":
+				config.pathIndicators = splOp[1][0] == 't';
+				break;
 		}
 		log(splOp[0] + " = " + config[splOp[0]], logType.unimportant);
 	});
@@ -489,7 +495,9 @@ function setDefaultConfig(){
 		volume_music: 1,
 		volume_sound: 1,
 		imageSmoothing: false,
-		saving: true
+		saving: true,
+		arrowIndicators: true,
+		pathIndicators: false
 	};
 }
 function setDefaultControls(){
