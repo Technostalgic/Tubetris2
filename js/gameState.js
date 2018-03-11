@@ -426,6 +426,8 @@ class state_menuState extends gameState{
 		this.currentSelection += 1;
 		if(this.currentSelection >= this.buttons.length)
 			this.currentSelection = 0;
+		
+		audioMgr.playSound(sfx.moveCursor);
 	}
 	selectionUp(){
 		// moves the menu cursor up to the previous selectable menu item
@@ -434,18 +436,24 @@ class state_menuState extends gameState{
 		this.currentSelection -= 1;
 		if(this.currentSelection < 0)
 			this.currentSelection = this.buttons.length - 1;
+		
+		audioMgr.playSound(sfx.moveCursor);
 	}
 	navigateLeft(){
 		// calls navLeft() on the currently selected button
 		if(!this.initialized) this.initialize();
-		if(this.selectedButton.navLeft)
+		if(this.selectedButton.navLeft){
 			this.selectedButton.navLeft();
+			audioMgr.playSound(sfx.moveCursor);
+		}
 	}
 	navigateRight(){
 		// calls navRight() on the currently selected button
 		if(!this.initialized) this.initialize();
-		if(this.selectedButton.navRight)
+		if(this.selectedButton.navRight){
 			this.selectedButton.navRight();
+			audioMgr.playSound(sfx.moveCursor);
+		}
 	}
 	
 	get selectedButton(){
@@ -460,6 +468,7 @@ class state_menuState extends gameState{
 		if(this.buttons.length <= 0) return;
 		if(!pos){
 			this.buttons[this.currentSelection].trigger();
+			audioMgr.playSound(sfx.select);
 			return;
 		}
 	}
@@ -496,6 +505,7 @@ class state_menuState extends gameState{
 		for(let i = 0; i < this.buttons.length; i ++){
 			if(this.buttons[i].normalBounds.overlapsPoint(pos)){
 				this.currentSelection = i;
+				audioMgr.playSound(sfx.moveCursor);
 				return;
 			}
 		}
