@@ -328,36 +328,18 @@ function loadConfig(){
 		return;
 	}
 	
+	var cfgFields = Object.keys(config);
 	var splCStr = cStr.split('\n');
 	splCStr.forEach(function(cOp){
 		let splOp = cOp.split(':');
 		if(splOp.length <= 1) return;
-		switch(splOp[0]){
-			case "animText":
-				config.animText = splOp[1][0] == 't';
-				break;
-			case "animSpeed": 
-				config.animSpeed = Number.parseFloat(splOp[1]);
-				break;
-			case "volume_music": 
-				config.volume_music = Number.parseFloat(splOp[1]);
-				break;
-			case "volume_sound": 
-				config.volume_sound = Number.parseFloat(splOp[1]);
-				break;
-			case "imageSmoothing": 
-				config.imageSmoothing = splOp[1][0] == 't';
-				break;
-			case "saving": 
-				config.saving = splOp[1][0] == 't';
-				break;
-			case "arrowIndicators":
-				config.arrowIndicators = splOp[1][0] == 't';
-				break;
-			case "pathIndicators":
-				config.pathIndicators = splOp[1][0] == 't';
-				break;
+		
+		for (var field in cfgFields){
+			if(field == splOp[0]){
+				config[field] = parseAny(splOp[1]);
+			}
 		}
+		
 		log(splOp[0] + " = " + config[splOp[0]], logType.unimportant);
 	});
 	applyConfig();
@@ -682,7 +664,12 @@ function generateForeground_overlay(){
 	gfx.foreground_overlay = fg;
 }
 
-
+function parseAny(str){
+	// decides what value type str is supposed to represent and parses it into either a 
+	// number or a boolean
+	var r = parseFloat(str);
+	return r || (str[0] == 't');
+}
 function applyConfig(){
 	// applies the game configuration settings
 	var smoothing = config.imageSmoothing;
