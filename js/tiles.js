@@ -5,9 +5,44 @@
 ///	twitter @technostalgicGM
 ///
 
+// enumerate the different tube pieces and entities
+var entity = {
+	none: -1,
+	S_horizontal: 0,
+	S_vertical: 1,
+	T_horizontalDown: 2,
+	T_horizontalUp: 3,
+	T_verticalRight: 4,
+	T_verticalLeft: 5,
+	L_downRight: 6,
+	L_downLeft: 7,
+	L_upRight: 8,
+	L_upLeft: 9,
+	quad: 10,
+	block_brick: 11,
+	block_bomb: 12
+}
+// gets the open sides of each entity type
+var entityOpenSides = [
+	[side.left, side.right],						// S_horizontal: 0,
+	[side.up, side.down],							// S_vertical: 1,
+	[side.left, side.right, side.down],				// T_horizontalDown: 2,
+	[side.left, side.right, side.up],				// T_horizontalUp: 3,
+	[side.right, side.up, side.down],				// T_verticalRight: 4,
+	[side.left, side.up, side.down],				// T_verticalLeft: 5,
+	[side.right, side.down],						// L_downRight: 6,
+	[side.left, side.down],							// L_downLeft: 7,
+	[side.right, side.up],							// L_upRight: 8,
+	[side.left, side.up],							// L_upLeft: 9,
+	[side.left, side.right, side.up, side.down],	// quad: 10,
+	[],												// block_brick: 11,
+	[]												// block_bomb: 12
+];
+
 class tile{
 	constructor(){
 		this.gridPos = new vec2(-1);
+		this.entityType = entity.none;
 	}
 	
 	static init(){
@@ -30,6 +65,13 @@ class tile{
 			}
 		}
 	}
+	static drawGrid(){
+		tile.grid.forEach(function(tileArr, x){
+			tileArr.forEach(function(tile, y){
+				tile.draw();
+			});
+		});
+	}
 	
 	static getEmpty(pos = null){ 
 		// returns an empty tile
@@ -46,7 +88,7 @@ class tile{
 	
 	static toTilePos(screenPos){
 		// converts a screen position to a coordinate on the tile grid
-		var r = screenPos.minus(offset);
+		var r = screenPos.minus(tile.offset);
 		
 		r = r.multiply(1 / tile.tilesize);
 		r = new vec2(Math.floor(r.x), Math.floor(r.y));
@@ -82,5 +124,13 @@ class tile{
 		// otherwise, return either an empty or full tile at the specified position
 		var r = empty ? tile.getEmpty(pos) : tile.getFull(pos);
 		return r;
+	}
+	
+	getOpenSides(){
+		if(this.entityType == entity.none) return [side.left, side.right, side.up, side.down];
+		return entityOpenSides[this.entityType];
+	}
+	
+	draw(){
 	}
 }

@@ -14,6 +14,9 @@ var debug = true;
 var config = {},
 	scores = {};
 	
+var currentScore = 0,
+	ballScore = 0;
+	
 var fonts = {},
 	gfx = {},
 	sfx = {};
@@ -756,6 +759,17 @@ function finishLoading(errors = []){
 	generateDynamicTextures();
 	applyConfig();
 	startGameLoop();
+}
+
+function startNewGame(){
+	// starts a new game
+	var state = new state_gameplayState();
+	
+	tile.constructGrid();
+	currentScore = 0;
+	ballScore = 0;
+	
+	gameState.switchState(state);
 }
 
 function startGameLoop(){

@@ -37,9 +37,7 @@ class gameState{
 		return gameMode;
 	}
 	static get empty(){
-		return {
-			timeElapsed: 0
-		};
+		return new gameState();
 	}
 	static switchState(tostate){
 		// switches the game from one gameState to another
@@ -613,10 +611,11 @@ class state_mainMenu extends state_menuState{
 		var off = 0;
 		var dif = 55;
 		
+		var action_startGame = function(){ startNewGame(); };
 		var action_switchToScoreboard = function(){ gameState.switchState(new state_scoreboard()); };
 		var action_switchToOptions = function(){ gameState.switchState(new state_optionsMenu()); };
 		
-		this.buttons.push(new menuButton().construct("Start Game", screenBounds.center.plus(new vec2(0, off * dif)), "start a new game")); off++;
+		this.buttons.push(new menuButton().construct("Start Game", screenBounds.center.plus(new vec2(0, off * dif)), "start a new game", action_startGame)); off++;
 		this.buttons.push(new menuButton().construct("Scoreboard", screenBounds.center.plus(new vec2(0, off * dif)), "view the highest scoring players", action_switchToScoreboard)); off++;
 		this.buttons.push(new menuButton().construct("Options", screenBounds.center.plus(new vec2(0, off * dif)), "configure gameplay and av options", action_switchToOptions)); off++;
 		this.buttons.push(new menuButton().construct("Credits", screenBounds.center.plus(new vec2(0, off * dif)), "see who contributed to making the game!")); off++;
@@ -1006,5 +1005,24 @@ class state_controlSettings extends state_menuState{
 	switchFrom(tostate = null){
 		controlState.setControls(this.controls);
 		saveControls();
+	}
+}
+
+// when the player is playing the game
+class state_gameplayState extends gameState{
+	constructor(){
+		super();
+	}
+	
+	update(dt){
+		super.update(dt);
+	}
+	
+	draw(){
+		// renders tiled background
+		drawBackground(); 
+		
+		// renders the foreground border
+		drawForegroundOverlay();
 	}
 }
