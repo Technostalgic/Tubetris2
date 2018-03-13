@@ -22,6 +22,7 @@ var entity = {
 	block_brick: 11,
 	block_bomb: 12
 }
+
 // gets the open sides of each entity type
 var entityOpenSides = [
 	[side.left, side.right],						// S_horizontal: 0,
@@ -38,6 +39,22 @@ var entityOpenSides = [
 	[],												// block_brick: 11,
 	[]												// block_bomb: 12
 ];
+// gets the sprite of each entity type
+var entitySprites = [
+	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 0, tile.tilesize * 0), new vec2(tile.tilesize) )),	// S_horizontal: 0,
+	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 1, tile.tilesize * 0), new vec2(tile.tilesize) )),	// S_vertical: 1,
+	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 2, tile.tilesize * 0), new vec2(tile.tilesize) )),	// T_horizontalDown: 2,
+	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 3, tile.tilesize * 0), new vec2(tile.tilesize) )),	// T_horizontalUp: 3,
+	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 2, tile.tilesize * 1), new vec2(tile.tilesize) )),	// T_verticalRight: 4,
+	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 3, tile.tilesize * 1), new vec2(tile.tilesize) )),	// T_verticalLeft: 5,
+	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 4, tile.tilesize * 0), new vec2(tile.tilesize) )),	// L_downRight: 6,
+	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 5, tile.tilesize * 0), new vec2(tile.tilesize) )),	// L_downLeft: 7,
+	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 4, tile.tilesize * 1), new vec2(tile.tilesize) )),	// L_upRight: 8,
+	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 5, tile.tilesize * 1), new vec2(tile.tilesize) )),	// L_upLeft: 9,
+	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 0, tile.tilesize * 1), new vec2(tile.tilesize) )),	// quad: 10,
+	new spriteContainer(gfx.tiles_blocks, new spriteBox(new vec2(tile.tilesize * 0, 0), new vec2(tile.tilesize) )),	// block_brick: 11,
+	new spriteContainer(gfx.tiles_blocks, new spriteBox(new vec2(tile.tilesize * 1, 0), new vec2(tile.tilesize) )),	// block_bomb: 12
+]
 
 class tile{
 	constructor(){
