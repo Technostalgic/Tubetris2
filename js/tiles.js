@@ -192,13 +192,22 @@ class tile{
 		if(!tile.grid[pos.x]) return tile.getEmpty(pos);
 		return tile.fromAny(tile.grid[pos.x][pos.y], true, pos);
 	}
-	static setTileAt(tile, pos, ypos = null){
+	static setTileAt(tileOb, pos, ypos = null){
 		// sets the specified tile at the specified grid position
 		// parameters accept formats: setTileAt(tile, vec2) or setTileAt(tile, int, int)
-		if(ypos != null) tile.setTileAt(tile, new vec2(pos, ypos));
-		tile.gridPos = pos;
-		if(!tile[x]) tile[x] = [];
-		tile.grid[x][y] = tile;
+		if(ypos != null) tile.setTileAt(tileOb, new vec2(pos, ypos));
+		tileOb.gridPos = pos;
+		if(!tile.grid[pos.x]) tile.grid[pos.x] = [];
+		tile.grid[pos.x][pos.y] = tileOb;
+	}
+	static isOutOfBounds(pos, ypos = null){
+		if(ypos != null) return tile.isOutOfBounds(new vec2(pos, ypos));
+		return ( 
+			pos.x < tile.gridBounds.left ||
+			pos.x >= tile.gridBounds.right ||
+			//pos.y < tile.gridBounds.top ||
+			pos.y >= tile.gridBounds.bottom
+			);
 	}
 	static fromAny(ob, empty = true, pos = null){
 		// returns a tile from ANY object type
@@ -286,7 +295,7 @@ class tileForm{
 		
 		for(var i = tilepos.length - 1; i >= 0; i--){
 			var tpos = tilepos[i].plus(vec2.fromSide(dir));
-			if(!tile.at(tpos).isEmpty())
+			if(!tile.at(tpos).isEmpty() || tile.isOutOfBounds(tpos))
 				return false;
 		}
 		
@@ -300,12 +309,17 @@ class tileForm{
 	bumpDown(){
 		// bumps the tileform downward if possible, otherwise sets it in place
 		if(this.canMove()) this.move();
-		else this.setInPlace();
+		else {
+			this.setInPlace(); 
+			return false;
+		}
+		return true;
 	}
 	
 	setInPlace(){
+		var ths = this;
 		this.tiles.forEach(function(tileOb){
-			let tpos = tileOb.gridPos.plus(this.gridPos);
+			let tpos = tileOb.gridPos.plus(ths.gridPos);
 			tile.setTileAt(tileOb, tpos);
 		});
 	}
