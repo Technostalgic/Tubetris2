@@ -171,7 +171,7 @@ class tile{
 	}
 	static at(pos, ypos = null){
 		// returns the tile at the specified pos
-		if(ypos) return tile.at(new vec2(pos, ypos));
+		if(ypos != null) return tile.at(new vec2(pos, ypos));
 		
 		// returns a full tile if the position is below the tile grid (if the tile at pos is undefined)
 		if(pos.y > tile.gridBounds.bottom){
@@ -201,14 +201,14 @@ class tile{
 	}
 	getSprite(){
 		if(this.entityID == entities.none) return null;
-		return getEntitySprite(this.entityID, this.entityType);
+		return tile.getEntitySprite(this.entityID, this.entityType);
 	}
 	
 	draw(){
 		// draw the sprite
 		var sprite = this.getSprite();
 		if(!sprite) return;
-		var bounds = new collisionBox(tile.toScreenPos(this.pos, false), new vec2(tile.tilesize));
+		var bounds = new collisionBox(tile.toScreenPos(this.gridPos, false), new vec2(tile.tilesize));
 		sprite.bounds = bounds;
 	}
 }
