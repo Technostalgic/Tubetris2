@@ -1012,10 +1012,33 @@ class state_controlSettings extends state_menuState{
 class state_gameplayState extends gameState{
 	constructor(){
 		super();
+		this.controlledTiles = null;
+		this.ctDropInterval = 1000;
+		this.ctBumpTime = this.ctDropInterval;
+	}
+	
+	getNextCT(){
+		this.controlledTiles = tileForm.getRandomPiece();
+	}
+	bumpDownCT(){
+		if(!this.controlledTiles) return;
+		this.ctBumpTime = this.timeElapsed;
+	}
+	handleControlledTiles(){
+		if(!this.controlledTiles) this.getNextCT();
+		
+		// if the controlled tiles drop interval has passed, bump the controlled tiles down
+		var nextBump = this.ctBumpTime + this.ctDropInterval
+		if(this.timeElapsed >= nextBump){
+			this.bumpDownCT();
+			this.ctBumpTime += this.timeElapsed - nextBump;
+		}
 	}
 	
 	update(dt){
 		super.update(dt);
+		
+		this.handleControlledTiles();
 	}
 	
 	draw(){
@@ -1023,6 +1046,7 @@ class state_gameplayState extends gameState{
 		drawBackground(); 
 		
 		tile.drawGrid();
+		if(this.controlledTiles) this.controlledTiles.draw();
 		
 		// renders the foreground border
 		drawForegroundOverlay();

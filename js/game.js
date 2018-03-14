@@ -516,6 +516,7 @@ function getDefaultScores(){
 		{name: "Bottom Dog", score: 1000}
 	];
 }
+
 function addInputEventListeners(){
 	//window.addEventListener('keydown', function(e){ log("key '" + e.key + "'(" + e.keyCode + ") pressed", logType.notify); });
 	scalingTarget.addEventListener('mousedown', controlState.listenForMouseDown);
