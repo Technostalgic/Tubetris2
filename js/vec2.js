@@ -185,7 +185,7 @@ class spriteContainer{
 		this.spriteSheet = spriteSheet;
 		this.sprite = sprite;
 		this.bounds = bounds;
-		if(bounds == null)
+		if(bounds == null && !!sprite)
 			this.bounds = new collisionBox(new vec2(), sprite.size);
 		
 		this.rotation = null;
