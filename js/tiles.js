@@ -201,14 +201,16 @@ class tile{
 	}
 	getSprite(){
 		if(this.entityID == entities.none) return null;
-		return tile.getEntitySprite(this.entityID, this.entityType);
+		var r = tile.getEntitySprite(this.entityID, this.entityType);
+		var bounds = new collisionBox(tile.toScreenPos(this.gridPos, false), new vec2(tile.tilesize));
+		r.bounds = bounds;
+		return r;
 	}
 	
 	draw(){
 		// draw the sprite
 		var sprite = this.getSprite();
 		if(!sprite) return;
-		var bounds = new collisionBox(tile.toScreenPos(this.gridPos, false), new vec2(tile.tilesize));
-		sprite.bounds = bounds;
+		sprite.draw();
 	}
 }

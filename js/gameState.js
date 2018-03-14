@@ -1022,6 +1022,8 @@ class state_gameplayState extends gameState{
 		// renders tiled background
 		drawBackground(); 
 		
+		tile.drawGrid();
+		
 		// renders the foreground border
 		drawForegroundOverlay();
 	}
