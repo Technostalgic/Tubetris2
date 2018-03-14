@@ -5,8 +5,14 @@
 ///	twitter @technostalgicGM
 ///
 
-// enumerate the different tube pieces and entities
-var entity = {
+// enumerate the different entity types
+var entities = {
+	none: -1,
+	tube: 0,
+	block: 1
+}
+// enumerate the different tube entity IDs
+var tubes = {
 	none: -1,
 	S_horizontal: 0,
 	S_vertical: 1,
@@ -18,48 +24,20 @@ var entity = {
 	L_downLeft: 7,
 	L_upRight: 8,
 	L_upLeft: 9,
-	quad: 10,
-	block_brick: 11,
-	block_bomb: 12
+	quad: 10
 }
-
-// gets the open sides of each entity type
-var entityOpenSides = [
-	[side.left, side.right],						// S_horizontal: 0,
-	[side.up, side.down],							// S_vertical: 1,
-	[side.left, side.right, side.down],				// T_horizontalDown: 2,
-	[side.left, side.right, side.up],				// T_horizontalUp: 3,
-	[side.right, side.up, side.down],				// T_verticalRight: 4,
-	[side.left, side.up, side.down],				// T_verticalLeft: 5,
-	[side.right, side.down],						// L_downRight: 6,
-	[side.left, side.down],							// L_downLeft: 7,
-	[side.right, side.up],							// L_upRight: 8,
-	[side.left, side.up],							// L_upLeft: 9,
-	[side.left, side.right, side.up, side.down],	// quad: 10,
-	[],												// block_brick: 11,
-	[]												// block_bomb: 12
-];
-// gets the sprite of each entity type
-var entitySprites = [
-	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 0, tile.tilesize * 0), new vec2(tile.tilesize) )),	// S_horizontal: 0,
-	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 1, tile.tilesize * 0), new vec2(tile.tilesize) )),	// S_vertical: 1,
-	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 2, tile.tilesize * 0), new vec2(tile.tilesize) )),	// T_horizontalDown: 2,
-	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 3, tile.tilesize * 0), new vec2(tile.tilesize) )),	// T_horizontalUp: 3,
-	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 2, tile.tilesize * 1), new vec2(tile.tilesize) )),	// T_verticalRight: 4,
-	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 3, tile.tilesize * 1), new vec2(tile.tilesize) )),	// T_verticalLeft: 5,
-	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 4, tile.tilesize * 0), new vec2(tile.tilesize) )),	// L_downRight: 6,
-	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 5, tile.tilesize * 0), new vec2(tile.tilesize) )),	// L_downLeft: 7,
-	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 4, tile.tilesize * 1), new vec2(tile.tilesize) )),	// L_upRight: 8,
-	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 5, tile.tilesize * 1), new vec2(tile.tilesize) )),	// L_upLeft: 9,
-	new spriteContainer(gfx.tiles_tubes, new spriteBox(new vec2(tile.tilesize * 0, tile.tilesize * 1), new vec2(tile.tilesize) )),	// quad: 10,
-	new spriteContainer(gfx.tiles_blocks, new spriteBox(new vec2(tile.tilesize * 0, 0), new vec2(tile.tilesize) )),	// block_brick: 11,
-	new spriteContainer(gfx.tiles_blocks, new spriteBox(new vec2(tile.tilesize * 1, 0), new vec2(tile.tilesize) )),	// block_bomb: 12
-]
+// enumerate the different block entity IDs
+var blocks = {
+	none: -1,
+	block_brick: 0,
+	block_bomb: 1
+}
 
 class tile{
 	constructor(){
 		this.gridPos = new vec2(-1);
-		this.entityType = entity.none;
+		this.entityType = entities.none;
+		this.entityID = entities.none;
 	}
 	
 	static init(){
@@ -69,6 +47,39 @@ class tile{
 		tile.gridBounds = collisionBox.fromSides(0, 0, 10, 20);
 		tile.grid = [];
 		tile.constructGrid();
+		
+		// gets the sprite of each entity type offset to its ID
+		tile.entitySprites = [
+			new spriteBox(new vec2(tile.tilesize * 0, tile.tilesize * 0), new vec2(tile.tilesize)),	// S_horizontal: 0,
+			new spriteBox(new vec2(tile.tilesize * 1, tile.tilesize * 0), new vec2(tile.tilesize)),	// S_vertical: 1,
+			new spriteBox(new vec2(tile.tilesize * 2, tile.tilesize * 0), new vec2(tile.tilesize)),	// T_horizontalDown: 2,
+			new spriteBox(new vec2(tile.tilesize * 3, tile.tilesize * 0), new vec2(tile.tilesize)),	// T_horizontalUp: 3,
+			new spriteBox(new vec2(tile.tilesize * 2, tile.tilesize * 1), new vec2(tile.tilesize)),	// T_verticalRight: 4,
+			new spriteBox(new vec2(tile.tilesize * 3, tile.tilesize * 1), new vec2(tile.tilesize)),	// T_verticalLeft: 5,
+			new spriteBox(new vec2(tile.tilesize * 4, tile.tilesize * 0), new vec2(tile.tilesize)),	// L_downRight: 6,
+			new spriteBox(new vec2(tile.tilesize * 5, tile.tilesize * 0), new vec2(tile.tilesize)),	// L_downLeft: 7,
+			new spriteBox(new vec2(tile.tilesize * 4, tile.tilesize * 1), new vec2(tile.tilesize)),	// L_upRight: 8,
+			new spriteBox(new vec2(tile.tilesize * 5, tile.tilesize * 1), new vec2(tile.tilesize)),	// L_upLeft: 9,
+			new spriteBox(new vec2(tile.tilesize * 0, tile.tilesize * 1), new vec2(tile.tilesize)),	// quad: 10,
+			new spriteBox(new vec2(tile.tilesize * 0, 0), new vec2(tile.tilesize)),	// block_brick: 11,
+			new spriteBox(new vec2(tile.tilesize * 1, 0), new vec2(tile.tilesize)),	// block_bomb: 12
+		];
+		// gets the open side list of each entity type offset to its ID
+		tile.entityOpenSides = [
+			[side.left, side.right],						// S_horizontal: 0,
+			[side.up, side.down],							// S_vertical: 1,
+			[side.left, side.right, side.down],				// T_horizontalDown: 2,
+			[side.left, side.right, side.up],				// T_horizontalUp: 3,
+			[side.right, side.up, side.down],				// T_verticalRight: 4,
+			[side.left, side.up, side.down],				// T_verticalLeft: 5,
+			[side.right, side.down],						// L_downRight: 6,
+			[side.left, side.down],							// L_downLeft: 7,
+			[side.right, side.up],							// L_upRight: 8,
+			[side.left, side.up],							// L_upLeft: 9,
+			[side.left, side.right, side.up, side.down],	// quad: 10,
+			[],												// block_brick: 11,
+			[]												// block_bomb: 12
+		];
 	}
 	static constructGrid(){
 		// constructs a tile grid full of empty tiles
@@ -101,6 +112,43 @@ class tile{
 		var r = new tile();
 		if(pos) r.gridPos = pos;
 		return r;
+	}
+	static getEntityOpenSides(entityID, entityType = entities.tube){
+		var off = 0;
+		
+		// adds the length of the entity specific enumerator to offset the entityID so that the correct index is referenced in entityOpenSides
+		// the switch statement probably looks like a dumb way to do it but it will be cleaner if I end up adding more entity types
+		switch(entityType){
+			case entities.none: return [side.left, side.right, side.up, side.down];
+			case entities.block: off += Object.keys(tubes).length;
+			default: break;
+		}
+		
+		return tile.entityOpenSides[off + entityID];
+	}
+	static getEntitySprite(entityID, entityType = entities.tube){
+		var spritesheet = null;
+		var off = 0;
+		
+		// sets the spritesheet according to the entity's type
+		switch (entityType){
+			case entities.none: return null;
+			case entities.tube:
+				spritesheet = gfx.tiles_tubes;
+				break;
+			case entities.block: 
+				spritesheet = gfx.tiles_blocks; 
+				break;
+		}
+		
+		// adds the length of the entity specific enumerator to offset the entityID so that the correct index is referenced in entitySprites
+		// the switch statement probably looks like a dumb way to do it but it will be cleaner if I end up adding more entity types
+		switch (entityType){
+			case entities.block: off += Object.keys(tubes).length;
+			default: break;
+		}
+		
+		return new spriteContainer(spritesheet, tile.entitySprites[off + entityID]);
 	}
 	
 	static toTilePos(screenPos){
@@ -143,11 +191,24 @@ class tile{
 		return r;
 	}
 	
+	setEntity(entityID, entityType = entities.tube){
+		this.entityType = entityType;
+		this.entityID = entityID;
+	}
 	getOpenSides(){
-		if(this.entityType == entity.none) return [side.left, side.right, side.up, side.down];
-		return entityOpenSides[this.entityType];
+		if(this.entityID == entities.none) return [side.left, side.right, side.up, side.down];
+		return tile.getEntityOpenSides(this.entityID, this.entityType);
+	}
+	getSprite(){
+		if(this.entityID == entities.none) return null;
+		return getEntitySprite(this.entityID, this.entityType);
 	}
 	
 	draw(){
+		// draw the sprite
+		var sprite = this.getSprite();
+		if(!sprite) return;
+		var bounds = new collisionBox(tile.toScreenPos(this.pos, false), new vec2(tile.tilesize));
+		sprite.bounds = bounds;
 	}
 }
