@@ -84,12 +84,12 @@ class vec2{
 			Math.cos(angle) * magnitude, 
 			Math.sin(angle) * magnitude);
 	}
-	static fromSide(side){
-		switch(direction){
+	static fromSide(dir){
+		switch(dir){
 			case side.none: return new vec2(0, 0);
 			case side.left: return new vec2(-1, 0);
 			case side.right: return new vec2(1, 0);
-			case side.up: return new vec2(0, -1);
+			case side.up: return new vec2(0, -1); 
 			case side.down: return new vec2(0, 1);
 		}
 		return new vec2();

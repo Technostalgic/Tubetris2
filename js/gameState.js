@@ -1022,6 +1022,7 @@ class state_gameplayState extends gameState{
 	}
 	bumpDownCT(){
 		if(!this.controlledTiles) return;
+		this.controlledTiles.bumpDown();
 		this.ctBumpTime = this.timeElapsed;
 	}
 	handleControlledTiles(){
@@ -1031,7 +1032,7 @@ class state_gameplayState extends gameState{
 		var nextBump = this.ctBumpTime + this.ctDropInterval
 		if(this.timeElapsed >= nextBump){
 			this.bumpDownCT();
-			this.ctBumpTime += this.timeElapsed - nextBump;
+			this.ctBumpTime -= this.timeElapsed - nextBump;
 		}
 	}
 	

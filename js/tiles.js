@@ -270,10 +270,11 @@ class tileForm{
 	getTileGridPositions(){
 		// returns a list of grid positions that are occupied by the tileForm's tiles
 		var r = [];
+		var ths = this;
 		
 		// adds the tileForm's gridPos to each of it's tile's gridPos and adds the result to a list
 		this.tiles.forEach(function(tileOb){
-			let gpos = tileOb.gridPos.plus(this.gridPos);
+			let gpos = tileOb.gridPos.plus(ths.gridPos);
 			r.push(gpos);
 		});
 		
@@ -283,7 +284,7 @@ class tileForm{
 		// checks to see if the tileForm can move in the specified direction
 		var tilepos = this.getTileGridPositions();
 		
-		for(var i = tpos.length - 1; i >= 0; i--){
+		for(var i = tilepos.length - 1; i >= 0; i--){
 			var tpos = tilepos[i].plus(vec2.fromSide(dir));
 			if(!tile.at(tpos).isEmpty())
 				return false;
@@ -314,7 +315,7 @@ class tileForm{
 		var ths = this;
 		
 		this.tiles.forEach(function(tileOb){
-			let off = tileOb.gridPos.multiply(tile.tilePos);
+			let off = tileOb.gridPos.multiply(tile.tilesize);
 			tileOb.drawAtScreenPos(ths.drawPos.plus(off));
 		});
 	}
