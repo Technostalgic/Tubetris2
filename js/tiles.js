@@ -261,8 +261,11 @@ class tile{
 class tileForm{
 	constructor(){
 		this.gridPos = new vec2(4, 0);
+		this.lastPos = this.gridPos.clone();
 		this.drawPos = tile.toScreenPos(this.gridPos, false);
 		this.tiles = [];
+		
+		this.animMoveOffset;
 	}
 	
 	static getRandomPiece(){
@@ -304,7 +307,9 @@ class tileForm{
 	move(dir = side.down){
 		// moves the tileform in the specified direction by one grid unit
 		if(!this.canMove(dir)) return;
+		this.lastPos = this.gridPos.clone();
 		this.gridPos = this.gridPos.plus(vec2.fromSide(dir));
+		this.animOffset = gameState.current.timeElapsed;
 	}
 	bumpDown(){
 		// bumps the tileform downward if possible, otherwise sets it in place
@@ -325,9 +330,14 @@ class tileForm{
 	}
 	
 	draw(){
-		this.drawPos = tile.toScreenPos(this.gridPos, false);
-		var ths = this;
+		var animElapsed = (gameState.current.timeElapsed - this.animOffset) / 50;
+		animElapsed = Math.max(0, Math.min(animElapsed, 1));
+		var lpos = tile.toScreenPos(this.lastPos, false);
+		var npos = tile.toScreenPos(this.gridPos, false);
+		var dpos = npos.minus(lpos);
+		this.drawPos = lpos.plus(dpos.multiply(animElapsed));
 		
+		var ths = this;
 		this.tiles.forEach(function(tileOb){
 			let off = tileOb.gridPos.multiply(tile.tilesize);
 			tileOb.drawAtScreenPos(ths.drawPos.plus(off));

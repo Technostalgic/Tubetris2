@@ -1012,7 +1012,8 @@ class state_controlSettings extends state_menuState{
 class state_gameplayState extends gameState{
 	constructor(){
 		super();
-		this.controlledTiles = null;
+		
+		this.controlledTiles = null; // the falling tileForm that the player can control
 		this.ctDropInterval = 1000;
 		this.ctBumpTime = null;
 	}
@@ -1040,6 +1041,20 @@ class state_gameplayState extends gameState{
 		if(this.timeElapsed >= nextBump){
 			this.bumpDownCT();
 			this.ctBumpTime -= this.timeElapsed - nextBump;
+		}
+	}
+	
+	controlTap(control = controlAction.none){
+		switch(control){
+			case controlAction.down:
+				this.bumpDownCT(); 
+				break;
+			case controlAction.left: 
+				if(this.controlledTiles) this.controlledTiles.move(side.left);
+				break;
+			case controlAction.right: 
+				if(this.controlledTiles) this.controlledTiles.move(side.right);
+				break;
 		}
 	}
 	
