@@ -1018,17 +1018,20 @@ class state_gameplayState extends gameState{
 	}
 	
 	getNextCT(){
+		// gets the next tileForm
 		log("tileForm placed, next piece retrieved", logType.notify);
 		this.controlledTiles = tileForm.getRandomPiece();
 		this.ctBumpTime = this.elapsedTime - this.ctDropInterval;
 	}
 	bumpDownCT(){
+		// bumps the controlled tile object downward
 		if(!this.controlledTiles) return;
 		var used = !this.controlledTiles.bumpDown();
 		this.ctBumpTime = this.timeElapsed;
 		if(used) this.getNextCT();
 	}
 	handleControlledTiles(){
+		// handles updating the controlled tiles tileForm object
 		if(!this.controlledTiles) this.getNextCT();
 		if(!this.ctBumpTime) this.ctBumpTime = this.timeElapsed;
 		

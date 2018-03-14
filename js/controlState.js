@@ -77,8 +77,10 @@ class controlState{
 			case controlAction.nudgeDown: return controlState.isKeyDown(controlState.controls.nudgeDown);
 			case controlAction.rotateCW: return controlState.isKeyDown(controlState.controls.rotateCW);
 			case controlAction.rotateCCW: return controlState.isKeyDown(controlState.controls.rotateCCW);
-			case controlAction.select: return controlState.isKeyDown(controlState.controls.select);
-			case controlAction.pause: return controlState.isKeyDown(controlState.controls.pause);
+			case controlAction.select: return (controlState.isKeyDown(controlState.controls.select) || 
+				controlState.isKeyDown(13)); // non-overridable default key 'enter'
+			case controlAction.pause: return (controlState.isKeyDown(controlState.controls.pause) || 
+				controlState.isKeyDown(27)); // non-overridable default key 'escape'
 		}
 		return false;
 	}
@@ -149,6 +151,15 @@ class controlState{
 			if(controlState.controls[key] == keycode)
 				r.push(controlAction[key]);
 		});
+		
+		// non-overridable default keys 'enter' and 'escape' bound to actions 'select' and 'pause'
+		if(keycode == 13) {
+			if(!r.includes(controlAction.select))
+				r.push(controlAction.select);
+		}
+		else if (keycode == 27)
+			if(!r.includes(controlAction.pause))
+				r.push(controlAction.pause);
 		
 		return r;
 	}
