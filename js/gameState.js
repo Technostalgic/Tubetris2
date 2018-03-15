@@ -1049,6 +1049,12 @@ class state_gameplayState extends gameState{
 			case controlAction.down:
 				this.bumpDownCT(); 
 				break;
+			case controlAction.rotateCW:
+				this.controlledTiles.rotateCW();
+				break;
+			case controlAction.rotateCCW:
+				this.controlledTiles.rotateCCW();
+				break;
 			case controlAction.left: 
 				if(this.controlledTiles) this.controlledTiles.move(side.left);
 				break;

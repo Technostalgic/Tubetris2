@@ -88,7 +88,23 @@ class tile{
 			[],												// block_brick: 11,
 			[]												// block_bomb: 12
 		];
-	}
+		// gets the entityID after being rotated by 90 degrees clockwise
+		tile.rotatedEntityID = [
+			1,	// S_horizontal: 0,
+			0,	// S_vertical: 1,
+			5,	// T_horizontalDown: 2,
+			4,	// T_horizontalUp: 3,
+			2,	// T_verticalRight: 4,
+			3,	// T_verticalLeft: 5,
+			7,	// L_downRight: 6,
+			9,	// L_downLeft: 7,
+			6,	// L_upRight: 8,
+			8,	// L_upLeft: 9,
+			10,	// quad: 10,
+			0,	// block_brick: (11 - tubeIDCount) -> 0
+			1,	// block_bomb: (12 - tubeIDCount) -> 1
+		];  
+	}       
 	static constructGrid(){
 		// constructs a tile grid full of empty tiles
 		tile.grid = [];
@@ -122,6 +138,7 @@ class tile{
 		if(pos) r.gridPos = pos;
 		return r;
 	}
+	
 	static getEntityOpenSides(entityID, entityType = entities.tube){
 		var off = 0;
 		
@@ -158,6 +175,26 @@ class tile{
 		}
 		
 		return new spriteContainer(spritesheet, tile.entitySprites[off + entityID]);
+	}
+	static getEntityRotatedID(direction, entityID, entityType = entities.tube){
+		var off = 0;
+		
+		// adds the length of the entity specific enumerator to offset the entityID so that the correct index is referenced in rotatedEntityID
+		// the switch statement probably looks like a dumb way to do it but it will be cleaner if I end up adding more entity types
+		switch (entityType){
+			case entities.block: off += Object.keys(tubes).length;
+			default: break;
+		}
+		
+		var r = off + entityID;
+		
+		// if clockwise, rotate by 90 degrees clockwise once
+		if(direction == 1) r = tile.rotatedEntityID[r];
+		// if counter clockwise, rotate by 90 degrees clockwise 3 times (270 degrees) to get the same result as rotating by 90 degrees CCW
+		else for(var i = 3; i > 0; i--) 
+			r = tile.rotatedEntityID[r];
+		
+		return r;
 	}
 	
 	static toTilePos(screenPos){
@@ -248,11 +285,12 @@ class tile{
 		// draw the sprite
 		this.drawAtScreenPos(tile.toScreenPos(this.gridPos, false));
 	}
-	drawAtScreenPos(pos){
+	drawAtScreenPos(pos, rotation = null){
 		// draw the sprite at the specified position
 		var sprite = this.getSprite();
 		if(!sprite) return;
 		sprite.bounds.pos = pos;
+		if(rotation) sprite.rotation = rotation;
 		sprite.draw();
 	}
 }
@@ -261,11 +299,14 @@ class tile{
 class tileForm{
 	constructor(){
 		this.gridPos = new vec2(4, 0);
-		this.lastPos = this.gridPos.clone();
-		this.drawPos = tile.toScreenPos(this.gridPos, false);
 		this.tiles = [];
 		
-		this.animMoveOffset;
+		// animation stuff for smooth transformations
+		this.animOffset_translate = gameState.current.timeElapsed;
+		this.drawPos = tile.toScreenPos(this.gridPos, false);
+		this.lastDrawPos = this.drawPos.clone();
+		this.animOffset_rotate = gameState.current.timeElapsed - 1000;
+		this.lastDrawRot = 0;
 	}
 	
 	static getRandomPiece(){
@@ -304,12 +345,30 @@ class tileForm{
 		
 		return true;
 	}
+	canRotate(dir = 1, anchor = false){
+		// checks to see if the tileForm can be rotated
+		for(var i = this.tiles.length - 1; i >= 0; i--){
+			let tpos = null;
+			// clockwise rotation
+			if(dir == 1) tpos = new vec2(-this.tiles[i].gridPos.y, this.tiles[i].gridPos.x);
+			// counter-clockwise rotation
+			else tpos = new vec2(this.tiles[i].gridPos.y, -this.tiles[i].gridPos.x);
+			
+			tpos += this.gridPos;
+			if(!tile.at(tpos).isEmpty() || tile.isOutOfBounds(tpos))
+				return false;
+		}
+		return true;
+	}
+	
 	move(dir = side.down){
 		// moves the tileform in the specified direction by one grid unit
 		if(!this.canMove(dir)) return;
-		this.lastPos = this.gridPos.clone();
+		
+		// animation stuff for smooth translation
+		this.lastDrawPos = this.drawPos.clone();
 		this.gridPos = this.gridPos.plus(vec2.fromSide(dir));
-		this.animOffset = gameState.current.timeElapsed;
+		this.animOffset_translate = gameState.current.timeElapsed;
 	}
 	bumpDown(){
 		// bumps the tileform downward if possible, otherwise sets it in place
@@ -320,8 +379,38 @@ class tileForm{
 		}
 		return true;
 	}
+	rotate(dir = 1, anchored = false){
+		// rotates each tile 
+		// 'dir = 1' is clockwise 'dir = -1' is counter-clockwise
+		// 'anchor' determines whether or not the tileForm should be translated so that the top left tile matches the same 
+		//   tile position as it did before being rotated, useful for square pieces not looking weird while rotated
+		if(!this.canRotate(dir, anchored)) return;
+		
+		var ths = this;
+		this.tiles.forEach(function(tileOb){
+			let tpos = null;
+			// clockwise rotation
+			if(dir == 1) tpos = new vec2(-tileOb.gridPos.y, tileOb.gridPos.x);
+			// counter-clockwise rotation
+			else tpos = new vec2(tileOb.gridPos.y, -tileOb.gridPos.x);
+			
+			tileOb.gridPos = tpos;
+			tileOb.entityID = tile.getEntityRotatedID(dir, tileOb.entityID, tileOb.entityType);
+		});
+		
+		//animation stuff for smooth rotation
+		this.animOffset_rotate = gameState.current.timeElapsed;
+		this.lastDrawRot = Math.PI / 2 * (dir == 1 ? -1 : 1);
+	}
+	rotateCW(){
+		this.rotate(1, false);
+	}
+	rotateCCW(){
+		this.rotate(-1, false);
+	}
 	
 	setInPlace(){
+		// sets each tile in the tileform and applies it to the tile grid
 		var ths = this;
 		this.tiles.forEach(function(tileOb){
 			let tpos = tileOb.gridPos.plus(ths.gridPos);
@@ -329,18 +418,45 @@ class tileForm{
 		});
 	}
 	
-	draw(){
-		var animElapsed = (gameState.current.timeElapsed - this.animOffset) / 50;
+	getTranslateAnimOffset(){
+		// calculates the draw position's animation offset based on the smooth translation anim interval
+		var animInterval = 50; // time in milliseconds it takes to complete the smooth translation animation
+		
+		var animElapsed = (gameState.current.timeElapsed - this.animOffset_translate) / animInterval;
 		animElapsed = Math.max(0, Math.min(animElapsed, 1));
-		var lpos = tile.toScreenPos(this.lastPos, false);
+		var lpos = this.lastDrawPos.clone();
 		var npos = tile.toScreenPos(this.gridPos, false);
 		var dpos = npos.minus(lpos);
-		this.drawPos = lpos.plus(dpos.multiply(animElapsed));
 		
+		return dpos.multiply(animElapsed);
+	}
+	getRotateAnimOffset(){
+		// calculates the draw rotation's animation offset based on the smooth rotation anim interval
+		var animInterval = 50; // time in milliseconds it takes to complete the smooth translation animation
+		
+		var animElapsed = (gameState.current.timeElapsed - this.animOffset_rotate) / animInterval;
+		animElapsed = Math.max(0, Math.min(animElapsed, 1));
+		
+		var lRot = this.lastDrawRot;
+		var nRot = 0;
+		var dRot = nRot - lRot;
+		
+		return lRot + dRot * animElapsed;
+	}
+	
+	draw(){
+		// draws the tileForm's tiles
+		
+		// calculates the draw position and rotation based on the smooth movement animation speed
+		this.drawPos = this.lastDrawPos.plus(this.getTranslateAnimOffset());
+		var drawRot = this.getRotateAnimOffset();
+		
+		// draws each tile in the tileForm
 		var ths = this;
 		this.tiles.forEach(function(tileOb){
 			let off = tileOb.gridPos.multiply(tile.tilesize);
-			tileOb.drawAtScreenPos(ths.drawPos.plus(off));
+			off = off.rotate(drawRot);
+			tileOb.drawAtScreenPos(ths.drawPos.plus(off), drawRot);
 		});
 	}
 }

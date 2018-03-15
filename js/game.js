@@ -518,7 +518,7 @@ function getDefaultScores(){
 }
 
 function addInputEventListeners(){
-	window.addEventListener('keydown', function(e){ log("key '" + e.key + "'(" + e.keyCode + ") pressed", logType.notify); });
+	//window.addEventListener('keydown', function(e){ log("key '" + e.key + "'(" + e.keyCode + ") pressed", logType.notify); });
 	scalingTarget.addEventListener('mousedown', controlState.listenForMouseDown);
 	scalingTarget.addEventListener('mouseup', controlState.listenForMouseUp);
 	scalingTarget.addEventListener('mousemove', controlState.listenForMouseMove);

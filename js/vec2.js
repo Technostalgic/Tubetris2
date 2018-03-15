@@ -43,7 +43,7 @@ class vec2{
 	}
 	rotate(rot){
 		//rotates the vector by the specified angle
-		var ang = this.direction;
+		var ang = this.direction();
 		var mag = this.distance();
 		ang += rot;
 		return vec2.fromAng(ang, mag)
