@@ -355,6 +355,18 @@ class tileForm{
 		
 		return r;
 	}
+	getRelativeTilePositions(){
+		// returns a list of position offsets that the tileform's tiles have
+		var r = [];
+		var ths = this;
+		
+		// adds the tileForm's gridPos to a list
+		this.tiles.forEach(function(tileOb){
+			r.push(tileOb.gridPos.clone());
+		});
+		
+		return r;
+	}
 	canMove(dir = side.down){
 		// checks to see if the tileForm can move in the specified direction
 		var tilepos = this.getTileGridPositions();
@@ -385,17 +397,28 @@ class tileForm{
 	}
 	canRotate(dir = 1, anchored = false){
 		// checks to see if the tileForm can be rotated
-		for(var i = this.tiles.length - 1; i >= 0; i--){
-			let tpos = null;
+		var tlPos0;
+		if(anchored) tlPos0 = this.getTopLeftTilePos();
+		
+		var tposes = this.getRelativeTilePositions();
+		tposes.forEach(function(pos, i){
 			// clockwise rotation
-			if(dir == 1) tpos = new vec2(-this.tiles[i].gridPos.y, this.tiles[i].gridPos.x);
+			if(dir == 1) tposes[i] = new vec2(-pos.y, pos.x);
 			// counter-clockwise rotation
-			else tpos = new vec2(this.tiles[i].gridPos.y, -this.tiles[i].gridPos.x);
+			else tposes[i] = new vec2(pos.y, -pos.x);
+		});
+		
+		var dtlPos = new vec2();
+		if(anchored) dtlPos = tlPos0.minus(vec2.getBounds(tposes).topLeft);
+		
+		for(let i = tposes.length - 1; i >= 0; i--){
+			let tpos = tposes[i];
 			
-			tpos += this.gridPos;
+			tpos = tpos.plus(this.gridPos).plus(dtlPos);
 			if(!tile.at(tpos).isEmpty() || tile.isOutOfBounds(tpos))
 				return false;
 		}
+		
 		return true;
 	}
 	
@@ -439,7 +462,6 @@ class tileForm{
 		//   tile position as it did before being rotated, useful for square pieces not looking weird while rotated
 		// 'forced' forces the piece to rotate if it overlaps a non-empty tile
 		if(!forced && !this.canRotate(dir, anchored)) return;
-		console.log(anchored);
 		
 		var tlPos0;
 		if(anchored) tlPos0 = this.getTopLeftTilePos();

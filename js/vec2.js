@@ -94,6 +94,27 @@ class vec2{
 		}
 		return new vec2();
 	}
+	static getBounds(vec2arrray){
+		var minX;
+		var minY;
+		var maxX;
+		var maxY;
+		
+		vec2arrray.forEach(function(vec, i){
+			if(i == 0){
+				minX = vec.x;
+				minY = vec.y;
+				maxX = vec.x;
+				maxY = vec.y;
+			}
+			if(vec.x < minX) minX = vec.x;
+			if(vec.y < minY) minY = vec.y;
+			if(vec.x > maxX) maxX = vec.x;
+			if(vec.y > maxY) maxY = vec.y;
+		});
+		
+		return collisionBox.fromSides(minX, minY, maxX, maxY);
+	}
 	
 	toString(){
 		return "vector<" + this.x + ", " + this.y + ">";
