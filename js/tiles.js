@@ -312,14 +312,36 @@ class tileForm{
 	static getRandomPiece(){
 		var r = new tileForm();
 		r.tiles = [
-			tile.fromData(new vec2(-1, 0), tubes.T_horizontalUp),
 			tile.fromData(new vec2(0, 0), tubes.S_horizontal),
 			tile.fromData(new vec2(1, 0), tubes.L_downLeft),
-			tile.fromData(new vec2(1, 1), tubes.T_horizontalUp)
+			tile.fromData(new vec2(1, 1), tubes.L_upLeft),
+			tile.fromData(new vec2(0, 1), tubes.S_horizontal)
 		];
+		//r.tiles = [
+		//	tile.fromData(new vec2(-1, 0), tubes.T_horizontalUp),
+		//	tile.fromData(new vec2(0, 0), tubes.S_horizontal),
+		//	tile.fromData(new vec2(1, 0), tubes.L_downLeft),
+		//	tile.fromData(new vec2(1, 1), tubes.T_horizontalUp)
+		//];
 		return r;
 	}
 	
+	getTopLeftTilePos(){
+		var minX = null;
+		var minY = null;
+		
+		this.tiles.forEach(function(tileOb, i){
+			if(i == 0) {
+				minX = tileOb.gridPos.x;
+				minY = tileOb.gridPos.y;
+				return; // acts as 'continue' keyword in async forEach
+			}
+			if(tileOb.gridPos.x < minX) minX = tileOb.gridPos.x;
+			if(tileOb.gridPos.y < minY) minY = tileOb.gridPos.y;
+		});
+		
+		return new vec2(minX, minY);
+	}
 	getTileGridPositions(){
 		// returns a list of grid positions that are occupied by the tileForm's tiles
 		var r = [];
@@ -345,7 +367,23 @@ class tileForm{
 		
 		return true;
 	}
-	canRotate(dir = 1, anchor = false){
+	canTranslate(translation){
+		// checks to see if the tileform overlaps any tiles or goes out of bounds with the specified translation applied
+		var lpos = this.gridPos;
+		this.gridPos = this.gridPos.plus(translation);
+		var dposes = this.getTileGridPositions();
+		
+		for(var i = dposes.length - 1; i >= 0; i--){
+			if(!tile.at(dposes[i]).isEmpty() || tile.isOutOfBounds(dposes[i])){
+				this.gridPos = lpos;
+				return false;
+			}
+		}
+		
+		this.gridPos = lpos;
+		return true;
+	}
+	canRotate(dir = 1, anchored = false){
 		// checks to see if the tileForm can be rotated
 		for(var i = this.tiles.length - 1; i >= 0; i--){
 			let tpos = null;
@@ -361,13 +399,28 @@ class tileForm{
 		return true;
 	}
 	
-	move(dir = side.down){
-		// moves the tileform in the specified direction by one grid unit
-		if(!this.canMove(dir)) return;
+	translate(translation, forced = false){
+		// moves the tileform by the specified translation
+		// 'forced' forces the piece to move if it overlaps a non-empty tile
+		if(!forced && !this.canTranslate(translation)) return;
+		
+		// applies the translation
+		this.gridPos = this.gridPos.plus(translation);
 		
 		// animation stuff for smooth translation
 		this.lastDrawPos = this.drawPos.clone();
+		this.animOffset_translate = gameState.current.timeElapsed;
+	}
+	move(dir = side.down, forced = false){
+		// moves the tileform in the specified direction by one grid unit
+		// 'forced' forces the piece to move if it overlaps a non-empty tile
+		if(!forced && !this.canMove(dir)) return;
+		
+		// applies the movement
 		this.gridPos = this.gridPos.plus(vec2.fromSide(dir));
+		
+		// animation stuff for smooth translation
+		this.lastDrawPos = this.drawPos.clone();
 		this.animOffset_translate = gameState.current.timeElapsed;
 	}
 	bumpDown(){
@@ -379,12 +432,17 @@ class tileForm{
 		}
 		return true;
 	}
-	rotate(dir = 1, anchored = false){
+	rotate(dir = 1, anchored = false, forced = false){
 		// rotates each tile 
 		// 'dir = 1' is clockwise 'dir = -1' is counter-clockwise
-		// 'anchor' determines whether or not the tileForm should be translated so that the top left tile matches the same 
+		// 'anchored' determines whether or not the tileForm should be translated so that the top left tile matches the same 
 		//   tile position as it did before being rotated, useful for square pieces not looking weird while rotated
-		if(!this.canRotate(dir, anchored)) return;
+		// 'forced' forces the piece to rotate if it overlaps a non-empty tile
+		if(!forced && !this.canRotate(dir, anchored)) return;
+		console.log(anchored);
+		
+		var tlPos0;
+		if(anchored) tlPos0 = this.getTopLeftTilePos();
 		
 		var ths = this;
 		this.tiles.forEach(function(tileOb){
@@ -398,15 +456,20 @@ class tileForm{
 			tileOb.entityID = tile.getEntityRotatedID(dir, tileOb.entityID, tileOb.entityType);
 		});
 		
+		if(anchored){
+			var dtlPos = tlPos0.minus(this.getTopLeftTilePos());
+			this.translate(dtlPos);
+		}
+		
 		//animation stuff for smooth rotation
 		this.animOffset_rotate = gameState.current.timeElapsed;
 		this.lastDrawRot = Math.PI / 2 * (dir == 1 ? -1 : 1);
 	}
 	rotateCW(){
-		this.rotate(1, false);
+		this.rotate(1, true);
 	}
 	rotateCCW(){
-		this.rotate(-1, false);
+		this.rotate(-1, true);
 	}
 	
 	setInPlace(){
