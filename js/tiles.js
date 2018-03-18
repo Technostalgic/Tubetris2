@@ -369,15 +369,7 @@ class tileForm{
 	}
 	canMove(dir = side.down){
 		// checks to see if the tileForm can move in the specified direction
-		var tilepos = this.getTileGridPositions();
-		
-		for(var i = tilepos.length - 1; i >= 0; i--){
-			var tpos = tilepos[i].plus(vec2.fromSide(dir));
-			if(!tile.at(tpos).isEmpty() || tile.isOutOfBounds(tpos))
-				return false;
-		}
-		
-		return true;
+		return this.canTranslate(vec2.fromSide(dir));
 	}
 	canTranslate(translation){
 		// checks to see if the tileform overlaps any tiles or goes out of bounds with the specified translation applied
@@ -397,9 +389,7 @@ class tileForm{
 	}
 	canRotate(dir = 1, anchored = false){
 		// checks to see if the tileForm can be rotated
-		var tlPos0;
-		if(anchored) tlPos0 = this.getTopLeftTilePos();
-		
+		// applies the rotation to each tile in the tileForm and stores the results in tposes
 		var tposes = this.getRelativeTilePositions();
 		tposes.forEach(function(pos, i){
 			// clockwise rotation
@@ -408,13 +398,14 @@ class tileForm{
 			else tposes[i] = new vec2(pos.y, -pos.x);
 		});
 		
+		// calculates the difference betweem the old top left grid pos and the new one, if not anchored, an empty vector is used
 		var dtlPos = new vec2();
-		if(anchored) dtlPos = tlPos0.minus(vec2.getBounds(tposes).topLeft);
+		if(anchored) dtlPos = this.getTopLeftTilePos().minus(vec2.getBounds(tposes).topLeft);
 		
 		for(let i = tposes.length - 1; i >= 0; i--){
-			let tpos = tposes[i];
-			
-			tpos = tpos.plus(this.gridPos).plus(dtlPos);
+			// applies the difference and tileForm's grid translation to each tile
+			let tpos = tposes[i].plus(this.gridPos).plus(dtlPos);
+			// if the position is not able to be occupied, return false
 			if(!tile.at(tpos).isEmpty() || tile.isOutOfBounds(tpos))
 				return false;
 		}
@@ -440,11 +431,7 @@ class tileForm{
 		if(!forced && !this.canMove(dir)) return;
 		
 		// applies the movement
-		this.gridPos = this.gridPos.plus(vec2.fromSide(dir));
-		
-		// animation stuff for smooth translation
-		this.lastDrawPos = this.drawPos.clone();
-		this.animOffset_translate = gameState.current.timeElapsed;
+		this.translate(vec2.fromSide(dir));
 	}
 	bumpDown(){
 		// bumps the tileform downward if possible, otherwise sets it in place
@@ -463,6 +450,7 @@ class tileForm{
 		// 'forced' forces the piece to rotate if it overlaps a non-empty tile
 		if(!forced && !this.canRotate(dir, anchored)) return;
 		
+		// if anchored, stores the lop left tile position in tlPos0
 		var tlPos0;
 		if(anchored) tlPos0 = this.getTopLeftTilePos();
 		
@@ -478,6 +466,7 @@ class tileForm{
 			tileOb.entityID = tile.getEntityRotatedID(dir, tileOb.entityID, tileOb.entityType);
 		});
 		
+		// if anchored, offsets the tileForm by the grid pos difference between the new top left and the old top left
 		if(anchored){
 			var dtlPos = tlPos0.minus(this.getTopLeftTilePos());
 			this.translate(dtlPos);

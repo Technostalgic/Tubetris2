@@ -95,10 +95,9 @@ class vec2{
 		return new vec2();
 	}
 	static getBounds(vec2arrray){
-		var minX;
-		var minY;
-		var maxX;
-		var maxY;
+		// returns a collisionBox that surrounds all the vectors in vec2arrray
+		var minX, minY,
+		    maxX, maxY;
 		
 		vec2arrray.forEach(function(vec, i){
 			if(i == 0){
@@ -107,6 +106,7 @@ class vec2{
 				maxX = vec.x;
 				maxY = vec.y;
 			}
+			
 			if(vec.x < minX) minX = vec.x;
 			if(vec.y < minY) minY = vec.y;
 			if(vec.x > maxX) maxX = vec.x;
