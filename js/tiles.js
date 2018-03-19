@@ -38,7 +38,7 @@ class tile{
 		this.gridPos = new vec2(-1);
 		this.entityType = entities.none;
 		this.entityID = entities.none;
-		this.tintColor = new color();
+		this.tintColor = color.fromRGBA(0, 0, 0, 0.4);
 	}
 	
 	static fromData(pos, entityID, entityType = entities.tube){
@@ -288,11 +288,17 @@ class tile{
 	}
 	drawAtScreenPos(pos, rotation = null){
 		// draw the sprite at the specified position
+		this.drawTintAtScreenPos(pos);
+		
 		var sprite = this.getSprite();
 		if(!sprite) return;
 		sprite.bounds.pos = pos;
 		if(rotation) sprite.rotation = rotation;
 		sprite.draw();
+	}
+	drawTintAtScreenPos(pos){
+		this.tintColor.setFill();
+		renderContext.fillRect(pos.x, pos.y, tile.tilesize, tile.tilesize);
 	}
 }
 
