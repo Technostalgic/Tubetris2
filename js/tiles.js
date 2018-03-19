@@ -9,7 +9,8 @@
 var entities = {
 	none: -1,
 	tube: 0,
-	block: 1
+	block: 1,
+	ball: 2
 }
 // enumerate the different tube entity IDs
 var tubes = {
@@ -31,6 +32,15 @@ var blocks = {
 	none: -1,
 	block_brick: 0,
 	block_bomb: 1
+}
+// enumerate the different ball entity IDs
+var balls = {
+	none: -1,
+	grey: 0,
+	orange: 1,
+	blue: 2,
+	green: 3,
+	gold: 4
 }
 
 class tile{
@@ -69,9 +79,14 @@ class tile{
 			new spriteBox(new vec2(tile.tilesize * 5, tile.tilesize * 0), new vec2(tile.tilesize)),	// L_downLeft: 7,
 			new spriteBox(new vec2(tile.tilesize * 4, tile.tilesize * 1), new vec2(tile.tilesize)),	// L_upRight: 8,
 			new spriteBox(new vec2(tile.tilesize * 5, tile.tilesize * 1), new vec2(tile.tilesize)),	// L_upLeft: 9,
-			new spriteBox(new vec2(tile.tilesize * 0, tile.tilesize * 1), new vec2(tile.tilesize)),	// quad: 10,
+			new spriteBox(new vec2(tile.tilesize * 0, tile.tilesize * 1), new vec2(tile.tilesize)),	// quad: 10 ~~ bricks:
 			new spriteBox(new vec2(tile.tilesize * 0, 0), new vec2(tile.tilesize)),	// block_brick: 11,
-			new spriteBox(new vec2(tile.tilesize * 1, 0), new vec2(tile.tilesize)),	// block_bomb: 12
+			new spriteBox(new vec2(tile.tilesize * 1, 0), new vec2(tile.tilesize)),	// block_bomb: 12 ~~ balls:
+			new spriteBox(new vec2(tile.tilesize * 0, 0), new vec2(tile.tilesize)),	// grey: 13,
+			new spriteBox(new vec2(tile.tilesize * 1, 0), new vec2(tile.tilesize)),	// orange: 14,
+			new spriteBox(new vec2(tile.tilesize * 2, 0), new vec2(tile.tilesize)),	// blue: 15,
+			new spriteBox(new vec2(tile.tilesize * 3, 0), new vec2(tile.tilesize)),	// green: 16,
+			new spriteBox(new vec2(tile.tilesize * 4, 0), new vec2(tile.tilesize)),	// gold: 17
 		];
 		// gets the open side list of each entity type offset to its ID
 		tile.entityOpenSides = [
@@ -87,7 +102,12 @@ class tile{
 			[side.left, side.up],							// L_upLeft: 9,
 			[side.left, side.right, side.up, side.down],	// quad: 10,
 			[],												// block_brick: 11,
-			[]												// block_bomb: 12
+			[],												// block_bomb: 12
+			[],												// ball: 13
+			[],												// ball: 14
+			[],												// ball: 15
+			[],												// ball: 16
+			[]												// ball: 17
 		];
 		// gets the entityID after being rotated by 90 degrees clockwise
 		tile.rotatedEntityID = [
@@ -102,8 +122,13 @@ class tile{
 			6,	// L_upRight: 8,
 			8,	// L_upLeft: 9,
 			10,	// quad: 10,
-			0,	// block_brick: (11 - tubeIDCount) -> 0
-			1,	// block_bomb: (12 - tubeIDCount) -> 1
+			0,	// block_brick: (11 - offIDCount) -> 0
+			1,	// block_bomb: (12 - offIDCount) -> 1
+			0,	// ball(grey): (13 - offIDCount) -> 0
+			1,	// ball(orange): (14 - offIDCount) -> 1
+			2,	// ball(blue): (15 - offIDCount) -> 2
+			3,	// ball(green): (16 - offIDCount) -> 3
+			4,	// ball(gold): (17 - offIDCount) -> 4
 		];  
 	}       
 	static constructGrid(){
@@ -166,12 +191,16 @@ class tile{
 			case entities.block: 
 				spritesheet = gfx.tiles_blocks; 
 				break;
+			case entities.ball:
+				spritesheet = gfx.tiles_balls;
+				break;
 		}
 		
 		// adds the length of the entity specific enumerator to offset the entityID so that the correct index is referenced in entitySprites
 		// the switch statement probably looks like a dumb way to do it but it will be cleaner if I end up adding more entity types
 		switch (entityType){
 			case entities.block: off += Object.keys(tubes).length;
+			case entities.ball: off += Object.keys(balls).length;
 			default: break;
 		}
 		
@@ -184,12 +213,13 @@ class tile{
 		// the switch statement probably looks like a dumb way to do it but it will be cleaner if I end up adding more entity types
 		switch (entityType){
 			case entities.block: off += Object.keys(tubes).length;
+			case entities.ball: off += Object.keys(balls).length;
 			default: break;
 		}
 		
 		var r = off + entityID;
 		
-		// if clockwise, rotate by 90 degrees clockwise once
+		// if clockwise, rotate once by 90 degrees clockwise
 		if(direction == 1) r = tile.rotatedEntityID[r];
 		// if counter clockwise, rotate by 90 degrees clockwise 3 times (270 degrees) to get the same result as rotating by 90 degrees CCW
 		else for(var i = 3; i > 0; i--) 
