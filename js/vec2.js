@@ -105,6 +105,7 @@ class vec2{
 				minY = vec.y;
 				maxX = vec.x;
 				maxY = vec.y;
+				return; // acts as "continue" keyword in anon callback in a forEach loop
 			}
 			
 			if(vec.x < minX) minX = vec.x;
@@ -141,6 +142,70 @@ class spriteBox{
 	
 	clone(){
 		return new spriteBox(this.pos.clone(), this.size.clone());
+	}
+}
+
+class color{
+	constructor(){
+		this.r = 0;
+		this.g = 0;
+		this.b = 0;
+		this.a = 0;
+	}
+	
+	static fromRGBA(r = 0, g = 0, b = 0, a = 1){
+		var col = new color();
+		
+		col.r = r;
+		col.g = g;
+		col.b = b;
+		col.a = a;
+		
+		return col;
+	}
+	static fromHex(hex = "#000", alpha = 1){
+		var sslength = hex.length == 4 ? 1 : 2;
+		var r = parseInt(hex.substr(1 + 0 * sslength, sslength), 16);
+		var g = parseInt(hex.substr(1 + 1 * sslength, sslength), 16);
+		var b = parseInt(hex.substr(1 + 2 * sslength, sslength), 16);
+		
+		if(sslength == 1){
+			r = r * 17;
+			g = g * 17;
+			b = b * 17;
+		}
+		
+		return color.fromRGBA(r, g, b, alpha);
+	}
+	
+	toRGB(){
+		return (
+			"rgb(" + 
+			Math.floor(this.r).toString() + "," + 
+			Math.floor(this.g).toString() + "," + 
+			Math.floor(this.b).toString() + ")" );
+	}
+	toRGBA(){
+		return (
+			"rgb(" + 
+			Math.floor(this.r).toString() + "," + 
+			Math.floor(this.g).toString() + "," + 
+			Math.floor(this.b).toString() + "," +
+			this.a.toString() + ")" );
+	}
+	toHex(){
+		var r = Math.floor(this.r).toString(16);
+		var g = Math.floor(this.g).toString(16);
+		var b = Math.floor(this.b).toString(16);
+		
+		return "#" + r + g + b;
+	}
+	
+	setFill(ctx = renderContext){
+		ctx.fillStyle = this.toRGBA();
+	}
+	setStroke(ctx = renderContext){
+		ctx.strokeStyle = this.toRGBA();
 	}
 }
 

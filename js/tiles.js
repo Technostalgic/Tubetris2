@@ -38,6 +38,7 @@ class tile{
 		this.gridPos = new vec2(-1);
 		this.entityType = entities.none;
 		this.entityID = entities.none;
+		this.tintColor = new color();
 	}
 	
 	static fromData(pos, entityID, entityType = entities.tube){
