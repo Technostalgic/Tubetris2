@@ -170,22 +170,11 @@ class tile{
 	}
 	
 	static getEntityOpenSides(entityID, entityType = entities.tube){
-		var off = 0;
-		
-		// adds the length of the entity specific enumerator to offset the entityID so that the correct index is referenced in entityOpenSides
-		// the switch statement probably looks like a dumb way to do it but it will be cleaner if I end up adding more entity types
-		switch(entityType){
-			case entities.none: return [side.left, side.right, side.up, side.down];
-			case entities.ball: off += Object.keys(blocks).length - 1;
-			case entities.block: off += Object.keys(tubes).length - 1;
-			default: break;
-		}
-		
-		return tile.entityOpenSides[off + entityID];
+		var uid = tile.getEntityUID(entityID, entityType);
+		return tile.entityOpenSides[uid];
 	}
 	static getEntitySprite(entityID, entityType = entities.tube){
 		var spritesheet = null;
-		var off = 0;
 		
 		// sets the spritesheet according to the entity's type
 		switch (entityType){
@@ -201,30 +190,14 @@ class tile{
 				break;
 		}
 		
-		// adds the length of the entity specific enumerator to offset the entityID so that the correct index is referenced in entitySprites
-		// the switch statement probably looks like a dumb way to do it but it will be cleaner if I end up adding more entity types
-		switch (entityType){
-			case entities.ball: off += Object.keys(blocks).length - 1;
-			case entities.block: off += Object.keys(tubes).length - 1;
-			default: break;
-		}
-		
-		return new spriteContainer(spritesheet, tile.entitySprites[off + entityID]);
+		var uid = tile.getEntityUID(entityID, entityType);
+		return new spriteContainer(spritesheet, tile.entitySprites[uid]);
 	}
 	static getEntityRotatedID(direction, entityID, entityType = entities.tube){
-		var off = 0;
-		
-		// adds the length of the entity specific enumerator to offset the entityID so that the correct index is referenced in rotatedEntityID
-		// the switch statement probably looks like a dumb way to do it but it will be cleaner if I end up adding more entity types
-		switch (entityType){
-			case entities.ball: off += Object.keys(blocks).length - 1;
-			case entities.block: off += Object.keys(tubes).length - 1;
-			default: break;
-		}
-		
-		var r = off + entityID;
+		var uid = tile.getEntityUID(entityID, entityType);
 		
 		// if clockwise, rotate once by 90 degrees clockwise
+		var r = uid;
 		if(direction == 1) r = tile.rotatedEntityID[r];
 		// if counter clockwise, rotate by 90 degrees clockwise 3 times (270 degrees) to get the same result as rotating by 90 degrees CCW
 		else for(var i = 3; i > 0; i--) 
@@ -292,8 +265,38 @@ class tile{
 		return r;
 	}
 	
+	static getEntityUID(entityID, entityType = entities.tube){
+		var off = 0;
+		
+		// adds the length of the entity specific enumerator to offset the entityID so that the correct UID offset is returned
+		// the switch statement probably looks like a dumb way to do it but it will be cleaner if I end up adding more entity types
+		switch (entityType){
+			case entities.ball: off += Object.keys(blocks).length - 1;
+			case entities.block: off += Object.keys(tubes).length - 1;
+			default: break;
+		}
+		
+		return off + entityID;
+	}
+	static getUIDEntityType(uid){
+		if(uid > tile.getEntityUID(0, entities.ball))
+			return entities.ball;
+		if(uid > tile.getEntityUID(0, entities.block))
+			return entities.block;
+		return entities.tube;
+	}
+	static getUIDEntityID(uid){
+		var type = tile.getUIDEntityType(uid);
+		var off = tile.getEntityUID(0, type);
+		return uid - off;
+	}
+	
 	static SIP_normal(self){
+		// the normal set in place action
 		tile.setTileAt(self, self.gridPos);
+	}
+	static SIP_ball(self){
+		// the set in place action for a ball tile entity
 	}
 	
 	isEmpty(){
@@ -303,7 +306,14 @@ class tile{
 		this.entityType = entityType;
 		this.entityID = entityID;
 		
-		this.m_setInPlace = tile.SIP_normal;
+		switch(entityType){
+			case entities.ball: 
+				this.m_setInPlace = tile.SIP_ball;
+				break;
+			default: 
+				this.m_setInPlace = tile.SIP_normal;
+				break;
+		}
 	}
 	getOpenSides(){
 		if(this.entityID == entities.none) return [side.left, side.right, side.up, side.down];
@@ -322,6 +332,7 @@ class tile{
 		this.m_setInPlace(this);
 	}
 	m_setInPlace(self = null){}
+	
 	clone(){
 		// returns an identical tile object of a seperate instance
 		var r = tile.fromData(this.gridPos.clone(), this.entityID, this.entityType);
