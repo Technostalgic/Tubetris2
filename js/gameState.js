@@ -1021,7 +1021,7 @@ class state_gameplayState extends gameState{
 	getNextCT(){
 		// gets the next tileForm
 		log("tileForm placed, next piece retrieved", logType.notify);
-		this.controlledTiles = tileForm.getRandomPiece();
+		this.controlledTiles = tileForm.getPiece_ball();
 		this.ctBumpTime = this.elapsedTime - this.ctDropInterval;
 	}
 	bumpDownCT(){

@@ -48,12 +48,13 @@ class tile{
 		this.gridPos = new vec2(-1);
 		this.entityType = entities.none;
 		this.entityID = entities.none;
-		this.tintColor = color.fromRGBA(0, 0, 0, 0.4);
+		this.tintColor = new color();
 	}
 	
 	static fromData(pos, entityID, entityType = entities.tube){
 		// used to construct a tile from the specified data
 		var r = new tile();
+		r.tintColor = tile.normalTint;
 		r.gridPos = pos;
 		r.setEntity(entityID, entityType);
 		return r;
@@ -62,6 +63,7 @@ class tile{
 	static init(){
 		// initializes the static fields for the tile class
 		tile.tilesize = 32;
+		tile.normalTint = color.fromRGBA(0, 0, 0, 0.4);
 		tile.offset = new vec2(-screenBounds.width % tile.tilesize - 2, -screenBounds.height % tile.tilesize - 2).plus(new vec2(tile.tilesize));
 		tile.gridBounds = collisionBox.fromSides(0, 0, 10, 20);
 		tile.grid = [];
@@ -79,9 +81,11 @@ class tile{
 			new spriteBox(new vec2(tile.tilesize * 5, tile.tilesize * 0), new vec2(tile.tilesize)),	// L_downLeft: 7,
 			new spriteBox(new vec2(tile.tilesize * 4, tile.tilesize * 1), new vec2(tile.tilesize)),	// L_upRight: 8,
 			new spriteBox(new vec2(tile.tilesize * 5, tile.tilesize * 1), new vec2(tile.tilesize)),	// L_upLeft: 9,
-			new spriteBox(new vec2(tile.tilesize * 0, tile.tilesize * 1), new vec2(tile.tilesize)),	// quad: 10 ~~ bricks:
+			new spriteBox(new vec2(tile.tilesize * 0, tile.tilesize * 1), new vec2(tile.tilesize)),	// quad: 10 
+																									//~~ bricks:
 			new spriteBox(new vec2(tile.tilesize * 0, 0), new vec2(tile.tilesize)),	// block_brick: 11,
-			new spriteBox(new vec2(tile.tilesize * 1, 0), new vec2(tile.tilesize)),	// block_bomb: 12 ~~ balls:
+			new spriteBox(new vec2(tile.tilesize * 1, 0), new vec2(tile.tilesize)),	// block_bomb: 12 
+																					//~~ balls:
 			new spriteBox(new vec2(tile.tilesize * 0, 0), new vec2(tile.tilesize)),	// grey: 13,
 			new spriteBox(new vec2(tile.tilesize * 1, 0), new vec2(tile.tilesize)),	// orange: 14,
 			new spriteBox(new vec2(tile.tilesize * 2, 0), new vec2(tile.tilesize)),	// blue: 15,
@@ -161,6 +165,7 @@ class tile{
 	static getFull(pos = null){
 		// returns a full tile
 		var r = new tile();
+		r.tintColor = tile.normalTint;
 		if(pos) r.gridPos = pos;
 		return r;
 	}
@@ -172,7 +177,8 @@ class tile{
 		// the switch statement probably looks like a dumb way to do it but it will be cleaner if I end up adding more entity types
 		switch(entityType){
 			case entities.none: return [side.left, side.right, side.up, side.down];
-			case entities.block: off += Object.keys(tubes).length;
+			case entities.ball: off += Object.keys(blocks).length - 1;
+			case entities.block: off += Object.keys(tubes).length - 1;
 			default: break;
 		}
 		
@@ -199,8 +205,8 @@ class tile{
 		// adds the length of the entity specific enumerator to offset the entityID so that the correct index is referenced in entitySprites
 		// the switch statement probably looks like a dumb way to do it but it will be cleaner if I end up adding more entity types
 		switch (entityType){
-			case entities.block: off += Object.keys(tubes).length;
-			case entities.ball: off += Object.keys(balls).length;
+			case entities.ball: off += Object.keys(blocks).length - 1;
+			case entities.block: off += Object.keys(tubes).length - 1;
 			default: break;
 		}
 		
@@ -212,8 +218,8 @@ class tile{
 		// adds the length of the entity specific enumerator to offset the entityID so that the correct index is referenced in rotatedEntityID
 		// the switch statement probably looks like a dumb way to do it but it will be cleaner if I end up adding more entity types
 		switch (entityType){
-			case entities.block: off += Object.keys(tubes).length;
-			case entities.ball: off += Object.keys(balls).length;
+			case entities.ball: off += Object.keys(blocks).length - 1;
+			case entities.block: off += Object.keys(tubes).length - 1;
 			default: break;
 		}
 		
@@ -283,6 +289,7 @@ class tile{
 		if(ob instanceof tile) return ob;
 		// otherwise, return either an empty or full tile at the specified position
 		var r = empty ? tile.getEmpty(pos) : tile.getFull(pos);
+		
 		return r;
 	}
 	
@@ -346,7 +353,7 @@ class tileForm{
 		this.lastDrawRot = 0;
 	}
 	
-	static getRandomPiece(){
+	static getPiece_random(){
 		var r = new tileForm();
 		r.tiles = [
 			tile.fromData(new vec2(0, 0), tubes.S_horizontal),
@@ -360,6 +367,18 @@ class tileForm{
 		//	tile.fromData(new vec2(1, 0), tubes.L_downLeft),
 		//	tile.fromData(new vec2(1, 1), tubes.T_horizontalUp)
 		//];
+		return r;
+	}
+	static getPiece_ball(){
+		var r = new tileForm();
+		
+		var n = Math.floor(Math.random() * (Object.keys(balls).length - 1));
+		r.tiles = [
+			tile.fromData(new vec2(), n, entities.ball)
+		];
+		
+		log(n);
+
 		return r;
 	}
 	

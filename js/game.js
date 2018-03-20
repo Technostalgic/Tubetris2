@@ -46,10 +46,12 @@ var logType = {
 }
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function log(obj, type = logType.log){
+function log(obj = null, type = logType.log){
 	// logs the spcified object to the console
 	if(!debug) return;
-	var ob = obj || "console logged @" + timeElapsed + "ms";
+	
+	var ob = obj;
+	if(obj == null) ob = "console logged @" + timeElapsed + "ms";
 	
 	// sets the console styling if the object is stylable (if it's a string)
 	var style;
@@ -216,7 +218,8 @@ function init(){
 	loadControls();
 	loadScores();
 
-	gameState.switchState(new state_mainMenu());	
+	//gameState.switchState(new state_mainMenu());	
+	gameState.switchState(new state_gameplayState());	
 	log("intitialized game!");
 }
 
