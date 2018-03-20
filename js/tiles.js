@@ -46,8 +46,7 @@ var balls = {
 class tile{
 	constructor(){
 		this.gridPos = new vec2(-1);
-		this.entityType = entities.none;
-		this.entityID = entities.none;
+		this.setEntity(entities.none, entities.none);
 		this.tintColor = new color();
 	}
 	
@@ -293,12 +292,18 @@ class tile{
 		return r;
 	}
 	
+	static SIP_normal(self){
+		tile.setTileAt(self, self.gridPos);
+	}
+	
 	isEmpty(){
 		return this.entityID == entities.none || this.entityType == entities.none;
 	}
 	setEntity(entityID, entityType = entities.tube){
 		this.entityType = entityType;
 		this.entityID = entityID;
+		
+		this.m_setInPlace = tile.SIP_normal;
 	}
 	getOpenSides(){
 		if(this.entityID == entities.none) return [side.left, side.right, side.up, side.down];
@@ -312,6 +317,11 @@ class tile{
 		return r;
 	}
 	
+	setInPlace(pos = null){
+		if(pos) this.gridPos = pos;
+		this.m_setInPlace(this);
+	}
+	m_setInPlace(self = null){}
 	clone(){
 		// returns an identical tile object of a seperate instance
 		var r = tile.fromData(this.gridPos.clone(), this.entityID, this.entityType);
@@ -377,8 +387,6 @@ class tileForm{
 			tile.fromData(new vec2(), n, entities.ball)
 		];
 		
-		log(n);
-
 		return r;
 	}
 	
@@ -544,7 +552,7 @@ class tileForm{
 		var ths = this;
 		this.tiles.forEach(function(tileOb){
 			let tpos = tileOb.gridPos.plus(ths.gridPos);
-			tile.setTileAt(tileOb, tpos);
+			tileOb.setInPlace(tpos);
 		});
 	}
 	
