@@ -1013,53 +1013,64 @@ class state_gameplayState extends gameState{
 	constructor(){
 		super();
 		
-		this.controlledTiles = null; // the falling tileForm that the player can control
-		this.ctDropInterval = 1000;
-		this.ctBumpTime = null;
+		this.currentTileForm = null; // the falling tileForm that the player can control
+		this.tfDropInterval = 1000;
+		this.tfBumpTime = null;
+		this.nextTileForms = [];
 	}
 	
-	getNextCT(){
+	getNextTileForm(){
 		// gets the next tileForm
+		if(!this.nextTileForms[0])
+			this.generateNextTileForms();
+		
 		log("tileForm placed, next piece retrieved", logType.notify);
-		this.controlledTiles = tileForm.getPiece_ball();
-		this.ctBumpTime = this.elapsedTime - this.ctDropInterval;
+		this.currentTileForm = this.nextTileForms.splice(0, 1)[0];
+		this.tfBumpTime = this.elapsedTime - this.tfDropInterval;
 	}
-	bumpDownCT(){
+	generateNextTileForms(count = 1){
+		// generates a specified amount of tileForms and adds them to this.nextTileForms
+		for(let i = count; i > 0; i--){
+			let r = tileForm.getPiece_ball();
+			this.nextTileForms.push(r);
+		}
+	}
+	bumpDownTF(){
 		// bumps the controlled tile object downward
-		if(!this.controlledTiles) return;
-		var used = !this.controlledTiles.bumpDown();
-		this.ctBumpTime = this.timeElapsed;
-		if(used) this.getNextCT();
+		if(!this.currentTileForm) return;
+		var used = !this.currentTileForm.bumpDown();
+		this.tfBumpTime = this.timeElapsed;
+		if(used) this.getNextTileForm();
 	}
 	handleControlledTiles(){
 		// handles updating the controlled tiles tileForm object
-		if(!this.controlledTiles) this.getNextCT();
-		if(!this.ctBumpTime) this.ctBumpTime = this.timeElapsed;
+		if(!this.currentTileForm) this.getNextTileForm();
+		if(!this.tfBumpTime) this.tfBumpTime = this.timeElapsed;
 		
 		// if the controlled tiles drop interval has passed, bump the controlled tiles down
-		var nextBump = this.ctBumpTime + this.ctDropInterval
+		var nextBump = this.tfBumpTime + this.tfDropInterval
 		if(this.timeElapsed >= nextBump){
-			this.bumpDownCT();
-			this.ctBumpTime -= this.timeElapsed - nextBump;
+			this.bumpDownTF();
+			this.tfBumpTime -= this.timeElapsed - nextBump;
 		}
 	}
 	
 	controlTap(control = controlAction.none){
 		switch(control){
 			case controlAction.down:
-				this.bumpDownCT(); 
+				this.bumpDownTF(); 
 				break;
 			case controlAction.rotateCW:
-				this.controlledTiles.rotateCW();
+				this.currentTileForm.rotateCW();
 				break;
 			case controlAction.rotateCCW:
-				this.controlledTiles.rotateCCW();
+				this.currentTileForm.rotateCCW();
 				break;
 			case controlAction.left: 
-				if(this.controlledTiles) this.controlledTiles.move(side.left);
+				if(this.currentTileForm) this.currentTileForm.move(side.left);
 				break;
 			case controlAction.right: 
-				if(this.controlledTiles) this.controlledTiles.move(side.right);
+				if(this.currentTileForm) this.currentTileForm.move(side.right);
 				break;
 		}
 	}
@@ -1075,7 +1086,7 @@ class state_gameplayState extends gameState{
 		drawBackground(); 
 		
 		tile.drawGrid();
-		if(this.controlledTiles) this.controlledTiles.draw();
+		if(this.currentTileForm) this.currentTileForm.draw();
 		
 		// renders the foreground border
 		drawForegroundOverlay();

@@ -372,6 +372,7 @@ class tileForm{
 		this.lastDrawPos = this.drawPos.clone();
 		this.animOffset_rotate = gameState.current.timeElapsed - 1000;
 		this.lastDrawRot = 0;
+		this.swappable = true;
 	}
 	
 	static getPiece_random(){
