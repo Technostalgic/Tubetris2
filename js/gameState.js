@@ -1017,6 +1017,9 @@ class state_gameplayState extends gameState{
 		this.tfDropInterval = 1000;
 		this.tfBumpTime = null;
 		this.nextTileForms = [];
+		
+		//animation stuff
+		this.anim_nextTileOff = 0;
 	}
 	
 	getNextTileForm(){
@@ -1026,18 +1029,22 @@ class state_gameplayState extends gameState{
 		
 		log("current tileForm placed, next tileForm retrieved", logType.notify);
 		this.currentTileForm = this.nextTileForms.splice(0, 1)[0];
-		this.tfBumpTime = this.elapsedTime - this.tfDropInterval;
+		this.tfBumpTime = this.elapsedTime;
+		this.currentTileForm.bumpDown();
 		this.generateNextTileForms();
+		
+		// animation stuff
+		this.anim_nextTileOff = this.timeElapsed;
 	}
 	generateNextTileForms(count = 1){
 		// generates a specified amount of tileForms and adds them to this.nextTileForms
 		for(let i = count; i > 0; i--){
-			let r = tileForm.getPiece_ball();
+			let r = tileForm.getPiece_random();
 			this.nextTileForms.push(r);
 		}
 	}
 	bumpDownTF(){
-		// bumps the controlled tile object downward
+		// bumps the current tileform object downward
 		if(!this.currentTileForm) return;
 		var used = !this.currentTileForm.bumpDown();
 		this.tfBumpTime = this.timeElapsed;
@@ -1082,21 +1089,41 @@ class state_gameplayState extends gameState{
 		this.handleControlledTiles();
 	}
 	
-	drawNextTileForm(){
+	drawNextTileFormAnim(){
+		var animLength = 200;
+		var animScale = tile.tilesize * 3;
+		var off = this.anim_nextTileOff + animLength - this.timeElapsed;
+		off = Math.min(1 - off / animLength, 1);
+		
+		if(off < 1)
+			this.drawPrevNextTileForm(-off * animScale);
+		this.drawNextTileForm(-off * animScale + animScale);
+	}
+	drawPrevNextTileForm(off){
+		if(!this.currentTileForm) return;
+		
+		off = new vec2(0, off);
+		this.currentTileForm.drawAtScreenPos(tile.nextTileFormSlot.minus(this.currentTileForm.getCenterOff()).plus(off));
+	}
+	drawNextTileForm(off = 0){
 		var next = this.nextTileForms[0];
 		if(!next) return;
 		
-		next.drawAtScreenPos(screenBounds.topRight.plus(new vec2(-74, 74).minus(new vec2(tile.tilesize / 2))));
+		off = new vec2(0, off);
+		next.drawAtScreenPos(tile.nextTileFormSlot.minus(next.getCenterOff()).plus(off));
+	}
+	drawHUD(){
+		// draws the heads up display
+		this.drawNextTileFormAnim();
+		drawForegroundOverlay();
 	}
 	draw(){
 		// renders tiled background
 		drawBackground(); 
 		
 		tile.drawGrid();
-		this.drawNextTileForm();
 		if(this.currentTileForm) this.currentTileForm.draw();
 		
-		// renders the foreground border
-		drawForegroundOverlay();
+		this.drawHUD();
 	}
 }

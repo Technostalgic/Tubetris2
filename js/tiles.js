@@ -67,6 +67,7 @@ class tile{
 		tile.gridBounds = collisionBox.fromSides(0, 0, 10, 20);
 		tile.grid = [];
 		tile.constructGrid();
+		tile.nextTileFormSlot = screenBounds.topRight.plus(new vec2(-74, 74));
 		
 		// gets the sprite of each entity type offset to its ID
 		tile.entitySprites = [
@@ -364,7 +365,7 @@ class tile{
 // a data structure that represents an assortment of tiles that can be moved and rotated as one, basically tubtris' version of a tetromino
 class tileForm{
 	constructor(){
-		this.gridPos = new vec2(4, 0);
+		this.gridPos = new vec2(4, -1);
 		this.tiles = [];
 		
 		// animation stuff for smooth transformations
@@ -377,19 +378,35 @@ class tileForm{
 	}
 	
 	static getPiece_random(){
+		var r = [
+			"getPiece_square",
+			"getPiece_square",
+			"getPiece_L0",
+			"getPiece_L0",
+			"getPiece_ball"
+		];
+		var i = Math.floor(r.length * Math.random());
+		
+		return tileForm[r[i]]();
+	}
+	static getPiece_square(){
 		var r = new tileForm();
 		r.tiles = [
 			tile.fromData(new vec2(0, 0), tubes.S_horizontal),
-			tile.fromData(new vec2(1, 0), tubes.L_downLeft),
-			tile.fromData(new vec2(1, 1), tubes.L_upLeft),
-			tile.fromData(new vec2(0, 1), tubes.S_horizontal)
+			tile.fromData(new vec2(1, 0), tubes.L_upLeft),
+			tile.fromData(new vec2(1, -1), tubes.L_downLeft),
+			tile.fromData(new vec2(0, -1), tubes.S_horizontal)
 		];
-		//r.tiles = [
-		//	tile.fromData(new vec2(-1, 0), tubes.T_horizontalUp),
-		//	tile.fromData(new vec2(0, 0), tubes.S_horizontal),
-		//	tile.fromData(new vec2(1, 0), tubes.L_downLeft),
-		//	tile.fromData(new vec2(1, 1), tubes.T_horizontalUp)
-		//];
+		return r;
+	}
+	static getPiece_L0(){
+		var r = new tileForm();
+		r.tiles = [
+			tile.fromData(new vec2(-1, 0), tubes.T_horizontalUp),
+			tile.fromData(new vec2(0, 0), tubes.S_horizontal),
+			tile.fromData(new vec2(1, 0), tubes.L_upLeft),
+			tile.fromData(new vec2(1, -1), tubes.T_horizontalDown)
+		];
 		return r;
 	}
 	static getPiece_ball(){
@@ -403,6 +420,36 @@ class tileForm{
 		return r;
 	}
 	
+	getCenterOff(){
+		var minY,
+			maxY;
+		var minX,
+			maxX;
+		
+		this.tiles.forEach(function(tileOb, i){
+			if(i == 0){
+				minY = tileOb.gridPos.y;
+				maxY = minY;
+				minX = tileOb.gridPos.x;
+				maxX = minX;
+				return;
+			}
+			
+			if(tileOb.gridPos.y < minY) minY = tileOb.gridPos.y;
+			if(tileOb.gridPos.y > maxY) maxY = tileOb.gridPos.y;
+			
+			if(tileOb.gridPos.x < minX) minX = tileOb.gridPos.x;
+			if(tileOb.gridPos.x > maxX) maxX = tileOb.gridPos.x;
+		});
+		
+		if(!minY) return new vec2(tile.tilesize / 2);
+		
+		var x = (minX + maxX + 1) / 2;
+		var y = (minY + maxY + 1) / 2;
+		log(minX +","+ maxX +":"+ minY +","+ maxY);
+		
+		return new vec2(x, y).multiply(tile.tilesize);
+	}
 	getTopLeftTilePos(){
 		var minX = null;
 		var minY = null;
@@ -597,7 +644,6 @@ class tileForm{
 	
 	draw(){
 		// draws the tileForm's tiles
-		
 		// calculates the draw position and rotation based on the smooth movement animation speed
 		this.drawPos = this.lastDrawPos.plus(this.getTranslateAnimOffset());
 		var drawRot = this.getRotateAnimOffset();
