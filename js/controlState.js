@@ -44,6 +44,7 @@ class controlState{
 	static listenForMouseUp(e){
 		// the event listener that is triggered when the mouse is released
 		controlState.mouseDown = false;
+		log("mouse click at: " + new vec2(e.offsetX, e.offsetY));
 	}
 	static listenForKeyDown(e){
 		// the event listener that is triggered when a keyboard key is pressed

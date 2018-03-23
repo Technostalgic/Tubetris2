@@ -344,9 +344,10 @@ class tile{
 		// draw the sprite
 		this.drawAtScreenPos(tile.toScreenPos(this.gridPos, false));
 	}
-	drawAtScreenPos(pos, rotation = null){
+	drawAtScreenPos(pos, rotation = null, drawTint = true){
 		// draw the sprite at the specified position
-		this.drawTintAtScreenPos(pos);
+		if(drawTint)
+			this.drawTintAtScreenPos(pos);
 		
 		var sprite = this.getSprite();
 		if(!sprite) return;
@@ -607,6 +608,16 @@ class tileForm{
 			let off = tileOb.gridPos.multiply(tile.tilesize);
 			off = off.rotate(drawRot);
 			tileOb.drawAtScreenPos(ths.drawPos.plus(off), drawRot);
+		});
+	}
+	drawAtScreenPos(pos, drawtint = true){
+		// calculates the draw position and rotation based on the smooth movement animation speed
+		var dpos = pos;
+		
+		// draws each tile in the tileForm
+		this.tiles.forEach(function(tileOb){
+			let off = tileOb.gridPos.multiply(tile.tilesize);
+			tileOb.drawAtScreenPos(dpos.plus(off), null, false);
 		});
 	}
 }

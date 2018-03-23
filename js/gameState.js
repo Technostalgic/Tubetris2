@@ -1024,9 +1024,10 @@ class state_gameplayState extends gameState{
 		if(!this.nextTileForms[0])
 			this.generateNextTileForms();
 		
-		log("tileForm placed, next piece retrieved", logType.notify);
+		log("current tileForm placed, next tileForm retrieved", logType.notify);
 		this.currentTileForm = this.nextTileForms.splice(0, 1)[0];
 		this.tfBumpTime = this.elapsedTime - this.tfDropInterval;
+		this.generateNextTileForms();
 	}
 	generateNextTileForms(count = 1){
 		// generates a specified amount of tileForms and adds them to this.nextTileForms
@@ -1081,11 +1082,18 @@ class state_gameplayState extends gameState{
 		this.handleControlledTiles();
 	}
 	
+	drawNextTileForm(){
+		var next = this.nextTileForms[0];
+		if(!next) return;
+		
+		next.drawAtScreenPos(screenBounds.topRight.plus(new vec2(-74, 74).minus(new vec2(tile.tilesize / 2))));
+	}
 	draw(){
 		// renders tiled background
 		drawBackground(); 
 		
 		tile.drawGrid();
+		this.drawNextTileForm();
 		if(this.currentTileForm) this.currentTileForm.draw();
 		
 		// renders the foreground border
