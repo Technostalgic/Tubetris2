@@ -1013,6 +1013,7 @@ class state_gameplayState extends gameState{
 	constructor(){
 		super();
 		
+		this.phase = new phase_placeTileform(this);
 		this.currentTileform = null; // the falling tileform that the player can control
 		this.tfDropInterval = 1000;
 		this.tfBumpTime = null;
@@ -1122,8 +1123,28 @@ class state_gameplayState extends gameState{
 		drawBackground(); 
 		
 		tile.drawGrid();
+		this.phase.draw();
 		if(this.currentTileform) this.currentTileform.draw();
 		
 		this.drawHUD();
+	}
+}
+
+class gameplayPhase{
+	constructor(parentState){ 
+		this.parentState = parentState; 
+		this.init(); 
+	}
+	
+	init(){}
+	update(dt){}
+	draw(){}
+	end(){}
+	
+	controlTap(control = controlAction.none){}
+}
+class phase_placeTileform{
+	constructor(parentState){ 
+		super(parentState); 
 	}
 }

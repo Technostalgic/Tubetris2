@@ -13,6 +13,16 @@ var side = {
 	up: 3,
 	down: 4
 }
+function invertedSide(dir){
+	// gets the oppisite of the specified side
+	switch(dir){
+		case side.left: return side.right;
+		case side.right: return side.left;
+		case side.up: return side.down;
+		case side.down: return side.up;
+	}
+	return side.none;
+}
 
 class vec2{
 	constructor(x = 0, y = x){

@@ -165,6 +165,7 @@ class tile{
 	static getFull(pos = null){
 		// returns a full tile
 		var r = new tile();
+		r.setEntity(blocks.block_brick, entities.block);
 		r.tintColor = tile.normalTint;
 		if(pos) r.gridPos = pos;
 		return r;
@@ -230,8 +231,8 @@ class tile{
 		// paramaters accept format: at(vec2) or at(int, int)
 		if(ypos != null) return tile.at(new vec2(pos, ypos));
 		
-		// returns a full tile if the position is below the tile grid (if the tile at pos is undefined)
-		if(pos.y > tile.gridBounds.bottom){
+		// returns a full tile if the position is below, or to the left or right of the tile grid bounds
+		if(pos.y > tile.gridBounds.bottom || pos.x < tile.gridBounds.left || pos.x >= tile.gridBounds.right){
 			if(!tile.grid[pos.x]) return tile.getFull(pos);
 			return tile.fromAny(tile.grid[pos.x][pos.y], false, pos);
 		}
@@ -319,6 +320,18 @@ class tile{
 	getOpenSides(){
 		if(this.entityID == entities.none) return [side.left, side.right, side.up, side.down];
 		return tile.getEntityOpenSides(this.entityID, this.entityType);
+	}
+	getUnblockedSides(){
+		var os = this.getOpenSides();
+		var us = [];
+		
+		var ths = this;
+		os.forEach(function(dir){
+			if(tile.at(ths.gridPos.plus(vec2.fromSide(dir))).getOpenSides().includes(invertedSide(dir)))
+				us.push(dir);
+		});
+		
+		return us;
 	}
 	getSprite(){
 		if(this.entityID == entities.none) return null;
