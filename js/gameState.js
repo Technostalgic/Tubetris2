@@ -1013,46 +1013,46 @@ class state_gameplayState extends gameState{
 	constructor(){
 		super();
 		
-		this.currentTileForm = null; // the falling tileForm that the player can control
+		this.currentTileform = null; // the falling tileform that the player can control
 		this.tfDropInterval = 1000;
 		this.tfBumpTime = null;
-		this.nextTileForms = [];
+		this.nextTileforms = [];
 		
 		//animation stuff
 		this.anim_nextTileOff = 0;
 	}
 	
-	getNextTileForm(){
-		// gets the next tileForm
-		if(!this.nextTileForms[0])
-			this.generateNextTileForms();
+	getNextTileform(){
+		// gets the next tileform
+		if(!this.nextTileforms[0])
+			this.generateNextTileforms();
 		
-		log("current tileForm placed, next tileForm retrieved", logType.notify);
-		this.currentTileForm = this.nextTileForms.splice(0, 1)[0];
+		log("next tileform retrieved", logType.notify);
+		this.currentTileform = this.nextTileforms.splice(0, 1)[0];
 		this.tfBumpTime = this.elapsedTime;
-		this.currentTileForm.bumpDown();
-		this.generateNextTileForms();
+		this.currentTileform.bumpDown();
+		this.generateNextTileforms();
 		
 		// animation stuff
 		this.anim_nextTileOff = this.timeElapsed;
 	}
-	generateNextTileForms(count = 1){
-		// generates a specified amount of tileForms and adds them to this.nextTileForms
+	generateNextTileforms(count = 1){
+		// generates a specified amount of tileforms and adds them to this.nextTileforms
 		for(let i = count; i > 0; i--){
-			let r = tileForm.getPiece_random();
-			this.nextTileForms.push(r);
+			let r = tileform.getPiece_random();
+			this.nextTileforms.push(r);
 		}
 	}
 	bumpDownTF(){
 		// bumps the current tileform object downward
-		if(!this.currentTileForm) return;
-		var used = !this.currentTileForm.bumpDown();
+		if(!this.currentTileform) return;
+		var used = !this.currentTileform.bumpDown();
 		this.tfBumpTime = this.timeElapsed;
-		if(used) this.getNextTileForm();
+		if(used) this.getNextTileform();
 	}
 	handleControlledTiles(){
-		// handles updating the controlled tiles tileForm object
-		if(!this.currentTileForm) this.getNextTileForm();
+		// handles updating the controlled tiles tileform object
+		if(!this.currentTileform) this.getNextTileform();
 		if(!this.tfBumpTime) this.tfBumpTime = this.timeElapsed;
 		
 		// if the controlled tiles drop interval has passed, bump the controlled tiles down
@@ -1069,16 +1069,16 @@ class state_gameplayState extends gameState{
 				this.bumpDownTF(); 
 				break;
 			case controlAction.rotateCW:
-				this.currentTileForm.rotateCW();
+				this.currentTileform.rotateCW();
 				break;
 			case controlAction.rotateCCW:
-				this.currentTileForm.rotateCCW();
+				this.currentTileform.rotateCCW();
 				break;
 			case controlAction.left: 
-				if(this.currentTileForm) this.currentTileForm.move(side.left);
+				if(this.currentTileform) this.currentTileform.move(side.left);
 				break;
 			case controlAction.right: 
-				if(this.currentTileForm) this.currentTileForm.move(side.right);
+				if(this.currentTileform) this.currentTileform.move(side.right);
 				break;
 		}
 	}
@@ -1089,32 +1089,32 @@ class state_gameplayState extends gameState{
 		this.handleControlledTiles();
 	}
 	
-	drawNextTileFormAnim(){
+	drawNextTileformAnim(){
 		var animLength = 200;
 		var animScale = tile.tilesize * 3;
 		var off = this.anim_nextTileOff + animLength - this.timeElapsed;
 		off = Math.min(1 - off / animLength, 1);
 		
 		if(off < 1)
-			this.drawPrevNextTileForm(-off * animScale);
-		this.drawNextTileForm(-off * animScale + animScale);
+			this.drawPrevNextTileform(-off * animScale);
+		this.drawNextTileform(-off * animScale + animScale);
 	}
-	drawPrevNextTileForm(off){
-		if(!this.currentTileForm) return;
+	drawPrevNextTileform(off){
+		if(!this.currentTileform) return;
 		
 		off = new vec2(0, off);
-		this.currentTileForm.drawAtScreenPos(tile.nextTileFormSlot.minus(this.currentTileForm.getCenterOff()).plus(off));
+		this.currentTileform.drawAtScreenPos(tile.nextTileformSlot.minus(this.currentTileform.getCenterOff()).plus(off));
 	}
-	drawNextTileForm(off = 0){
-		var next = this.nextTileForms[0];
+	drawNextTileform(off = 0){
+		var next = this.nextTileforms[0];
 		if(!next) return;
 		
 		off = new vec2(0, off);
-		next.drawAtScreenPos(tile.nextTileFormSlot.minus(next.getCenterOff()).plus(off));
+		next.drawAtScreenPos(tile.nextTileformSlot.minus(next.getCenterOff()).plus(off));
 	}
 	drawHUD(){
 		// draws the heads up display
-		this.drawNextTileFormAnim();
+		this.drawNextTileformAnim();
 		drawForegroundOverlay();
 	}
 	draw(){
@@ -1122,7 +1122,7 @@ class state_gameplayState extends gameState{
 		drawBackground(); 
 		
 		tile.drawGrid();
-		if(this.currentTileForm) this.currentTileForm.draw();
+		if(this.currentTileform) this.currentTileform.draw();
 		
 		this.drawHUD();
 	}

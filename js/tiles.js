@@ -67,7 +67,7 @@ class tile{
 		tile.gridBounds = collisionBox.fromSides(0, 0, 10, 20);
 		tile.grid = [];
 		tile.constructGrid();
-		tile.nextTileFormSlot = screenBounds.topRight.plus(new vec2(-74, 74));
+		tile.nextTileformSlot = screenBounds.topRight.plus(new vec2(-74, 74));
 		
 		// gets the sprite of each entity type offset to its ID
 		tile.entitySprites = [
@@ -363,7 +363,7 @@ class tile{
 }
 
 // a data structure that represents an assortment of tiles that can be moved and rotated as one, basically tubtris' version of a tetromino
-class tileForm{
+class tileform{
 	constructor(){
 		this.gridPos = new vec2(4, -1);
 		this.tiles = [];
@@ -387,10 +387,10 @@ class tileForm{
 		];
 		var i = Math.floor(r.length * Math.random());
 		
-		return tileForm[r[i]]();
+		return tileform[r[i]]();
 	}
 	static getPiece_square(){
-		var r = new tileForm();
+		var r = new tileform();
 		r.tiles = [
 			tile.fromData(new vec2(0, 0), tubes.S_horizontal),
 			tile.fromData(new vec2(1, 0), tubes.L_upLeft),
@@ -400,7 +400,7 @@ class tileForm{
 		return r;
 	}
 	static getPiece_L0(){
-		var r = new tileForm();
+		var r = new tileform();
 		r.tiles = [
 			tile.fromData(new vec2(-1, 0), tubes.T_horizontalUp),
 			tile.fromData(new vec2(0, 0), tubes.S_horizontal),
@@ -410,7 +410,7 @@ class tileForm{
 		return r;
 	}
 	static getPiece_ball(){
-		var r = new tileForm();
+		var r = new tileform();
 		
 		var n = Math.floor(Math.random() * (Object.keys(balls).length - 1));
 		r.tiles = [
@@ -446,7 +446,6 @@ class tileForm{
 		
 		var x = (minX + maxX + 1) / 2;
 		var y = (minY + maxY + 1) / 2;
-		log(minX +","+ maxX +":"+ minY +","+ maxY);
 		
 		return new vec2(x, y).multiply(tile.tilesize);
 	}
@@ -467,11 +466,11 @@ class tileForm{
 		return new vec2(minX, minY);
 	}
 	getTileGridPositions(){
-		// returns a list of grid positions that are occupied by the tileForm's tiles
+		// returns a list of grid positions that are occupied by the tileform's tiles
 		var r = [];
 		var ths = this;
 		
-		// adds the tileForm's gridPos to each of it's tile's gridPos and adds the result to a list
+		// adds the tileform's gridPos to each of it's tile's gridPos and adds the result to a list
 		this.tiles.forEach(function(tileOb){
 			let gpos = tileOb.gridPos.plus(ths.gridPos);
 			r.push(gpos);
@@ -484,7 +483,7 @@ class tileForm{
 		var r = [];
 		var ths = this;
 		
-		// adds the tileForm's gridPos to a list
+		// adds the tileform's gridPos to a list
 		this.tiles.forEach(function(tileOb){
 			r.push(tileOb.gridPos.clone());
 		});
@@ -492,7 +491,7 @@ class tileForm{
 		return r;
 	}
 	canMove(dir = side.down){
-		// checks to see if the tileForm can move in the specified direction
+		// checks to see if the tileform can move in the specified direction
 		return this.canTranslate(vec2.fromSide(dir));
 	}
 	canTranslate(translation){
@@ -512,8 +511,8 @@ class tileForm{
 		return true;
 	}
 	canRotate(dir = 1, anchored = false){
-		// checks to see if the tileForm can be rotated
-		// applies the rotation to each tile in the tileForm and stores the results in tposes
+		// checks to see if the tileform can be rotated
+		// applies the rotation to each tile in the tileform and stores the results in tposes
 		var tposes = this.getRelativeTilePositions();
 		tposes.forEach(function(pos, i){
 			// clockwise rotation
@@ -527,7 +526,7 @@ class tileForm{
 		if(anchored) dtlPos = this.getTopLeftTilePos().minus(vec2.getBounds(tposes).topLeft);
 		
 		for(let i = tposes.length - 1; i >= 0; i--){
-			// applies the difference and tileForm's grid translation to each tile
+			// applies the difference and tileform's grid translation to each tile
 			let tpos = tposes[i].plus(this.gridPos).plus(dtlPos);
 			// if the position is not able to be occupied, return false
 			if(!tile.at(tpos).isEmpty() || tile.isOutOfBounds(tpos))
@@ -569,7 +568,7 @@ class tileForm{
 	rotate(dir = 1, anchored = false, forced = false){
 		// rotates each tile 
 		// 'dir = 1' is clockwise 'dir = -1' is counter-clockwise
-		// 'anchored' determines whether or not the tileForm should be translated so that the top left tile matches the same 
+		// 'anchored' determines whether or not the tileform should be translated so that the top left tile matches the same 
 		//   tile position as it did before being rotated, useful for square pieces not looking weird while rotated
 		// 'forced' forces the piece to rotate if it overlaps a non-empty tile
 		if(!forced && !this.canRotate(dir, anchored)) return;
@@ -590,7 +589,7 @@ class tileForm{
 			tileOb.entityID = tile.getEntityRotatedID(dir, tileOb.entityID, tileOb.entityType);
 		});
 		
-		// if anchored, offsets the tileForm by the grid pos difference between the new top left and the old top left
+		// if anchored, offsets the tileform by the grid pos difference between the new top left and the old top left
 		if(anchored){
 			var dtlPos = tlPos0.minus(this.getTopLeftTilePos());
 			this.translate(dtlPos);
@@ -643,12 +642,12 @@ class tileForm{
 	}
 	
 	draw(){
-		// draws the tileForm's tiles
+		// draws the tileform's tiles
 		// calculates the draw position and rotation based on the smooth movement animation speed
 		this.drawPos = this.lastDrawPos.plus(this.getTranslateAnimOffset());
 		var drawRot = this.getRotateAnimOffset();
 		
-		// draws each tile in the tileForm
+		// draws each tile in the tileform
 		var ths = this;
 		this.tiles.forEach(function(tileOb){
 			let off = tileOb.gridPos.multiply(tile.tilesize);
@@ -660,7 +659,7 @@ class tileForm{
 		// calculates the draw position and rotation based on the smooth movement animation speed
 		var dpos = pos;
 		
-		// draws each tile in the tileForm
+		// draws each tile in the tileform
 		this.tiles.forEach(function(tileOb){
 			let off = tileOb.gridPos.multiply(tile.tilesize);
 			tileOb.drawAtScreenPos(dpos.plus(off), null, false);
