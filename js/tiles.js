@@ -232,7 +232,7 @@ class tile{
 		if(ypos != null) return tile.at(new vec2(pos, ypos));
 		
 		// returns a full tile if the position is below, or to the left or right of the tile grid bounds
-		if(pos.y > tile.gridBounds.bottom || pos.x < tile.gridBounds.left || pos.x >= tile.gridBounds.right){
+		if(pos.y >= tile.gridBounds.bottom || pos.x < tile.gridBounds.left || pos.x >= tile.gridBounds.right){
 			if(!tile.grid[pos.x]) return tile.getFull(pos);
 			return tile.fromAny(tile.grid[pos.x][pos.y], false, pos);
 		}
@@ -298,7 +298,7 @@ class tile{
 		tile.setTileAt(self, self.gridPos);
 	}
 	static SIP_ball(self){
-		// the set in place action for a ball tile entity
+		// the set in place action for a ball tile entity	
 		if(gameState.current instanceof state_gameplayState)
 			gameState.current.spawnBallAt(self.gridPos, self.entityID);
 	}

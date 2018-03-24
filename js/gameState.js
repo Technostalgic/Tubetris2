@@ -1189,11 +1189,16 @@ class phase_ballPhysics extends gameplayPhase{
 			if(this.balls[i].state == ballStates.dead)
 				this.balls.splice(i, 1);
 		}
+		if(this.balls.length <= 0)
+			this.end();
 	}
 	draw(){
 		this.balls.forEach(function(ballOb){
 			ballOb.draw();
 		});
+	}
+	end(){
+		
 	}
 	
 	addBall(ballOb){

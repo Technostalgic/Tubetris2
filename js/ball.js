@@ -21,7 +21,7 @@ class ball{
 		this.ballType = type;
 		
 		this.state = ballStates.choosing;
-		this.travelDir = side.down;
+		this.travelDir = side.none;
 		this.momentum = 0;
 		this.lastPosUpdate = gameState.current.timeElapsed;
 	}
@@ -53,7 +53,6 @@ class ball{
 		if(prog >= 1) {
 			this.drawPos = tile.toScreenPos(this.nextPos);
 			this.state = ballStates.choosing;
-			this.gridPos = this.nextPos.clone();
 			return;
 		}
 		
@@ -62,11 +61,14 @@ class ball{
 	}
 	
 	chooseNextTravelDir(){
+		if(this.nextPos)
+			this.gridPos = this.nextPos.clone();
 		var unblocked = tile.at(this.gridPos).getUnblockedSides();
+		var tdir;
 		
-		// remove the previous travelDirection from the possible travel directions
+		// remove the previous travelDirection's opposite from the possible travel directions
 		for(var i = unblocked.length; i >= 0; i--){
-			if(unblocked[i] == this.travelDir){
+			if(unblocked[i] == invertedSide(this.travelDir)){
 				unblocked.splice(i, 1);
 				break;
 			}
@@ -78,13 +80,19 @@ class ball{
 			return;
 		}
 		
-		this.travelDir = unblocked[Math.floor(Math.random() * unblocked.length)];
+		tdir = unblocked[Math.floor(Math.random() * unblocked.length)];
+		if(unblocked.includes(side.down)) 
+			tdir = side.down;
+		
+		this.travelDir = tdir;
 		this.updateNextPos();
 		this.state = ballStates.moving;
 	}
 	updateNextPos(){
 		this.nextPos = this.gridPos.plus(vec2.fromSide(this.travelDir));
 		this.lastPosUpdate = gameState.current.timeElapsed;
+		
+		log(this.nextPos);
 	}
 	
 	destroy(){
