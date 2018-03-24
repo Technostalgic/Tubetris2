@@ -5,6 +5,7 @@
 ///	twitter @technostalgicGM
 ///
 
+// enumerate the different states a ball object can be
 var ballStates = {
 	none: -1,
 	choosing: 0,
@@ -13,6 +14,7 @@ var ballStates = {
 	dead: 3
 }
 
+// a physical ball entity that can move through the tubes during the phase_ballPhysics gameplayPhase
 class ball{
 	constructor(pos, type = balls.grey){
 		this.gridPos = pos;
@@ -27,11 +29,12 @@ class ball{
 	}
 	
 	update(dt){
+		// main logic step for the ball
 		switch(this.state){
-			case ballStates.moving: 
+			case ballStates.moving: // moving animation
 				this.move();
 				break;
-			case ballStates.choosing: 
+			case ballStates.choosing: // deciding which way to go next
 				this.chooseNextTravelDir();
 				break;
 			case ballStates.paused: break;
@@ -40,27 +43,34 @@ class ball{
 	}
 	
 	direct(dir){
+		// when the ball is paused, this method allows the user decide which way the ball should go
 		if(this.state != ballStates.paused) return;
 	}
 	getMoveAnimProgress(){
+		// returns a value between 0 and 1 indicating the percent complete that the movement animation is
 		var animLength = 100;
 		
 		return Math.min(1 - (this.lastPosUpdate + animLength - gameState.current.timeElapsed) / animLength, 1);
 	}
 	move(){
+		// moves the ball to it's nextPos
 		var prog = this.getMoveAnimProgress();
 		
+		// if the movement animation is complete, decide where to go next
 		if(prog >= 1) {
 			this.drawPos = tile.toScreenPos(this.nextPos);
 			this.state = ballStates.choosing;
 			return;
 		}
 		
+		// the ball is drawn between it's gridPos and nextPos based on a percentage(prog) of how complete the 
+		// movement animation is
 		var off = this.nextPos.minus(this.gridPos).multiply(prog * tile.tilesize);
 		this.drawPos = tile.toScreenPos(this.gridPos).plus(off);
 	}
 	
 	chooseNextTravelDir(){
+		// decides which way the ball will go next
 		if(this.nextPos)
 			this.gridPos = this.nextPos.clone();
 		var unblocked = tile.at(this.gridPos).getUnblockedSides();
@@ -89,6 +99,7 @@ class ball{
 		this.state = ballStates.moving;
 	}
 	updateNextPos(){
+		// updates the ball's nextPos once the travel direction has been determined
 		this.nextPos = this.gridPos.plus(vec2.fromSide(this.travelDir));
 		this.lastPosUpdate = gameState.current.timeElapsed;
 		
@@ -101,6 +112,7 @@ class ball{
 	}
 	
 	draw(){
+		// draws the ball object if it's still alive
 		if(this.state == ballStates.dead) return;
 		
 		var sprt = new spriteBox(new vec2(tile.tilesize * this.ballType, 0), new vec2(tile.tilesize));
@@ -110,6 +122,6 @@ class ball{
 			this.drawDirectionIndicators();
 	}
 	drawDirectionIndicators(){
-		
+		// draws the arrows that show which way the ball can be directed when it is paused
 	}
 }
