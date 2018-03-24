@@ -1137,6 +1137,16 @@ class gameplayPhase{
 	// for override, called when a control is tapped
 	controlTap(control = controlAction.none){}
 }
+// the phase that quickly occurs between two tileform placement phases
+class phase_betweenPhase extends gameplayPhase{
+	constructor(parentState){
+		super(parentState);
+	}
+	
+	update(dt){
+		this.parentState.getNextTileform();
+	}
+}
 // the gameplay phase that lets the player control the tileform that is falling from the sky
 class phase_placeTileform extends gameplayPhase{
 	constructor(parentState){ 
@@ -1149,6 +1159,12 @@ class phase_placeTileform extends gameplayPhase{
 	
 	update(dt){
 		this.handleTileform();
+	}
+	end(){
+	}
+	
+	goToBetweenPhase(){
+		this.parentState.switchGameplayPhase(new phase_betweenPhase());
 	}
 	
 	controlTap(control){
@@ -1183,7 +1199,9 @@ class phase_placeTileform extends gameplayPhase{
 		
 		// bumps down the tileform and if it gets set into place, the next tileform is retrieved
 		var used = !this.currentTileform.bumpDown();
-		if(used) this.parentState.getNextTileform();
+		if(used) 
+			if(this.parentState.phase == this)
+				this.goToBetweenPhase();
 		
 		// resets the bump interval so that the tileform will be bumped down at the right time
 		this.tfLastBumpTime = this.parentState.timeElapsed;

@@ -343,6 +343,9 @@ class tile{
 		return r;
 	}
 	
+	tag(){
+		// gets tagged by ball rolling through it
+	}
 	setInPlace(pos = null){
 		if(pos) this.gridPos = pos;
 		this.m_setInPlace(this);
