@@ -1016,12 +1016,13 @@ class state_gameplayState extends gameState{
 		this.nextTileforms = [];
 		this.generateNextTileforms(2, tileform.getPiece_ball());
 		this.switchGameplayPhase(new phase_placeTileform(this));
+		
 		this.currentTileform = null; // the falling tileform that the player can control
 		this.tfDropInterval = 1000;
 		this.tfBumpTime = null;
 		
 		//animation stuff
-		this.anim_nextTileOff = 0;
+		this.anim_HUDNextTileOff = 0;
 	}
 	
 	spawnBallAt(pos, balltype){
@@ -1038,13 +1039,15 @@ class state_gameplayState extends gameState{
 			this.generateNextTileforms();
 		
 		log("next tileform retrieved", logType.notify);
-		this.currentTileform = this.nextTileforms.splice(0, 1)[0];
-		this.tfBumpTime = this.elapsedTime;
-		this.currentTileform.bumpDown();
+		
+		var ptf = new phase_placeTileform(this);
+		ptf.setTileform(this.nextTileforms.splice(0, 1)[0]);
+		this.switchGameplayPhase(ptf);
+		
 		this.generateNextTileforms();
 		
 		// animation stuff
-		this.anim_nextTileOff = this.timeElapsed;
+		this.anim_HUDNextTileOff = this.timeElapsed;
 	}
 	generateNextTileforms(count = 1, backpiece = null){
 		// generates a specified amount of tileforms and adds them to this.nextTileforms
@@ -1053,25 +1056,6 @@ class state_gameplayState extends gameState{
 			this.nextTileforms.push(r);
 		}
 		if(backpiece) this.nextTileforms.push(backpiece);
-	}
-	bumpDownTF(){
-		// bumps the current tileform object downward
-		if(!this.currentTileform) return;
-		var used = !this.currentTileform.bumpDown();
-		this.tfBumpTime = this.timeElapsed;
-		if(used) this.getNextTileform();
-	}
-	handleTileform(){
-		// handles updating the controlled tiles tileform object
-		if(!this.currentTileform) this.getNextTileform();
-		if(!this.tfBumpTime) this.tfBumpTime = this.timeElapsed;
-		
-		// if the controlled tiles drop interval has passed, bump the controlled tiles down
-		var nextBump = this.tfBumpTime + this.tfDropInterval
-		if(this.timeElapsed >= nextBump){
-			this.bumpDownTF();
-			this.tfBumpTime -= this.timeElapsed - nextBump;
-		}
 	}
 	
 	switchGameplayPhase(newphase){
@@ -1095,7 +1079,7 @@ class state_gameplayState extends gameState{
 	drawNextTileformAnim(){
 		var animLength = 200;
 		var animScale = tile.tilesize * 3;
-		var off = this.anim_nextTileOff + animLength - this.timeElapsed;
+		var off = this.anim_HUDNextTileOff + animLength - this.timeElapsed;
 		off = Math.min(1 - off / animLength, 1);
 		
 		if(off < 1)
@@ -1126,7 +1110,6 @@ class state_gameplayState extends gameState{
 		
 		tile.drawGrid();
 		this.phase.draw();
-		if(this.currentTileform) this.currentTileform.draw();
 		
 		this.drawHUD();
 	}
@@ -1150,30 +1133,63 @@ class phase_placeTileform extends gameplayPhase{
 	constructor(parentState){ 
 		super(parentState); 
 		
+		this.currentTileform = null; // the falling tileform that the player can control
+		this.tfBumpInterval = 1000;
+		this.tfLastBumpTime = this.parentState.timeElapsed;
 	}
 	
 	update(dt){
-		this.parentState.handleTileform();
+		this.handleTileform();
 	}
 	
-	controlTap(control){		
+	controlTap(control){
+		if(!this.currentTileform) return;
 		switch(control){
 			case controlAction.down:
-				this.parentState.bumpDownTF(); 
+				this.bumpDownTF(); 
 				break;
 			case controlAction.rotateCW:
-				this.parentState.currentTileform.rotateCW();
+				this.currentTileform.rotateCW();
 				break;
 			case controlAction.rotateCCW:
-				this.parentState.currentTileform.rotateCCW();
+				this.currentTileform.rotateCCW();
 				break;
 			case controlAction.left: 
-				if(this.parentState.currentTileform) this.parentState.currentTileform.move(side.left);
+				this.currentTileform.move(side.left);
 				break;
 			case controlAction.right: 
-				if(this.parentState.currentTileform) this.parentState.currentTileform.move(side.right);
+				this.currentTileform.move(side.right);
 				break;
 		}
+	}
+	
+	setTileform(tf){
+		this.currentTileform = tf;
+		this.currentTileform.bumpDown();
+	}
+	bumpDownTF(){
+		// bumps the current tileform object downward
+		if(!this.currentTileform) return;
+		var used = !this.currentTileform.bumpDown();
+		this.tfLastBumpTime = this.parentState.timeElapsed;
+		if(used) this.parentState.getNextTileform();
+	}
+	handleTileform(){
+		// handles updating the controlled tiles tileform object
+		if(!this.currentTileform) this.parentState.getNextTileform();
+		if(!this.tfLastBumpTime) this.tfLastBumpTime = this.parentState.timeElapsed;
+		
+		// if the controlled tiles drop interval has passed, bump the controlled tiles down
+		var nextBump = this.tfLastBumpTime + this.tfBumpInterval;
+		if(this.parentState.timeElapsed >= nextBump){
+			this.bumpDownTF();
+			this.tfLastBumpTime -= this.parentState.timeElapsed - nextBump;
+		}
+	}
+
+	draw(){
+		if(this.currentTileform)
+			this.currentTileform.draw();
 	}
 }
 class phase_ballPhysics extends gameplayPhase{
