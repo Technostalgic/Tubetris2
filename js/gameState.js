@@ -1034,7 +1034,7 @@ class state_gameplayState extends gameState{
 		this.phase.addBall(b);
 	}
 	getNextTileform(){
-		// gets the next tileform
+		// gets the next tileform and allows the player to control it
 		if(!this.nextTileforms[0])
 			this.generateNextTileforms();
 		
@@ -1059,6 +1059,7 @@ class state_gameplayState extends gameState{
 	}
 	
 	switchGameplayPhase(newphase){
+		// switches the active gameplayPhase from one to another
 		if(this.phase){
 			log("gameplayPhase switching from '" + this.phase.constructor.name + "' to '" + newphase.constructor.name + "'");
 			this.phase.end();
@@ -1067,16 +1068,19 @@ class state_gameplayState extends gameState{
 		this.phase = newphase;
 	}
 	controlTap(control = controlAction.none){
+		// called when a control is tapped
 		this.phase.controlTap(control);
 	}
 	
 	update(dt){
+		// main logic step
 		super.update(dt);
 		
 		this.phase.update(dt);
 	}
 	
 	drawNextTileformAnim(){
+		// draws the next tile form on the HUD (and the current tileForm if it is still being animated off the screen)
 		var animLength = 200;
 		var animScale = tile.tilesize * 3;
 		var off = this.anim_HUDNextTileOff + animLength - this.timeElapsed;
@@ -1087,12 +1091,14 @@ class state_gameplayState extends gameState{
 		this.drawNextTileform(-off * animScale + animScale);
 	}
 	drawPrevNextTileform(off){
-		if(!this.currentTileform) return;
+		// draws the previous "nextTileform" (aka the current tileform) being animated off the screen
+		if(!this.phase.currentTileform) return;
 		
 		off = new vec2(0, off);
-		this.currentTileform.drawAtScreenPos(tile.nextTileformSlot.minus(this.currentTileform.getCenterOff()).plus(off));
+		this.phase.currentTileform.drawAtScreenPos(tile.nextTileformSlot.minus(this.phase.currentTileform.getCenterOff()).plus(off));
 	}
 	drawNextTileform(off = 0){
+		// draws the next tileform in the "next" slot in the HUD
 		var next = this.nextTileforms[0];
 		if(!next) return;
 		
@@ -1122,13 +1128,16 @@ class gameplayPhase{
 		this.init(); 
 	}
 	
+	// to be overridden by objects that inherit from this class
 	init(){}
 	update(dt){}
 	draw(){}
 	end(){}
 	
+	// for override, called when a control is tapped
 	controlTap(control = controlAction.none){}
 }
+// the gameplay phase that lets the player control the tileform that is falling from the sky
 class phase_placeTileform extends gameplayPhase{
 	constructor(parentState){ 
 		super(parentState); 
@@ -1164,15 +1173,21 @@ class phase_placeTileform extends gameplayPhase{
 	}
 	
 	setTileform(tf){
+		// sets the current tileform
 		this.currentTileform = tf;
 		this.currentTileform.bumpDown();
 	}
 	bumpDownTF(){
 		// bumps the current tileform object downward
 		if(!this.currentTileform) return;
+		
+		// bumps down the tileform and if it gets set into place, the next tileform is retrieved
 		var used = !this.currentTileform.bumpDown();
-		this.tfLastBumpTime = this.parentState.timeElapsed;
 		if(used) this.parentState.getNextTileform();
+		
+		// resets the bump interval so that the tileform will be bumped down at the right time
+		this.tfLastBumpTime = this.parentState.timeElapsed;
+		
 	}
 	handleTileform(){
 		// handles updating the controlled tiles tileform object
@@ -1188,27 +1203,35 @@ class phase_placeTileform extends gameplayPhase{
 	}
 
 	draw(){
+		// draws the current tileform
 		if(this.currentTileform)
 			this.currentTileform.draw();
 	}
 }
+// the gameplay state that handles the movement and logic for ball objects
 class phase_ballPhysics extends gameplayPhase{
 	constructor(parentState){
 		super(parentState);
 		
+		// the array that holds the ball objects
 		this.balls = [];
 	}
 	
 	update(dt){
+		// update all the balls in the array and remove the ones that are dead from the ball array
 		for(var i = this.balls.length - 1; i >= 0; i--){
 			this.balls[i].update(dt);
 			if(this.balls[i].state == ballStates.dead)
 				this.balls.splice(i, 1);
 		}
+		
+		// if there are no more balls to be handled end this gameplayPhase
+		// Because, well what's the point of life without any balls to handle?
 		if(this.balls.length <= 0)
 			this.end();
 	}
 	draw(){
+		// renders the gameplayPhase
 		this.balls.forEach(function(ballOb){
 			ballOb.draw();
 		});
@@ -1218,6 +1241,7 @@ class phase_ballPhysics extends gameplayPhase{
 	}
 	
 	addBall(ballOb){
+		// adds a ball to the ball array
 		this.balls.push(ballOb);
 	}
 }
