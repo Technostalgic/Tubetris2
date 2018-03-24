@@ -26,19 +26,22 @@ class ball{
 		this.lastPosUpdate = gameState.current.timeElapsed;
 	}
 	
-	update(){
+	update(dt){
 		switch(this.state){
 			case ballStates.moving: 
 				this.move();
 				break;
 			case ballStates.choosing: 
-				this.chooseNextTravelDir;
+				this.chooseNextTravelDir();
 				break;
 			case ballStates.paused: break;
 			case ballStates.dead: return;
 		}
 	}
 	
+	direct(dir){
+		if(this.state != ballStates.paused) return;
+	}
 	getMoveAnimProgress(){
 		var animLength = 100;
 		

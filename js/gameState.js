@@ -1013,16 +1013,25 @@ class state_gameplayState extends gameState{
 	constructor(){
 		super();
 		
-		this.phase = new phase_placeTileform(this);
+		this.nextTileforms = [];
+		this.generateNextTileforms(2);
+		this.switchGameplayPhase(new phase_placeTileform(this));
 		this.currentTileform = null; // the falling tileform that the player can control
 		this.tfDropInterval = 1000;
 		this.tfBumpTime = null;
-		this.nextTileforms = [];
 		
 		//animation stuff
 		this.anim_nextTileOff = 0;
 	}
 	
+	spawnBallAt(pos, balltype){
+		//spawns a ball at the specified position and changes the phase to the ball physics phase
+		if(!(this.phase instanceof phase_ballPhysics))
+			this.switchGameplayPhase(new phase_ballPhysics(this));
+		
+		var b = new ball(pos, balltype);
+		this.phase.addBall(b);
+	}
 	getNextTileform(){
 		// gets the next tileform
 		if(!this.nextTileforms[0])
@@ -1051,7 +1060,7 @@ class state_gameplayState extends gameState{
 		this.tfBumpTime = this.timeElapsed;
 		if(used) this.getNextTileform();
 	}
-	handleControlledTiles(){
+	handleTileform(){
 		// handles updating the controlled tiles tileform object
 		if(!this.currentTileform) this.getNextTileform();
 		if(!this.tfBumpTime) this.tfBumpTime = this.timeElapsed;
@@ -1064,6 +1073,14 @@ class state_gameplayState extends gameState{
 		}
 	}
 	
+	switchGameplayPhase(newphase){
+		if(this.phase){
+			log("gameplayPhase switching from '" + this.phase.constructor.name + "' to '" + newphase.constructor.name + "'");
+			this.phase.end();
+		}
+		newphase.parentState = this;
+		this.phase = newphase;
+	}
 	controlTap(control = controlAction.none){
 		switch(control){
 			case controlAction.down:
@@ -1087,7 +1104,7 @@ class state_gameplayState extends gameState{
 	update(dt){
 		super.update(dt);
 		
-		this.handleControlledTiles();
+		this.phase.update(dt);
 	}
 	
 	drawNextTileformAnim(){
@@ -1130,8 +1147,9 @@ class state_gameplayState extends gameState{
 	}
 }
 
+// a state machine for a handler inside a different state machine! It's like stateception!
 class gameplayPhase{
-	constructor(parentState){ 
+	constructor(parentState){
 		this.parentState = parentState; 
 		this.init(); 
 	}
@@ -1143,8 +1161,32 @@ class gameplayPhase{
 	
 	controlTap(control = controlAction.none){}
 }
-class phase_placeTileform{
+class phase_placeTileform extends gameplayPhase{
 	constructor(parentState){ 
 		super(parentState); 
+		
+	}
+	
+	update(dt){
+		this.parentState.handleTileform();
+	}
+}
+class phase_ballPhysics extends gameplayPhase{
+	constructor(parentState){
+		super(parentState);
+		
+		this.balls = [];
+	}
+	
+	update(dt){
+		for(var i = this.balls.length - 1; i >= 0; i--){
+			this.balls[i].update(dt);
+			if(this.balls[i].state == ballState.dead)
+				this.balls.splice(i, 1);
+		}
+	}
+	
+	addBall(ballOb){
+		this.balls.push(ballOb);
 	}
 }
