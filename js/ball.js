@@ -53,11 +53,12 @@ class ball{
 		if(prog >= 1) {
 			this.drawPos = tile.toScreenPos(this.nextPos);
 			this.state = ballStates.choosing;
+			this.gridPos = this.nextPos.clone();
 			return;
 		}
 		
 		var off = this.nextPos.minus(this.gridPos).multiply(prog * tile.tilesize);
-		this.drawPos = this.gridPos.plus(off);
+		this.drawPos = tile.toScreenPos(this.gridPos).plus(off);
 	}
 	
 	chooseNextTravelDir(){
@@ -77,7 +78,7 @@ class ball{
 			return;
 		}
 		
-		this.travelDir = this.travelDir(Math.floor(Math.random() * unblocked.length));
+		this.travelDir = unblocked[Math.floor(Math.random() * unblocked.length)];
 		this.updateNextPos();
 		this.state = ballStates.moving;
 	}

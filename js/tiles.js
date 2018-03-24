@@ -299,6 +299,8 @@ class tile{
 	}
 	static SIP_ball(self){
 		// the set in place action for a ball tile entity
+		if(gameState.current instanceof state_gameplayState)
+			gameState.current.spawnBallAt(self.gridPos, self.entityID);
 	}
 	
 	isEmpty(){
@@ -393,10 +395,7 @@ class tileform{
 	static getPiece_random(){
 		var r = [
 			"getPiece_square",
-			"getPiece_square",
-			"getPiece_L0",
-			"getPiece_L0",
-			"getPiece_ball"
+			"getPiece_L0"
 		];
 		var i = Math.floor(r.length * Math.random());
 		

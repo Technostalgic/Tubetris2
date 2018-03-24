@@ -172,7 +172,7 @@ function drawCenteredImage(ctx, img, pos, sprite = null, scale = 1, rotation = 0
 	
 	// sets the context transformation to allow rotation
 	ctx.translate(pos.x, pos.y);
-	ctx.rotate(angle);
+	ctx.rotate(rotation);
 	
 	ctx.drawImage(
 		img,
@@ -183,7 +183,7 @@ function drawCenteredImage(ctx, img, pos, sprite = null, scale = 1, rotation = 0
 		);
 	
 	// resets the context transformation
-	ctx.rotate(-angle);
+	ctx.rotate(-rotation);
 	ctx.translate(-pos.x, -pos.y);
 }
 

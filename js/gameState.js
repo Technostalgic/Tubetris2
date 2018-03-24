@@ -1014,7 +1014,7 @@ class state_gameplayState extends gameState{
 		super();
 		
 		this.nextTileforms = [];
-		this.generateNextTileforms(2);
+		this.generateNextTileforms(2, tileform.getPiece_ball());
 		this.switchGameplayPhase(new phase_placeTileform(this));
 		this.currentTileform = null; // the falling tileform that the player can control
 		this.tfDropInterval = 1000;
@@ -1046,12 +1046,13 @@ class state_gameplayState extends gameState{
 		// animation stuff
 		this.anim_nextTileOff = this.timeElapsed;
 	}
-	generateNextTileforms(count = 1){
+	generateNextTileforms(count = 1, backpiece = null){
 		// generates a specified amount of tileforms and adds them to this.nextTileforms
 		for(let i = count; i > 0; i--){
 			let r = tileform.getPiece_random();
 			this.nextTileforms.push(r);
 		}
+		if(backpiece) this.nextTileforms.push(backpiece);
 	}
 	bumpDownTF(){
 		// bumps the current tileform object downward
@@ -1082,23 +1083,7 @@ class state_gameplayState extends gameState{
 		this.phase = newphase;
 	}
 	controlTap(control = controlAction.none){
-		switch(control){
-			case controlAction.down:
-				this.bumpDownTF(); 
-				break;
-			case controlAction.rotateCW:
-				this.currentTileform.rotateCW();
-				break;
-			case controlAction.rotateCCW:
-				this.currentTileform.rotateCCW();
-				break;
-			case controlAction.left: 
-				if(this.currentTileform) this.currentTileform.move(side.left);
-				break;
-			case controlAction.right: 
-				if(this.currentTileform) this.currentTileform.move(side.right);
-				break;
-		}
+		this.phase.controlTap(control);
 	}
 	
 	update(dt){
@@ -1170,6 +1155,26 @@ class phase_placeTileform extends gameplayPhase{
 	update(dt){
 		this.parentState.handleTileform();
 	}
+	
+	controlTap(control){		
+		switch(control){
+			case controlAction.down:
+				this.parentState.bumpDownTF(); 
+				break;
+			case controlAction.rotateCW:
+				this.parentState.currentTileform.rotateCW();
+				break;
+			case controlAction.rotateCCW:
+				this.parentState.currentTileform.rotateCCW();
+				break;
+			case controlAction.left: 
+				if(this.parentState.currentTileform) this.parentState.currentTileform.move(side.left);
+				break;
+			case controlAction.right: 
+				if(this.parentState.currentTileform) this.parentState.currentTileform.move(side.right);
+				break;
+		}
+	}
 }
 class phase_ballPhysics extends gameplayPhase{
 	constructor(parentState){
@@ -1181,9 +1186,14 @@ class phase_ballPhysics extends gameplayPhase{
 	update(dt){
 		for(var i = this.balls.length - 1; i >= 0; i--){
 			this.balls[i].update(dt);
-			if(this.balls[i].state == ballState.dead)
+			if(this.balls[i].state == ballStates.dead)
 				this.balls.splice(i, 1);
 		}
+	}
+	draw(){
+		this.balls.forEach(function(ballOb){
+			ballOb.draw();
+		});
 	}
 	
 	addBall(ballOb){
