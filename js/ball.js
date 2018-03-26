@@ -70,7 +70,7 @@ class ball{
 		this.drawPos = tile.toScreenPos(this.gridPos).plus(off);
 		
 		// tags the tile at the current draw position
-		var gpos = tile.toGridPos(this.drawPos);
+		var gpos = tile.toTilePos(this.drawPos);
 		if(!tile.at(gpos).isEmpty()){
 			if(!this.tilesTagged.includes(tile.at(gpos))){
 				this.tilesTagged.push(tile.at(gpos));
