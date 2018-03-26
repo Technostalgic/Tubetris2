@@ -24,7 +24,7 @@ class ball{
 		this.pauseDirections = null;
 		
 		this.state = ballStates.choosing;
-		this.travelDir = side.none;
+		this.travelDir = side.down;
 		this.momentum = 0;
 		this.lastPosUpdate = gameState.current.timeElapsed;
 		
@@ -121,9 +121,14 @@ class ball{
 			return;
 		}
 		
-		// if downward is open, gravity will pull the ball down, otherwise it gets paused
+		// if downward is unblocked, gravity will pull the ball down,
+		// otherwise if it's previous travelDir is unblocked it goes that way,
+		// otherwise if there is more than one possible direction to go, it pauses,
+		// otherwise it goes the only possible direction left to go
 		if(unblocked.includes(side.down)) 
 			tdir = side.down;
+		else if(unblocked.includes(this.travelDir))
+			tdir = this.travelDir;
 		else if(unblocked.length > 1){
 			this.pause();
 			return;

@@ -270,6 +270,9 @@ class tile{
 	static getEntityUID(entityID, entityType = entities.tube){
 		var off = 0;
 		
+		// returns null entity if either the entity type or id is none
+		if(entityID < 0 || entityType < 0) return entities.none;
+		
 		// adds the length of the entity specific enumerator to offset the entityID so that the correct UID offset is returned
 		// the switch statement probably looks like a dumb way to do it but it will be cleaner if I end up adding more entity types
 		switch (entityType){
