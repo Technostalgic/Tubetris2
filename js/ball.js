@@ -124,10 +124,11 @@ class ball{
 		// if downward is open, gravity will pull the ball down, otherwise it gets paused
 		if(unblocked.includes(side.down)) 
 			tdir = side.down;
-		else{
+		else if(unblocked.length > 1){
 			this.pause();
 			return;
 		}
+		else tdir = unblocked[0];
 		
 		this.travelDir = tdir;
 		this.updateNextPos();
@@ -137,8 +138,6 @@ class ball{
 		// updates the ball's nextPos once the travel direction has been determined
 		this.nextPos = this.gridPos.plus(vec2.fromSide(this.travelDir));
 		this.lastPosUpdate = gameState.current.timeElapsed;
-		
-		log(this.nextPos);
 	}
 	
 	destroy(){

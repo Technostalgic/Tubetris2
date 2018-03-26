@@ -138,10 +138,10 @@ class tile{
 	static constructGrid(){
 		// constructs a tile grid full of empty tiles
 		tile.grid = [];
-		for(let x = tile.gridBounds.left; x <= tile.gridBounds.right; x++){
+		for(let x = tile.gridBounds.left; x < tile.gridBounds.right; x++){
 			// creates an empty array for each valid iteration of the horizontal grid bounds
 			tile.grid[x] = [];
-			for(let y = tile.gridBounds.top; y <= tile.gridBounds.bottom; y++){
+			for(let y = tile.gridBounds.top; y < tile.gridBounds.bottom; y++){
 				// adds an empty tile at each available location inside the grid bounds
 				tile.grid[x][y] = tile.getEmpty(new vec2(x, y));
 			}
