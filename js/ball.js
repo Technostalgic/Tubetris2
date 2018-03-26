@@ -24,7 +24,7 @@ class ball{
 		this.pauseDirections = null;
 		
 		this.state = ballStates.choosing;
-		this.travelDir = side.down;
+		this.travelDir = side.none;
 		this.momentum = 0;
 		this.lastPosUpdate = gameState.current.timeElapsed;
 		
@@ -51,16 +51,21 @@ class ball{
 		
 		return Math.min(1 - (this.lastPosUpdate + animLength - gameState.current.timeElapsed) / animLength, 1);
 	}
+	finishMoveAnim(){
+		// in a nutshell, tells the ball to start deciding where it should go next
+		if(this.nextPos)
+			this.drawPos = tile.toScreenPos(this.nextPos);
+		this.state = ballStates.choosing;
+		if(this.nextPos)
+			this.gridPos = this.nextPos.clone();
+	}
 	move(){
 		// moves the ball to it's nextPos
 		var prog = this.getMoveAnimProgress();
 		
 		// if the movement animation is complete, decide where to go next
 		if(prog >= 1) {
-			this.drawPos = tile.toScreenPos(this.nextPos);
-			this.state = ballStates.choosing;
-			if(this.nextPos)
-				this.gridPos = this.nextPos.clone();
+			this.finishMoveAnim();
 			return;
 		}
 		
@@ -100,6 +105,15 @@ class ball{
 	direct(dir){
 		// when the ball is paused, this method allows the user to decide which way the ball should go
 		if(this.state != ballStates.paused) return;
+		
+		for(var pdir of this.pauseDirections){
+			if(pdir == dir){
+				this.travelDir = dir;
+				this.updateNextPos();
+				this.state = ballStates.moving;
+				break;
+			}
+		}
 	}
 	
 	chooseNextTravelDir(){
@@ -107,7 +121,18 @@ class ball{
 		var unblocked = tile.at(this.gridPos).getUnblockedSides();
 		var tdir;
 		
-		// remove the previous travelDirection's opposite from the possible travel directions
+		// if it's travel direction isn't none (which only ever happens on the first ball physics tick), 
+		// the ball will be destroyed if not inside a tube
+		// otherwise set the travelDir to down
+		if(this.travelDir != side.none){
+			if(tile.at(this.gridPos).isEmpty()){
+				this.destroy();
+				return;
+			}
+		}
+		else this.travelDir = side.down;
+		
+		// remove the opposite of the previous travelDirection from the array of possible travel directions
 		for(var i = unblocked.length; i >= 0; i--){
 			if(unblocked[i] == invertedSide(this.travelDir)){
 				unblocked.splice(i, 1);

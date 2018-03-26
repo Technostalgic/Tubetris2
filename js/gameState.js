@@ -1258,6 +1258,25 @@ class phase_ballPhysics extends gameplayPhase{
 		
 	}
 	
+	controlTap(control){
+		this.balls.forEach(function(ballOb){
+			switch(control){
+				case controlAction.left:
+					ballOb.direct(side.left);
+					break;
+				case controlAction.right: 
+					ballOb.direct(side.right);
+					break;
+				case controlAction.up: 
+					ballOb.direct(side.up);
+					break;
+				case controlAction.down: 
+					ballOb.direct(side.down);
+					break;
+			}
+		});
+	}
+	
 	addBall(ballOb){
 		// adds a ball to the ball array
 		this.balls.push(ballOb);
