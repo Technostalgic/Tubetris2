@@ -304,6 +304,7 @@ function loadGFX(){
 	loadGraphic("tiles_tubes", "tiles_tubes.png");
 	loadGraphic("tiles_blocks", "tiles_blocks.png");
 	loadGraphic("tiles_balls", "tiles_balls.png");
+	loadGraphic("pathIndicators", "pathIndicators.png");
 	loadGraphic("arrows", "arrows.png");
 	
 	log(Object.keys(gfx).length.toString() + " images indexed", logType.notify);
