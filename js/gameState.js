@@ -1345,11 +1345,12 @@ class phase_fellTiles extends gameplayPhase{
 		
 		this.fallHeights = [];
 		this.fallingTiles = null;
-		
+		this.fallOffset = 0;
+
 		this.lastOffReset = this.parentState.timeElapsed;
 	}
 	
-	update(dt){
+	firstStep(){
 		// if it is the first tick in this phase, retrieve the falling tiles list and remove those tiles from the 
 		// tile grid
 		if(!this.fallingTiles){
@@ -1359,18 +1360,64 @@ class phase_fellTiles extends gameplayPhase{
 				tile.setTileAt(tile.getEmpty(tpos), tpos);
 			});
 		}
-		
+	}
+	update(dt){
+		// handles update logic for the falling tiles phase
+		// first step
+		if(!this.fallingTiles) this.firstStep();
+
 		this.handleFallingTiles();
 	}
-	handleFallingTiles(){
-		// handles the falling tiles animation
-		var animLength = 100;
-		var fallOffset = (this.parentState.timeElapsed - this.lastOffReset) / animLength;
-		
+	draw(){
+		// draws all the falling tiles with the specified tile offset
+		if(!this.fallingTiles) this.firstStep();
+
+		var yOff = this.fallOffset * tile.tilesize;
+		var ths = this;
 		this.fallingTiles.forEach(function(tileOb){
-			let yOff = fallOffset * tile.tilesize;
-			
+			tileOb.drawAtScreenPos(tile.toScreenPos(tileOb.gridPos, false)
+				.plus(new vec2(0,
+					yOff
+				)));
 		});
+	}
+	
+	handleFallingTiles(){
+		this.updateFallingTileOffset();
+		
+		if(this.fallOffset >= 1)
+			this.updateFallingTilePos();
+
+		if(this.fallingTiles.length <= 0)
+			this.nextPhase();
+	}
+	updateFallingTilePos(){
+		// updates the falling tiles gridpos by moving them down 1 tile
+		this.fallingTiles.forEach(function(tileOb){
+			tileOb.gridPos.y += 1;
+		});
+		this.lastOffReset = this.parentState.timeElapsed;
+		this.fallOffset = 0;
+		this.checkFallingTiles();
+	}
+	checkFallingTiles(){
+		// checks to see if the falling tiles have landed on the ground or another solid tile
+		for(let i = this.fallingTiles.length - 1; i >= 0; i--){
+			let gpos = this.fallingTiles[i].gridPos.plus(vec2.fromSide(side.down));
+			let ttile = tile.at(gpos);
+			if(!ttile.isEmpty()){
+				this.fallingTiles[i].setInPlace();
+				this.fallingTiles.splice(i, 1);
+			}
+		}
+	}
+	updateFallingTileOffset(){
+		// updates the Y offset that the tiles should be drawn at
+		var animLength = 100;
+		this.fallOffset = (this.parentState.timeElapsed - this.lastOffReset) / animLength;
+		
+		//caps the fall offset to %100
+		this.fallOffset = Math.min(this.fallOffset, 1);
 	}
 	
 	setFallHeights(heights){
@@ -1387,6 +1434,12 @@ class phase_fellTiles extends gameplayPhase{
 			}
 		});
 		
-		return r;
+		// reverse the tile array, this is important because the bottom tiles must check for 
+		// ground collision beffore the tiles above them
+		return r.reverse();
+	}
+
+	nextPhase(){
+		this.parentState.getNextTileform();
 	}
 }
