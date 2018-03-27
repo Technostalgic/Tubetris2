@@ -1345,6 +1345,8 @@ class phase_fellTiles extends gameplayPhase{
 		
 		this.fallHeights = [];
 		this.fallingTiles = null;
+		
+		this.lastOffReset = this.parentState.timeElapsed;
 	}
 	
 	update(dt){
@@ -1357,6 +1359,18 @@ class phase_fellTiles extends gameplayPhase{
 				tile.setTileAt(tile.getEmpty(tpos), tpos);
 			});
 		}
+		
+		this.handleFallingTiles();
+	}
+	handleFallingTiles(){
+		// handles the falling tiles animation
+		var animLength = 100;
+		var fallOffset = (this.parentState.timeElapsed - this.lastOffReset) / animLength;
+		
+		this.fallingTiles.forEach(function(tileOb){
+			let yOff = fallOffset * tile.tilesize;
+			
+		});
 	}
 	
 	setFallHeights(heights){
