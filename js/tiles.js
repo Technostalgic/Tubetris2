@@ -346,6 +346,11 @@ class tile{
 		return r;
 	}
 	
+	destroy(){
+		// destroys the tile
+		var tpos = this.gridPos.clone();
+		tile.setTileAt(tile.getEmpty(tpos), tpos);
+	}
 	tag(){
 		// gets tagged by ball rolling through it
 	}

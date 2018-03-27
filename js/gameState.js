@@ -1137,16 +1137,6 @@ class gameplayPhase{
 	// for override, called when a control is tapped
 	controlTap(control = controlAction.none){}
 }
-// the phase that quickly occurs between two tileform placement phases
-class phase_betweenPhase extends gameplayPhase{
-	constructor(parentState){
-		super(parentState);
-	}
-	
-	update(dt){
-		this.parentState.getNextTileform();
-	}
-}
 // the gameplay phase that lets the player control the tileform that is falling from the sky
 class phase_placeTileform extends gameplayPhase{
 	constructor(parentState){ 
@@ -1201,7 +1191,7 @@ class phase_placeTileform extends gameplayPhase{
 		var used = !this.currentTileform.bumpDown();
 		if(used) 
 			if(this.parentState.phase == this)
-				this.goToBetweenPhase();
+				this.parentState.getNextTileform();
 		
 		// resets the bump interval so that the tileform will be bumped down at the right time
 		this.tfLastBumpTime = this.parentState.timeElapsed;
@@ -1226,27 +1216,29 @@ class phase_placeTileform extends gameplayPhase{
 			this.currentTileform.draw();
 	}
 }
-// the gameplay state that handles the movement and logic for ball objects
+// the gameplay phase that handles the movement and logic for ball objects
 class phase_ballPhysics extends gameplayPhase{
 	constructor(parentState){
 		super(parentState);
 		
 		// the array that holds the ball objects
 		this.balls = [];
+		this.tilesTagged = [];
 	}
 	
 	update(dt){
 		// update all the balls in the array and remove the ones that are dead from the ball array
-		for(var i = this.balls.length - 1; i >= 0; i--){
-			this.balls[i].update(dt);
-			if(this.balls[i].state == ballStates.dead)
-				this.balls.splice(i, 1);
-		}
+		var ths = this;
+		this.balls.forEach(function(ballOb){
+			ballOb.update(dt);
+			if(ballOb.state == ballStates.dead)
+				ths.killBall(ballOb);
+		});
 		
 		// if there are no more balls to be handled end this gameplayPhase
 		// Because, well what's the point of life without any balls to handle?
 		if(this.balls.length <= 0)
-			this.end();
+			this.nextPhase();
 	}
 	draw(){
 		// renders the gameplayPhase
@@ -1256,6 +1248,12 @@ class phase_ballPhysics extends gameplayPhase{
 	}
 	end(){
 		
+	}
+	
+	nextPhase(){
+		var phase = new phase_destroyTaggedTiles(this.parentState);
+		phase.setTilesTagged(this.tilesTagged);
+		this.parentState.switchGameplayPhase(phase);
 	}
 	
 	controlTap(control){
@@ -1280,5 +1278,61 @@ class phase_ballPhysics extends gameplayPhase{
 	addBall(ballOb){
 		// adds a ball to the ball array
 		this.balls.push(ballOb);
+	}
+	killBall(ballOb){
+		this.balls.splice(this.balls.indexOf(ballOb), 1);
+		this.tilesTagged = this.tilesTagged.concat(ballOb.tilesTagged);
+	}
+}
+// destroys the tiles that have been tagged by the ball
+class phase_destroyTaggedTiles extends gameplayPhase{
+	constructor(parentState){
+		super(parentState);
+		
+		this.lastTileDestroyed = parentState.timeElapsed;
+		this.tilesTagged = [];
+		this.fallHeights = [];
+	}
+	
+	update(dt){
+		// destroy each tagged tile sequentially
+		var animInterval = 100;
+		var nextDestroy = this.lastTileDestroyed + animInterval;
+		
+		while(this.parentState.timeElapsed >= nextDestroy){
+			this.lastTileDestroyed += animInterval;
+			this.destroyTiles(this.tilesTagged.splice(0, 1));
+			nextDestroy = this.lastTileDestroyed + animInterval;
+		}
+	}
+	
+	setTilesTagged(tagged){
+		// flags the tagged tiles for destruction
+		this.tilesTagged = tagged;
+	}
+	destroyTiles(tileArray){
+		// destroy the specified tiles
+		tileArray.forEach(function(tileOb){
+			tileOb.destroy();
+		});
+	}
+	
+	nextPhase(){
+		// enters the next gameplay phase
+		var phase = new new phase_fellTiles(this.parentState);
+		phase.setFallHeights(this.fallHeights);
+		this.parentState.switchGameplayPhase(phase);
+	}
+}
+// the phase where tiles can fall
+class phase_fellTiles extends gameplayPhase{
+	constructor(parentState){
+		super(parentState);
+		
+		this.fallHeights = [];
+	}
+	
+	setFallHeights(heights){
+		this.fallHeights = heights;
 	}
 }
