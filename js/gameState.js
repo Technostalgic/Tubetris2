@@ -1280,6 +1280,7 @@ class phase_ballPhysics extends gameplayPhase{
 		this.balls.push(ballOb);
 	}
 	killBall(ballOb){
+		// destroys the specified ball, removes it from the array and queries all the tiles that it tagged
 		this.balls.splice(this.balls.indexOf(ballOb), 1);
 		this.tilesTagged = this.tilesTagged.concat(ballOb.tilesTagged);
 	}
@@ -1304,6 +1305,9 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 			this.destroyTiles(this.tilesTagged.splice(0, 1));
 			nextDestroy = this.lastTileDestroyed + animInterval;
 		}
+		
+		if(this.tilesTagged.length <= 0)
+			this.nextPhase();
 	}
 	
 	setTilesTagged(tagged){
@@ -1312,14 +1316,24 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 	}
 	destroyTiles(tileArray){
 		// destroy the specified tiles
+		var ths = this;
 		tileArray.forEach(function(tileOb){
-			tileOb.destroy();
+			ths.destroyTile(tileOb);
 		});
+	}
+	destroyTile(tileOb){
+		// destroys the tile and sets the corresponding fall height
+		var x = tileOb.gridPos.x;
+		var y = tileOb.gridPos.y;
+		var h = this.fallHeights[x];
+		
+		this.fallHeights[x] = !h ? y : Math.max(h, y);
+		tileOb.destroy();
 	}
 	
 	nextPhase(){
 		// enters the next gameplay phase
-		var phase = new new phase_fellTiles(this.parentState);
+		var phase = new phase_fellTiles(this.parentState);
 		phase.setFallHeights(this.fallHeights);
 		this.parentState.switchGameplayPhase(phase);
 	}
@@ -1330,9 +1344,35 @@ class phase_fellTiles extends gameplayPhase{
 		super(parentState);
 		
 		this.fallHeights = [];
+		this.fallingTiles = null;
+	}
+	
+	update(dt){
+		// if it is the first tick in this phase, retrieve the falling tiles list and remove those tiles from the 
+		// tile grid
+		if(!this.fallingTiles){
+			this.fallingTiles = this.getFallingTiles();
+			this.fallingTiles.forEach(function(tileOb){
+				let tpos = tileOb.gridPos.clone();
+				tile.setTileAt(tile.getEmpty(tpos), tpos);
+			});
+		}
 	}
 	
 	setFallHeights(heights){
 		this.fallHeights = heights;
+	}
+	getFallingTiles(){
+		var r = [];
+		
+		this.fallHeights.forEach(function(y0, x){
+			for(let y = y0; y >= 0; y--){
+				let t = tile.at(x, y);
+				if(!t.isEmpty())
+					r.push(t);
+			}
+		});
+		
+		return r;
 	}
 }

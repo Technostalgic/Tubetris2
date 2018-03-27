@@ -353,6 +353,7 @@ class tile{
 	}
 	tag(){
 		// gets tagged by ball rolling through it
+		this.tintColor = color.fromRGBA(255, 255, 255, 0.5);
 	}
 	setInPlace(pos = null){
 		if(pos) this.gridPos = pos;

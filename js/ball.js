@@ -66,6 +66,7 @@ class ball{
 		// if the movement animation is complete, decide where to go next
 		if(prog >= 1) {
 			this.finishMoveAnim();
+			this.checkTileForTagging();
 			return;
 		}
 		
@@ -74,11 +75,16 @@ class ball{
 		var off = this.nextPos.minus(this.gridPos).multiply(prog * tile.tilesize);
 		this.drawPos = tile.toScreenPos(this.gridPos).plus(off);
 		
-		// tags the tile at the current draw position
+		this.checkTileForTagging();
+	}
+	checkTileForTagging(){
+		// ensures the tile at the current draw position is tagged
 		var gpos = tile.toTilePos(this.drawPos);
-		if(!tile.at(gpos).isEmpty()){
-			if(!this.tilesTagged.includes(tile.at(gpos))){
+		var ttile = tile.at(gpos);
+		if(!ttile.isEmpty()){
+			if(!this.tilesTagged.includes(ttile)){
 				this.tilesTagged.push(tile.at(gpos));
+				ttile.tag();
 			}
 		}
 	}
