@@ -106,7 +106,7 @@ class tile{
 			[side.left, side.up],							// L_upLeft: 9,
 			[side.left, side.right, side.up, side.down],	// quad: 10,
 			[],												// block_brick: 11,
-			[],												// block_bomb: 12
+			[side.left, side.right, side.up, side.down],	// block_bomb: 12
 			[],												// ball: 13
 			[],												// ball: 14
 			[],												// ball: 15
@@ -296,6 +296,17 @@ class tile{
 		return uid - off;
 	}
 	
+	static explodeAt(pos){
+		// causes a destructive explosion at the specified position
+		for(let y = pos.y - 1; y <= pos.y + 1; y++){
+			for(let x = pos.x - 1; x <= pos.x + 1; x++){
+				var ttile = tile.at(x, y);
+				if(!ttile.isEmpty())
+					ttile.destroy();
+			}
+		}
+	}
+	
 	static SIP_normal(self){
 		// the normal set in place action
 		tile.setTileAt(self, self.gridPos);
@@ -304,6 +315,35 @@ class tile{
 		// the set in place action for a ball tile entity	
 		if(gameState.current instanceof state_gameplayState)
 			gameState.current.spawnBallAt(self.gridPos, self.entityID);
+	}
+	static SIP_bomb(self){
+		// what happens when a bomb is set in place
+		tile.setTileAt(self, self.gridPos);
+		var neighborPos = [
+			self.gridPos.plus(vec2.fromSide(side.down)),
+			self.gridPos.plus(vec2.fromSide(side.left)),
+			self.gridPos.plus(vec2.fromSide(side.right)),
+			self.gridPos.plus(vec2.fromSide(side.up))
+		];
+		
+		neighborPos.forEach(function(npos){
+			let ttile = tile.at(npos);
+			if(ttile.isEntity(blocks.block_bomb, entities.block)){
+				self.destroy();
+				ttile.destroy();
+			}
+		});
+	}
+	static RT_tube(self, ball){
+		// tag
+		this.tag();
+	}
+	static RT_bomb(self, ball){
+		ball.destroy();
+		this.destroy();
+	}
+	static DST_bomb(self){
+		tile.explodeAt(self.gridPos);
 	}
 	
 	isEmpty(){
@@ -314,14 +354,28 @@ class tile{
 		this.entityID = entityID;
 		
 		switch(entityType){
+			case entities.tube:
+				this.m_rollThrough = tile.RT_tube;
+				break;
 			case entities.ball: 
 				this.m_setInPlace = tile.SIP_ball;
+				break;
+			case entities.block:
+				if(this.entityID == blocks.block_bomb){
+					this.m_setInPlace = tile.SIP_bomb;
+					this.m_rollThrough = tile.RT_bomb;
+					this.m_destroy = tile.DST_bomb;
+				}
 				break;
 			default: 
 				this.m_setInPlace = tile.SIP_normal;
 				break;
 		}
 	}
+	isEntity(entityID, entityType = entities.tube){
+		return(this.entityID == entityID && this.entityType == entityType);
+	}
+	
 	getOpenSides(){
 		if(this.entityID == entities.none) return [side.left, side.right, side.up, side.down];
 		return tile.getEntityOpenSides(this.entityID, this.entityType);
@@ -351,16 +405,24 @@ class tile{
 		var tpos = this.gridPos.clone();
 		tile.setTileAt(tile.getEmpty(tpos), tpos);
 		effect.createPoof(tile.toScreenPos(tpos));
+		this.m_destroy(this);
 	}
 	tag(){
 		// gets tagged by ball rolling through it
 		this.tintColor = color.fromRGBA(255, 255, 255, 0.5);
 	}
+	
 	setInPlace(pos = null){
 		if(pos) this.gridPos = pos;
 		this.m_setInPlace(this);
 	}
+	rollThrough(ballOb = null){
+		this.m_rollThrough(this, ballOb);
+	}
+	
 	m_setInPlace(self = null){}
+	m_rollThrough(self = null, ballOb = null){}
+	m_destroy(self){}
 	
 	clone(){
 		// returns an identical tile object of a seperate instance
@@ -413,7 +475,9 @@ class tileform{
 			"getPiece_L0",
 			"getPiece_L1",
 			"getPiece_Z0",
-			"getPiece_Z1"
+			"getPiece_Z1",
+			"getPiece_bomb",
+			"getPiece_brick"
 		];
 		var i = Math.floor(r.length * Math.random());
 		
@@ -484,12 +548,30 @@ class tileform{
 		return r;
 	}
 	
-	static getPiece_ball(){
+	static getPiece_bomb(){
 		var r = new tileform();
 		
-		var n = Math.floor(Math.random() * (Object.keys(balls).length - 1));
 		r.tiles = [
-			tile.fromData(new vec2(), n, entities.ball)
+			tile.fromData(new vec2(), blocks.block_bomb, entities.block)
+		];
+		
+		return r;
+	}
+	static getPiece_brick(){
+		var r = new tileform();
+		
+		r.tiles = [
+			tile.fromData(new vec2(), blocks.block_brick, entities.block)
+		];
+		
+		return r;
+	}
+	static getPiece_ball(type = null){
+		var r = new tileform();
+		
+		if(type == null) type = Math.floor(Math.random() * (Object.keys(balls).length - 1));
+		r.tiles = [
+			tile.fromData(new vec2(), type, entities.ball)
 		];
 		
 		return r;

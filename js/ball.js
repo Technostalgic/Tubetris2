@@ -84,7 +84,7 @@ class ball{
 		if(!ttile.isEmpty()){
 			if(!this.tilesTagged.includes(ttile)){
 				this.tilesTagged.push(tile.at(gpos));
-				ttile.tag();
+				ttile.rollThrough(this);
 			}
 		}
 	}
