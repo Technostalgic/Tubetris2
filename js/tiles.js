@@ -395,6 +395,8 @@ class tileform{
 	constructor(){
 		this.gridPos = new vec2(4, -1);
 		this.tiles = [];
+		this.swappable = true;
+		this.anchoredRotation = false;
 		
 		// animation stuff for smooth transformations
 		this.animOffset_translate = gameState.current.timeElapsed;
@@ -402,25 +404,40 @@ class tileform{
 		this.lastDrawPos = this.drawPos.clone();
 		this.animOffset_rotate = gameState.current.timeElapsed - 1000;
 		this.lastDrawRot = 0;
-		this.swappable = true;
 	}
 	
 	static getPiece_random(){
 		var r = [
 			"getPiece_square",
-			"getPiece_L0"
+			"getPiece_straight",
+			"getPiece_L0",
+			"getPiece_L1",
+			"getPiece_Z0",
+			"getPiece_Z1"
 		];
 		var i = Math.floor(r.length * Math.random());
 		
 		return tileform[r[i]]();
 	}
+	
 	static getPiece_square(){
 		var r = new tileform();
+		r.anchoredRotation = true;
 		r.tiles = [
 			tile.fromData(new vec2(0, 0), tubes.S_horizontal),
 			tile.fromData(new vec2(1, 0), tubes.L_upLeft),
 			tile.fromData(new vec2(1, -1), tubes.L_downLeft),
 			tile.fromData(new vec2(0, -1), tubes.S_horizontal)
+		];
+		return r;
+	}
+	static getPiece_straight(){
+		var r = new tileform();
+		r.tiles = [
+			tile.fromData(new vec2(-1, 0), tubes.T_horizontalDown),
+			tile.fromData(new vec2(0, 0), tubes.T_horizontalUp),
+			tile.fromData(new vec2(1, 0), tubes.T_horizontalDown),
+			tile.fromData(new vec2(2, 0), tubes.T_horizontalUp)
 		];
 		return r;
 	}
@@ -434,6 +451,39 @@ class tileform{
 		];
 		return r;
 	}
+	static getPiece_L1(){
+		var r = new tileform();
+		r.tiles = [
+			tile.fromData(new vec2(-1, -1), tubes.T_horizontalDown),
+			tile.fromData(new vec2(-1, 0), tubes.T_horizontalUp),
+			tile.fromData(new vec2(0, 0), tubes.S_horizontal),
+			tile.fromData(new vec2(1, 0), tubes.T_horizontalUp)
+		];
+		return r;
+	}
+	static getPiece_Z0(){
+		var r = new tileform();
+		r.anchoredRotation = true;
+		r.tiles = [
+			tile.fromData(new vec2(-1, -1), tubes.L_downRight),
+			tile.fromData(new vec2(0, -1), tubes.T_horizontalDown),
+			tile.fromData(new vec2(0, 0), tubes.L_upRight),
+			tile.fromData(new vec2(1, 0), tubes.S_horizontal)
+		];
+		return r;
+	}
+	static getPiece_Z1(){
+		var r = new tileform();
+		r.anchoredRotation = true;
+		r.tiles = [
+			tile.fromData(new vec2(-1, 0), tubes.S_horizontal),
+			tile.fromData(new vec2(0, 0), tubes.L_upLeft),
+			tile.fromData(new vec2(0, -1), tubes.T_horizontalDown),
+			tile.fromData(new vec2(1, -1), tubes.L_downLeft)
+		];
+		return r;
+	}
+	
 	static getPiece_ball(){
 		var r = new tileform();
 		
@@ -467,13 +517,14 @@ class tileform{
 			if(tileOb.gridPos.x > maxX) maxX = tileOb.gridPos.x;
 		});
 		
-		if(!minY) return new vec2(tile.tilesize / 2);
+		if(minY == undefined) return new vec2(tile.tilesize / 2);
 		
-		var x = (minX + maxX + 1) / 2;
-		var y = (minY + maxY + 1) / 2;
+		var min = new vec2(minX, minY);
+		var center = new vec2((maxX - minX + 1) / 2, (maxY - minY + 1) / 2);
 		
-		return new vec2(x, y).multiply(tile.tilesize);
+		return center.plus(min).multiply(tile.tilesize);
 	}
+	
 	getTopLeftTilePos(){
 		var minX = null;
 		var minY = null;
@@ -625,10 +676,10 @@ class tileform{
 		this.lastDrawRot = Math.PI / 2 * (dir == 1 ? -1 : 1);
 	}
 	rotateCW(){
-		this.rotate(1, true);
+		this.rotate(1, this.anchoredRotation);
 	}
 	rotateCCW(){
-		this.rotate(-1, true);
+		this.rotate(-1, this.anchoredRotation);
 	}
 	
 	setInPlace(){
