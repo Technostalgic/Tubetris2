@@ -1071,6 +1071,19 @@ class state_gameplayState extends gameState{
 		// called when a control is tapped
 		this.phase.controlTap(control);
 	}
+	checkTilePlacement(ctiles = null){
+		// checks the tile placement of all the specified tiles
+		// if no tiles are specified, check all the tiles in the tile grid
+		if(!ctiles){
+			ctiles = [];
+			tile.grid.forEach(function(tileArray){
+				ctiles = ctiles.concat(tileArray);
+			});
+		}
+		ctiles.forEach(function(tileOb){
+			tileOb.checkPlacement();
+		});
+	}
 	
 	update(dt){
 		// main logic step
@@ -1155,10 +1168,6 @@ class phase_placeTileform extends gameplayPhase{
 	end(){
 	}
 	
-	goToBetweenPhase(){
-		this.parentState.switchGameplayPhase(new phase_betweenPhase());
-	}
-	
 	controlTap(control){
 		if(!this.currentTileform) return;
 		switch(control){
@@ -1191,9 +1200,11 @@ class phase_placeTileform extends gameplayPhase{
 		
 		// bumps down the tileform and if it gets set into place, the next tileform is retrieved
 		var used = !this.currentTileform.bumpDown();
+		this.parentState.checkTilePlacement();
+		used = used && this.parentState.phase == this
+		
 		if(used) 
-			if(this.parentState.phase == this)
-				this.parentState.getNextTileform();
+			this.parentState.getNextTileform();
 		
 		// resets the bump interval so that the tileform will be bumped down at the right time
 		this.tfLastBumpTime = this.parentState.timeElapsed;
@@ -1408,7 +1419,7 @@ class phase_fellTiles extends gameplayPhase{
 			let gpos = this.fallingTiles[i].gridPos.plus(vec2.fromSide(side.down));
 			let ttile = tile.at(gpos);
 			if(!ttile.isEmpty()){
-				this.fallingTiles[i].setInPlace();
+				this.fallingTiles[i].place();
 				this.fallingTiles.splice(i, 1);
 			}
 		}

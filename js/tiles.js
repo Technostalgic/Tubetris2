@@ -307,16 +307,12 @@ class tile{
 		}
 	}
 	
-	static SIP_normal(self){
-		// the normal set in place action
-		tile.setTileAt(self, self.gridPos);
-	}
-	static SIP_ball(self){
+	static CP_ball(self){
 		// the set in place action for a ball tile entity	
 		if(gameState.current instanceof state_gameplayState)
 			gameState.current.spawnBallAt(self.gridPos, self.entityID);
 	}
-	static SIP_bomb(self){
+	static CP_bomb(self){
 		// what happens when a bomb is set in place
 		tile.setTileAt(self, self.gridPos);
 		var neighborPos = [
@@ -334,7 +330,7 @@ class tile{
 			}
 		});
 	}
-	static RT_tube(self, ball){
+	static RT_normal(self, ball){
 		// tag
 		this.tag();
 	}
@@ -355,20 +351,19 @@ class tile{
 		
 		switch(entityType){
 			case entities.tube:
-				this.m_rollThrough = tile.RT_tube;
 				break;
 			case entities.ball: 
-				this.m_setInPlace = tile.SIP_ball;
+				this.m_checkPlacement = tile.CP_ball;
 				break;
 			case entities.block:
 				if(this.entityID == blocks.block_bomb){
-					this.m_setInPlace = tile.SIP_bomb;
+					this.m_checkPlacement = tile.CP_bomb;
 					this.m_rollThrough = tile.RT_bomb;
 					this.m_destroy = tile.DST_bomb;
 				}
 				break;
 			default: 
-				this.m_setInPlace = tile.SIP_normal;
+				this.m_rollThrough = tile.RT_normal;
 				break;
 		}
 	}
@@ -400,6 +395,10 @@ class tile{
 		return r;
 	}
 	
+	place(pos = null){
+		if(pos) this.gridPos = pos;
+		tile.setTileAt(this, this.gridPos);
+	}
 	destroy(){
 		// destroys the tile
 		var tpos = this.gridPos.clone();
@@ -412,15 +411,14 @@ class tile{
 		this.tintColor = color.fromRGBA(255, 255, 255, 0.5);
 	}
 	
-	setInPlace(pos = null){
-		if(pos) this.gridPos = pos;
-		this.m_setInPlace(this);
+	checkPlacement(){
+		this.m_checkPlacement(this);
 	}
 	rollThrough(ballOb = null){
 		this.m_rollThrough(this, ballOb);
 	}
 	
-	m_setInPlace(self = null){}
+	m_checkPlacement(self = null){}
 	m_rollThrough(self = null, ballOb = null){}
 	m_destroy(self){}
 	
@@ -769,7 +767,7 @@ class tileform{
 		var ths = this;
 		this.tiles.forEach(function(tileOb){
 			let tpos = tileOb.gridPos.plus(ths.gridPos);
-			tileOb.setInPlace(tpos);
+			tileOb.place(tpos);
 		});
 	}
 	
