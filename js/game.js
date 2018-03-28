@@ -17,6 +17,8 @@ var config = {},
 var currentScore = 0,
 	ballScore = 0;
 	
+var effects = [];
+	
 var fonts = {},
 	gfx = {},
 	sfx = {};
@@ -304,6 +306,8 @@ function loadGFX(){
 	loadGraphic("tiles_tubes", "tiles_tubes.png");
 	loadGraphic("tiles_blocks", "tiles_blocks.png");
 	loadGraphic("tiles_balls", "tiles_balls.png");
+	loadGraphic("effect_poof", "effect_poof.png");
+	loadGraphic("effect_explosion", "effect_explosion.png");
 	loadGraphic("pathIndicators", "pathIndicators.png");
 	loadGraphic("arrows", "arrows.png");
 	
@@ -711,6 +715,17 @@ function getCanvas(){
 	
 	// sets the screen bounds
 	screenBounds = new collisionBox(new vec2(), new vec2(renderTarget.width, renderTarget.height));
+}
+
+function updateEffects(dt){
+	effects.forEach(function(effectOb){
+		effectOb.update(dt);
+	});
+}
+function drawEffects(){
+	effects.forEach(function(effectOb){
+		effectOb.draw();
+	});
 }
 
 function assetLoadingFinishCheck(){

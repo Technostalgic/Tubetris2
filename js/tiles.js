@@ -350,6 +350,7 @@ class tile{
 		// destroys the tile
 		var tpos = this.gridPos.clone();
 		tile.setTileAt(tile.getEmpty(tpos), tpos);
+		effect.createPoof(tile.toScreenPos(tpos));
 	}
 	tag(){
 		// gets tagged by ball rolling through it

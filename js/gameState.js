@@ -1076,6 +1076,7 @@ class state_gameplayState extends gameState{
 		// main logic step
 		super.update(dt);
 		
+		updateEffects(dt);
 		this.phase.update(dt);
 	}
 	
@@ -1118,6 +1119,7 @@ class state_gameplayState extends gameState{
 		this.phase.draw();
 		
 		this.drawHUD();
+		drawEffects();
 	}
 }
 
