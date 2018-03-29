@@ -115,6 +115,8 @@ class ball{
 	findPausePaths(){
 		// calculate the potential travel paths and generate an imgage that displays them
 		if(this.isVirtual) return;
+		var pathWidth = 2;
+		
 		var pathCanvas = document.createElement("canvas");
 		pathCanvas.width = tile.gridBounds.width * tile.tilesize;
 		pathCanvas.height = tile.gridBounds.height * tile.tilesize;
@@ -129,32 +131,57 @@ class ball{
 			tball.updateNextPos();
 			
 			// roll the ball until it is destroyed or paused and track its location with pArray
-			let pArray = [];
+			let pArray = [{
+					pos:tball.gridPos, 
+					dir:tball.travelDir
+					}];
 			for(let i = 100; i >= 0; i--){
 				tball.finishMoveAnim();
 				tball.chooseNextTravelDir();
 				tile.at(tball.gridPos).rollThrough(tball, true);
-				if(tball.state == ballStates.paused || tball.state == ballStates.dead)
-					break;
 				
 				pArray.push({
 					pos:tball.gridPos, 
 					dir:tball.travelDir
 					});
+					
+				if(tball.state == ballStates.paused || tball.state == ballStates.dead)
+					break;
 			}
 			
 			// print all the tball's positions onto the path canvas
-			pArray.forEach(function(bpoint){
-				let tpoint = tile.toScreenPos(bpoint.pos).plus(vec2.fromSide(bpoint.dir).multiply(tile.tilesize / 4));
-				tpoint = tpoint.minus(tile.offset);
-				let tsize = vec2.fromSide(bpoint.dir).multiply(tile.tilesize / 4);
-				tsize.x = Math.abs(tsize.x) + 3.5;
-				tsize.y = Math.abs(tsize.y) + 3.5;
-				let tbox = new collisionBox(new vec2(), tsize);
+			var lpoint = null;
+			pArray.forEach(function(bpoint, i){
+				let tpoint = null;
+				let tsize = null;
 				
-				tbox.setCenter(tpoint);
-				tbox.drawFill(pathCtx, "#FFF");
-				tbox.drawOutline(pathCtx, "#000", 1);
+				let tbox = null;
+				if(i > 0 && i < pArray.length - 1) {
+					tpoint = tile.toScreenPos(bpoint.pos).plus(vec2.fromSide(bpoint.dir).multiply(tile.tilesize / 4));
+					tpoint = tpoint.minus(tile.offset);
+					tsize = vec2.fromSide(bpoint.dir).multiply(tile.tilesize / 4);
+					tsize.x = Math.max(Math.abs(tsize.x), pathWidth);
+					tsize.y = Math.max(Math.abs(tsize.y), pathWidth);
+					tbox = new collisionBox(new vec2(), tsize.clone());
+					tbox.setCenter(tpoint.clone());
+				}
+				
+				let lbox = null;
+				if(lpoint){
+					tpoint = tile.toScreenPos(bpoint.pos).plus(vec2.fromSide(invertedSide(lpoint.dir)).multiply(tile.tilesize / 4));
+					tpoint = tpoint.minus(tile.offset);
+					tsize = vec2.fromSide(invertedSide(lpoint.dir)).multiply(tile.tilesize / 4);
+					tsize.x = Math.max(Math.abs(tsize.x), pathWidth);
+					tsize.y = Math.max(Math.abs(tsize.y), pathWidth);
+					lbox = new collisionBox(new vec2(), tsize.clone());
+					lbox.setCenter(tpoint.clone());
+				}
+				lpoint = bpoint;
+				
+				if(lbox) lbox.drawOutline(pathCtx, "#000", 2);
+				if(tbox) tbox.drawOutline(pathCtx, "#000", 2);
+				if(lbox) lbox.drawFill(pathCtx, "#FFF");
+				if(tbox) tbox.drawFill(pathCtx, "#FFF");
 			});
 			
 			// print the end point onto the path canvas
