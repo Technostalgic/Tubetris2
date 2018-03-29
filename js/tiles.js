@@ -298,6 +298,7 @@ class tile{
 	
 	static explodeAt(pos){
 		// causes a destructive explosion at the specified position
+		effect.createExplosion(tile.toScreenPos(pos));
 		for(let y = pos.y - 1; y <= pos.y + 1; y++){
 			for(let x = pos.x - 1; x <= pos.x + 1; x++){
 				var ttile = tile.at(x, y);
@@ -337,7 +338,6 @@ class tile{
 	}
 	static RT_bomb(self, ball){
 		ball.destroy();
-		this.destroy();
 	}
 	static DST_bomb(self){
 		tile.explodeAt(self.gridPos);

@@ -15,7 +15,13 @@ class effect{
 		// creates a poof effect at the specified position
 		var e = animatedSpriteEffect.build(gfx.effect_poof, 33, animatedSpriteEffect.getFrames(gfx.effect_poof, 10));
 		e.pos = pos;
-		log(pos);
+		
+		effects.push(e);
+		return e;
+	}
+	static createExplosion(pos){
+		var e = animatedSpriteEffect.build(gfx.effect_explosion, 33, animatedSpriteEffect.getFrames(gfx.effect_explosion, 12));
+		e.pos = pos;
 		
 		effects.push(e);
 		return e;

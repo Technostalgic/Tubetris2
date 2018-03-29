@@ -1082,7 +1082,6 @@ class state_gameplayState extends gameState{
 		}
 		ctiles.forEach(function(tileOb){
 			if(tileOb.isEmpty()) return;
-			log(tileOb);
 			tileOb.checkPlacement();
 		});
 	}
@@ -1199,7 +1198,6 @@ class phase_placeTileform extends gameplayPhase{
 	placeTileform(){
 		// places the current tileform and does all the necessary checks
 		this.currentTileform.setInPlace();
-		log(this.currentTileform);
 		this.currentTileform = null;
 		
 		this.parentState.checkTilePlacement();
