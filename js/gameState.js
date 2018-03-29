@@ -1014,9 +1014,9 @@ class state_gameplayState extends gameState{
 		super();
 		
 		this.nextTileforms = [];
-		this.generateNextTileforms(4, tileform.getPiece_brick());
-		this.generateNextTileforms(0, tileform.getPiece_bomb());
-		this.generateNextTileforms(0, tileform.getPiece_ball());
+		this.generateNextTileforms(3, tileform.getPiece_ball());
+		//this.generateNextTileforms(0, tileform.getPiece_bomb());
+		//this.generateNextTileforms(0, tileform.getPiece_ball());
 		this.switchGameplayPhase(new phase_placeTileform(this));
 		
 		this.currentTileform = null; // the falling tileform that the player can control

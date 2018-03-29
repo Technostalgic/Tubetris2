@@ -22,6 +22,7 @@ class ball{
 		this.drawPos = tile.toScreenPos(this.gridPos);
 		this.ballType = type;
 		this.pauseDirections = null;
+		this.pausePaths = null;
 		
 		this.state = ballStates.choosing;
 		this.travelDir = side.none;
@@ -93,6 +94,7 @@ class ball{
 		// pauses the ball to wait for player input
 		this.state = ballStates.paused;
 		this.findPauseDirections();
+		this.findPausePaths();
 	}
 	findPauseDirections(){
 		// get the unblocked directions at the current tile
@@ -107,6 +109,60 @@ class ball{
 		}
 		
 		this.pauseDirections = unblocked;
+	}
+	findPausePaths(){
+		var pathCanvas = document.createElement("canvas");
+		pathCanvas.width = tile.gridBounds.width * tile.tilesize;
+		pathCanvas.height = tile.gridBounds.height * tile.tilesize;
+		
+		var pathCtx = pathCanvas.getContext("2d");
+		
+		// send a virtual ball out in each direction and draw its path
+		var ths = this;
+		this.pauseDirections.forEach(function(dir){
+			let tball = new ball(ths.gridPos.clone(), ths.ballType);
+			tball.travelDir = dir;
+			tball.updateNextPos();
+			
+			// roll the ball until it is destroyed or paused and track its location with pArray
+			let pArray = [];
+			for(let i = 100; i >= 0; i--){
+				tball.finishMoveAnim();
+				tball.chooseNextTravelDir();
+				if(tball.state == ballStates.paused || tball.state == ballStates.dead)
+					break;
+				
+				pArray.push({
+					pos:tball.gridPos, 
+					dir:tball.travelDir
+					});
+			}
+			
+			// print all the tball's positions onto the path canvas
+			pArray.forEach(function(bpoint){
+				let tpoint = tile.toScreenPos(bpoint.pos).plus(vec2.fromSide(bpoint.dir).multiply(tile.tilesize / 4));
+				tpoint = tpoint.minus(tile.offset);
+				let tsize = vec2.fromSide(bpoint.dir).multiply(tile.tilesize / 4);
+				tsize.x = Math.abs(tsize.x) + 3.5;
+				tsize.y = Math.abs(tsize.y) + 3.5;
+				let tbox = new collisionBox(new vec2(), tsize);
+				
+				tbox.setCenter(tpoint);
+				tbox.drawFill(pathCtx, "#FFF");
+				tbox.drawOutline(pathCtx, "#000", 1);
+			});
+			
+			// print the end point onto the path canvas
+			let tsprt = new spriteBox(new vec2(), new vec2(gfx.pathIndicators.height, gfx.pathIndicators.width / 2));
+			if(tball.state == ballStates.dead)
+				tsprt.pos.x = gfx.pathIndicators.width / 2;
+			let tbox = new collisionBox(new vec2(), tsprt.size);
+			tbox.setCenter(tile.toScreenPos(tball.gridPos).minus(tile.offset));
+			let endSprt = new spriteContainer(gfx.pathIndicators, tsprt, tbox);
+			endSprt.draw(pathCtx);
+		});
+		
+		this.pausePaths = pathCanvas;
 	}
 	direct(dir){
 		// when the ball is paused, this method allows the user to decide which way the ball should go
@@ -191,8 +247,10 @@ class ball{
 		var sprt = new spriteBox(new vec2(tile.tilesize * this.ballType, 0), new vec2(tile.tilesize));
 		drawCenteredImage(renderContext, gfx.tiles_balls, this.drawPos, sprt);
 		
-		if(this.state == ballStates.paused)
+		if(this.state == ballStates.paused){
 			this.drawDirectionIndicators();
+			this.drawPathIndicators();
+		}
 	}
 	drawDirectionIndicators(){
 		// draws the arrows that show which way the ball can be directed when it is paused
@@ -203,5 +261,9 @@ class ball{
 			var tpos = tile.toScreenPos(ths.gridPos).plus(vec2.fromSide(dir).multiply(tile.tilesize / 2));
 			drawArrow(tpos, dir);
 		});
+	}
+	drawPathIndicators(){
+		// draws the potential paths the ball can travel along
+		drawImage(renderContext, this.pausePaths, tile.offset);
 	}
 }

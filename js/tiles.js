@@ -355,6 +355,7 @@ class tile{
 		this.tag();
 	}
 	static RT_bomb(self, ball){
+		this.tag();
 		ball.destroy();
 	}
 	static DST_bomb(self){
