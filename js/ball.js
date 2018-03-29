@@ -115,7 +115,7 @@ class ball{
 	findPausePaths(){
 		// calculate the potential travel paths and generate an imgage that displays them
 		if(this.isVirtual) return;
-		var pathWidth = 2;
+		var pathWidth = 4;
 		
 		var pathCanvas = document.createElement("canvas");
 		pathCanvas.width = tile.gridBounds.width * tile.tilesize;
@@ -155,8 +155,9 @@ class ball{
 				let tpoint = null;
 				let tsize = null;
 				
+				// create the second dash of the path in the tile
 				let tbox = null;
-				if(i > 0 && i < pArray.length - 1) {
+				if(i > 0 && i < pArray.length - 1) { // if not the first or last iteration
 					tpoint = tile.toScreenPos(bpoint.pos).plus(vec2.fromSide(bpoint.dir).multiply(tile.tilesize / 4));
 					tpoint = tpoint.minus(tile.offset);
 					tsize = vec2.fromSide(bpoint.dir).multiply(tile.tilesize / 4);
@@ -166,8 +167,9 @@ class ball{
 					tbox.setCenter(tpoint.clone());
 				}
 				
+				// create the first dash of the path in the tile
 				let lbox = null;
-				if(lpoint){
+				if(lpoint){ // if not the first iteration
 					tpoint = tile.toScreenPos(bpoint.pos).plus(vec2.fromSide(invertedSide(lpoint.dir)).multiply(tile.tilesize / 4));
 					tpoint = tpoint.minus(tile.offset);
 					tsize = vec2.fromSide(invertedSide(lpoint.dir)).multiply(tile.tilesize / 4);
@@ -178,6 +180,7 @@ class ball{
 				}
 				lpoint = bpoint;
 				
+				// draw the first dash if possible, as well as the second if possible
 				if(lbox) lbox.drawOutline(pathCtx, "#000", 2);
 				if(tbox) tbox.drawOutline(pathCtx, "#000", 2);
 				if(lbox) lbox.drawFill(pathCtx, "#FFF");

@@ -1007,6 +1007,43 @@ class state_controlSettings extends state_menuState{
 		saveControls();
 	}
 }
+// when the game is paused
+class state_pauseMenu extends state_menuState{
+	constructor(){
+		super();
+		this.resumeState = null;
+	}
+	
+	addButtons(){
+		// adds buttons to the interface
+		this.buttons = [];
+		var off = 0;
+		var dif = 55;
+		
+		var ths = this;
+		var action_resumeGame = function(){ ths.resume(); };
+		var action_switchToScoreboard = function(){ gameState.switchState(new state_scoreboard()); };
+		var action_switchToOptions = function(){ gameState.switchState(new state_optionsMenu()); };
+		var action_quitSession = function(){ gameState.switchState(new state_mainMenu()); };
+		
+		this.buttons.push(new menuButton().construct("Resume", screenBounds.center.plus(new vec2(0, off * dif)), "resumes the gameplay", action_resumeGame)); off++;
+		this.buttons.push(new menuButton().construct("Scoreboard", screenBounds.center.plus(new vec2(0, off * dif)), "view the highest scoring players", action_switchToScoreboard)); off++;
+		this.buttons.push(new menuButton().construct("Options", screenBounds.center.plus(new vec2(0, off * dif)), "configure gameplay and av options", action_switchToOptions)); off++;
+		this.buttons.push(new menuButton().construct("Quit", screenBounds.center.plus(new vec2(0, off * dif)), "quit the current game and return to the main menu", action_quitSession)); off++;
+	}
+	setResumeState(gameplayState){
+		this.resumeState = gameplayState;
+	}
+	resume(){
+		gameState.switchState(this.resumeState);
+	}
+
+	drawInternals(){
+		// draws the the main menu title
+		var style = new textStyle(fonts.large, textColor.green, 2);
+		textRenderer.drawText("GAME PAUSED", new vec2(screenBounds.center.x, screenBounds.top + 100), style);
+	}
+}
 
 // when the player is playing the game
 class state_gameplayState extends gameState{
@@ -1071,6 +1108,11 @@ class state_gameplayState extends gameState{
 	}
 	controlTap(control = controlAction.none){
 		// called when a control is tapped
+		if(control == controlAction.pause){
+			this.pauseGame();
+			return;
+		}
+		
 		this.phase.controlTap(control);
 	}
 	checkTilePlacement(ctiles = null){
@@ -1086,6 +1128,11 @@ class state_gameplayState extends gameState{
 			if(tileOb.isEmpty()) return;
 			tileOb.checkPlacement();
 		});
+	}
+	pauseGame(){
+		var pauseState = new state_pauseMenu();
+		pauseState.setResumeState(this);
+		gameState.switchState(pauseState);
 	}
 	
 	update(dt){
