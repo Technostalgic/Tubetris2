@@ -23,6 +23,7 @@ class ball{
 		this.ballType = type;
 		this.pauseDirections = null;
 		this.pausePaths = null;
+		this.isVirtual = false;
 		
 		this.state = ballStates.choosing;
 		this.travelDir = side.none;
@@ -98,6 +99,7 @@ class ball{
 	}
 	findPauseDirections(){
 		// get the unblocked directions at the current tile
+		if(this.isVirtual) return;
 		var unblocked = tile.at(this.gridPos).getUnblockedSides();
 		
 		// remove the previous travelDirection's opposite from the possible travel directions
@@ -111,6 +113,8 @@ class ball{
 		this.pauseDirections = unblocked;
 	}
 	findPausePaths(){
+		// calculate the potential travel paths and generate an imgage that displays them
+		if(this.isVirtual) return;
 		var pathCanvas = document.createElement("canvas");
 		pathCanvas.width = tile.gridBounds.width * tile.tilesize;
 		pathCanvas.height = tile.gridBounds.height * tile.tilesize;
@@ -129,6 +133,7 @@ class ball{
 			for(let i = 100; i >= 0; i--){
 				tball.finishMoveAnim();
 				tball.chooseNextTravelDir();
+				tile.at(tball.gridPos).rollThrough(tball, true);
 				if(tball.state == ballStates.paused || tball.state == ballStates.dead)
 					break;
 				
@@ -235,9 +240,10 @@ class ball{
 	destroy(){
 		// destroys the ball object
 		if(this.state == ballStates.dead) return;
-		
-		effect.createPoof(this.drawPos);
 		this.state = ballStates.dead;
+		
+		if(this.isVirtual) return;
+		effect.createPoof(this.drawPos);
 	}
 	
 	draw(){
