@@ -178,6 +178,9 @@ class ball{
 	
 	destroy(){
 		// destroys the ball object
+		if(this.state == ballStates.dead) return;
+		
+		effect.createPoof(this.drawPos);
 		this.state = ballStates.dead;
 	}
 	

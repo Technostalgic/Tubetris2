@@ -1014,7 +1014,9 @@ class state_gameplayState extends gameState{
 		super();
 		
 		this.nextTileforms = [];
-		this.generateNextTileforms(2, tileform.getPiece_ball());
+		this.generateNextTileforms(4, tileform.getPiece_brick());
+		this.generateNextTileforms(0, tileform.getPiece_bomb());
+		this.generateNextTileforms(0, tileform.getPiece_ball());
 		this.switchGameplayPhase(new phase_placeTileform(this));
 		
 		this.currentTileform = null; // the falling tileform that the player can control
@@ -1347,12 +1349,20 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 	}
 	destroyTile(tileOb){
 		// destroys the tile and sets the corresponding fall height
-		var x = tileOb.gridPos.x;
-		var y = tileOb.gridPos.y;
-		var h = this.fallHeights[x];
-		
-		this.fallHeights[x] = !h ? y : Math.max(h, y);
+		this.concatFallHeight(tileOb.gridPos.x, tileOb.gridPos.y);
 		tileOb.destroy();
+	}
+	
+	concatFallHeights(heightArray = []){
+		// updates the fallheights in all the specified columns
+		var ths = this;
+		heightArray.forEach(function(height, x){
+			ths.concatFallHeight(x, height);
+		});
+	}
+	concatFallHeight(x, height){
+		// adds a fall height at the necessary column if the height is lower than the previous fall height
+		this.fallHeights[x] = !this.fallHeights[x] ? height : Math.max(this.fallHeights[x], height);
 	}
 	
 	nextPhase(){

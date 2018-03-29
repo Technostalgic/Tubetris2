@@ -244,6 +244,10 @@ class tile{
 		// sets the specified tile at the specified grid position
 		// parameters accept formats: setTileAt(tile, vec2) or setTileAt(tile, int, int)
 		if(ypos != null) tile.setTileAt(tileOb, new vec2(pos, ypos));
+		
+		// tiles outside of the grid cannot be set
+		if(tile.isOutOfBounds(pos)) return;
+		
 		tileOb.gridPos = pos;
 		if(!tile.grid[pos.x]) tile.grid[pos.x] = [];
 		tile.grid[pos.x][pos.y] = tileOb;
@@ -302,8 +306,14 @@ class tile{
 		for(let y = pos.y - 1; y <= pos.y + 1; y++){
 			for(let x = pos.x - 1; x <= pos.x + 1; x++){
 				var ttile = tile.at(x, y);
-				if(!ttile.isEmpty())
-					ttile.destroy();
+				if(!ttile.isEmpty()){
+					if(gameState.current.phase instanceof phase_destroyTaggedTiles){
+						if(ttile.isEntity(blocks.block_bomb, entities.block))
+							gameState.current.phase.tilesTagged.push(ttile);
+						else ttile.destroy();
+					}
+					else ttile.destroy();
+				}
 			}
 		}
 	}
@@ -324,13 +334,21 @@ class tile{
 			self.gridPos.plus(vec2.fromSide(side.up))
 		];
 		
+		var enterDestMode = false;
+		var tagblocks = [self];
 		neighborPos.forEach(function(npos){
 			let ttile = tile.at(npos);
 			if(ttile.isEntity(blocks.block_bomb, entities.block)){
-				self.destroy();
-				ttile.destroy();
+				enterDestMode = true;
+				tagblocks.push(ttile);
 			}
 		});
+		
+		if(enterDestMode){
+			var p = new phase_destroyTaggedTiles(gameState.current);
+			p.setTilesTagged(tagblocks);
+			gameState.current.switchGameplayPhase(p);
+		}
 	}
 	static RT_normal(self, ball){
 		// tag
@@ -340,7 +358,15 @@ class tile{
 		ball.destroy();
 	}
 	static DST_bomb(self){
+		// the custom destroy method for bombs
 		tile.explodeAt(self.gridPos);
+		
+		// if the gameplay phase is in the destroy tagged tiles phase, set the fallHeight to compensate for the tiles in the bomb's explosion radius
+		if(gameState.current.phase instanceof phase_destroyTaggedTiles){
+			gameState.current.phase.concatFallHeight(this.gridPos.x - 1, this.gridPos.y + 1);
+			gameState.current.phase.concatFallHeight(this.gridPos.x, this.gridPos.y + 1);
+			gameState.current.phase.concatFallHeight(this.gridPos.x + 1, this.gridPos.y + 1);
+		}
 	}
 	
 	isEmpty(){
