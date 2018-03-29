@@ -1081,6 +1081,8 @@ class state_gameplayState extends gameState{
 			});
 		}
 		ctiles.forEach(function(tileOb){
+			if(tileOb.isEmpty()) return;
+			log(tileOb);
 			tileOb.checkPlacement();
 		});
 	}
@@ -1194,28 +1196,39 @@ class phase_placeTileform extends gameplayPhase{
 		this.currentTileform = tf;
 		this.currentTileform.bumpDown();
 	}
+	placeTileform(){
+		// places the current tileform and does all the necessary checks
+		this.currentTileform.setInPlace();
+		log(this.currentTileform);
+		this.currentTileform = null;
+		
+		this.parentState.checkTilePlacement();
+		
+		// if the gameplay phase hasn't changed, get the next tileForm
+		if(this.parentState.phase == this) 
+			this.parentState.getNextTileform();
+	}
 	bumpDownTF(){
 		// bumps the current tileform object downward
 		if(!this.currentTileform) return;
 		
-		// bumps down the tileform and if it gets set into place, the next tileform is retrieved
-		var used = !this.currentTileform.bumpDown();
-		this.parentState.checkTilePlacement();
-		used = used && this.parentState.phase == this
+		// bumps down the tileform if possible
+		var canBump = this.currentTileform.canMove(side.down);
+		if(canBump) this.currentTileform.move(side.down);
 		
-		if(used) 
-			this.parentState.getNextTileform();
+		// otherwise the tileform is set in place
+		else this.placeTileform();
 		
 		// resets the bump interval so that the tileform will be bumped down at the right time
 		this.tfLastBumpTime = this.parentState.timeElapsed;
 		
 	}
 	handleTileform(){
-		// handles updating the controlled tiles tileform object
+		// handles updating the tileform object
 		if(!this.currentTileform) this.parentState.getNextTileform();
 		if(!this.tfLastBumpTime) this.tfLastBumpTime = this.parentState.timeElapsed;
 		
-		// if the controlled tiles drop interval has passed, bump the controlled tiles down
+		// if the tileform drop interval has passed, bump the tileform down
 		var nextBump = this.tfLastBumpTime + this.tfBumpInterval;
 		if(this.parentState.timeElapsed >= nextBump){
 			this.bumpDownTF();

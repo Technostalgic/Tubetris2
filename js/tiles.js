@@ -308,7 +308,8 @@ class tile{
 	}
 	
 	static CP_ball(self){
-		// the set in place action for a ball tile entity	
+		// the set in place action for a ball tile entity
+		tile.at(this.gridPos).destroy();
 		if(gameState.current instanceof state_gameplayState)
 			gameState.current.spawnBallAt(self.gridPos, self.entityID);
 	}
