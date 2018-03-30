@@ -1091,6 +1091,8 @@ class state_gameplayState extends gameState{
 		
 		this.currentScore = 0;
 		this.currentBallScore = 0;
+		this.scoreEmphasisAnim = new textAnim_scaleTransform(100, 1.5, 1);
+		this.scoreEmphasisAnim.animType = textAnimType.easeIn;
 		
 		this.nextTileforms = [];
 		this.generateNextTileforms(3, tileform.getPiece_ball());
@@ -1224,7 +1226,7 @@ class state_gameplayState extends gameState{
 		var scoreLabelPreRender = preRenderedText.fromString("score:", new vec2(scorePos.x, scorePos.y - 22), new textStyle(fonts.small));
 		var scorePreRender = preRenderedText.fromString(scoreText, scorePos, new textStyle(fonts.large, textColor.green));
 		scoreLabelPreRender.draw();
-		scorePreRender.draw();
+		scorePreRender.animated(this.scoreEmphasisAnim).draw();
 		
 		// draws the high score
 		var hscoretext = scores[0].score.toString();

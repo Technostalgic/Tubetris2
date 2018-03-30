@@ -45,6 +45,7 @@ class scoring{
 	static addScore(points, splashPos = null, scoreType = scoreTypes.roll){
 		// adds points to the current score
 		gameState.current.currentScore += points;
+		gameState.current.scoreEmphasisAnim.resetAnim();
 		
 		// create a splash effect of there is a defined splash position
 		if(splashPos)

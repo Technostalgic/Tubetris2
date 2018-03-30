@@ -93,8 +93,8 @@ class ball{
 		this.tilesTagged.push(tileOb);
 		tileOb.rollThrough(this);
 		
-		// test splashText
-		scoring.addScore(50, tile.toScreenPos(tileOb.gridPos));
+		// test score effects
+		//scoring.addScore(50, tile.toScreenPos(tileOb.gridPos));
 	}
 	
 	pause(){

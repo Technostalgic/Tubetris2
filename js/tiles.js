@@ -42,12 +42,21 @@ var balls = {
 	green: 3,
 	gold: 4
 }
+// enumerate the different tube colors
+var tubeColors = {
+	grey: 0,
+	orange: 1,
+	blue: 2,
+	green: 3,
+	gold: 4
+}
 
 class tile{
 	constructor(){
 		this.gridPos = new vec2(-1);
 		this.setEntity(entities.none, entities.none);
 		this.tintColor = new color();
+		this.tileVariant = -1;
 	}
 	
 	static fromData(pos, entityID, entityType = entities.tube){
@@ -487,6 +496,7 @@ class tileform{
 		this.tiles = [];
 		this.swappable = true;
 		this.anchoredRotation = false;
+		this.tubeColor = tubeColors.grey;
 		
 		// animation stuff for smooth transformations
 		this.animOffset_translate = gameState.current.timeElapsed;
@@ -509,7 +519,9 @@ class tileform{
 		];
 		var i = Math.floor(r.length * Math.random());
 		
-		return tileform[r[i]]();
+		var t = tileform[r[i]](); 
+		t.setColor(tubeColors[ Object.keys(tubeColors)[Math.floor(Object.keys(tubeColors).length * Math.random())] ]);
+		return t;
 	}
 	
 	static getPiece_square(){
@@ -722,6 +734,13 @@ class tileform{
 		return true;
 	}
 	
+	setColor(tubecolor = tubeColors.grey){
+		// sets the tubecolor of this tileform and all the tiles within it
+		this.tubeColor = tubecolor;
+		this.tiles.forEach(function(tileOb){
+			tileOb.tileVariant = tubecolor;
+		});
+	}
 	translate(translation, forced = false){
 		// moves the tileform by the specified translation
 		// 'forced' forces the piece to move if it overlaps a non-empty tile
