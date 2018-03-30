@@ -93,7 +93,7 @@ class ball{
 		this.tilesTagged.push(tileOb);
 		tileOb.rollThrough(this);
 		// test splashText
-		scoring.createScoreSplashEffect(100, tile.toScreenPos(tileOb.gridPos));
+		//scoring.createScoreSplashEffect(100, tile.toScreenPos(tileOb.gridPos));
 	}
 	
 	pause(){
@@ -132,6 +132,7 @@ class ball{
 		var ths = this;
 		this.pauseDirections.forEach(function(dir){
 			let tball = new ball(ths.gridPos.clone(), ths.ballType);
+			tball.isVirtual = true;
 			tball.travelDir = dir;
 			tball.updateNextPos();
 			
@@ -143,7 +144,7 @@ class ball{
 			for(let i = 100; i >= 0; i--){
 				tball.finishMoveAnim();
 				tball.chooseNextTravelDir();
-				tile.at(tball.gridPos).rollThrough(tball, true);
+				tile.at(tball.gridPos).rollThrough(tball);
 				
 				pArray.push({
 					pos:tball.gridPos, 
@@ -277,6 +278,7 @@ class ball{
 		if(this.state == ballStates.dead) return;
 		this.state = ballStates.dead;
 		
+		log(this.isVirtual);
 		if(this.isVirtual) return;
 		effect.createPoof(this.drawPos);
 	}

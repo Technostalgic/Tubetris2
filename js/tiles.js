@@ -350,13 +350,13 @@ class tile{
 			gameState.current.switchGameplayPhase(p);
 		}
 	}
-	static RT_normal(self, ball, virtual){
+	static RT_normal(self, ball){
 		// tag
-		if(!virtual)
+		if(!ball.isVirtual)
 			this.tag();
 	}
-	static RT_bomb(self, ball, virtual){
-		if(!virtual)
+	static RT_bomb(self, ball){
+		if(!ball.isVirtual)
 			this.tag();
 		ball.destroy();
 	}
@@ -444,8 +444,8 @@ class tile{
 	checkPlacement(){
 		this.m_checkPlacement(this);
 	}
-	rollThrough(ballOb = null, virtual = false){
-		this.m_rollThrough(this, ballOb, virtual);
+	rollThrough(ballOb = null){
+		this.m_rollThrough(this, ballOb);
 	}
 	
 	m_checkPlacement(self = null){}
