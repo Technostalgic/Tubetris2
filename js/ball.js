@@ -100,7 +100,8 @@ class ball{
 		// pauses the ball to wait for player input
 		this.state = ballStates.paused;
 		this.findPauseDirections();
-		this.findPausePaths();
+		if(config.pathIndicators)
+			this.findPausePaths();
 	}
 	findPauseDirections(){
 		// get the unblocked directions at the current tile
@@ -292,7 +293,8 @@ class ball{
 		
 		if(this.state == ballStates.paused){
 			this.drawDirectionIndicators();
-			this.drawPathIndicators();
+			if(config.pathIndicators)
+				this.drawPathIndicators();
 		}
 	}
 	drawDirectionIndicators(){

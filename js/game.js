@@ -488,7 +488,7 @@ function setDefaultConfig(){
 		imageSmoothing: false,
 		saving: true,
 		arrowIndicators: true,
-		pathIndicators: false
+		pathIndicators: true
 	};
 }
 function setDefaultControls(){
