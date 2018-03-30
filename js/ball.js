@@ -92,8 +92,9 @@ class ball{
 		// tags the specified tile
 		this.tilesTagged.push(tileOb);
 		tileOb.rollThrough(this);
+		
 		// test splashText
-		//scoring.createScoreSplashEffect(100, tile.toScreenPos(tileOb.gridPos));
+		scoring.addScore(50, tile.toScreenPos(tileOb.gridPos));
 	}
 	
 	pause(){
@@ -309,6 +310,7 @@ class ball{
 	}
 	drawPathIndicators(){
 		// draws the potential paths the ball can travel along
+		if(!this.pausePaths) this.findPausePaths();
 		drawImage(renderContext, this.pausePaths, tile.offset);
 	}
 }

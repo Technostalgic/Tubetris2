@@ -1090,6 +1090,8 @@ class state_gameplayState extends gameState{
 		super();
 		
 		this.currentScore = 0;
+		this.currentBallScore = 0;
+		
 		this.nextTileforms = [];
 		this.generateNextTileforms(3, tileform.getPiece_ball());
 		//this.generateNextTileforms(0, tileform.getPiece_bomb());
@@ -1143,6 +1145,8 @@ class state_gameplayState extends gameState{
 			log("gameplayPhase switching from '" + this.phase.constructor.name + "' to '" + newphase.constructor.name + "'");
 			this.phase.end();
 		}
+		if(newphase instanceof phase_ballPhysics)
+			this.currentBallScore = 0;
 		newphase.parentState = this;
 		this.phase = newphase;
 	}
@@ -1213,6 +1217,22 @@ class state_gameplayState extends gameState{
 		// draws the heads up display
 		this.drawNextTileformAnim();
 		drawForegroundOverlay();
+		
+		//draw the score
+		var scorePos = tile.toScreenPos(new vec2(12, 18));
+		var scoreText = scoring.getCurrentScore().toString();
+		var scoreLabelPreRender = preRenderedText.fromString("score:", new vec2(scorePos.x, scorePos.y - 22), new textStyle(fonts.small));
+		var scorePreRender = preRenderedText.fromString(scoreText, scorePos, new textStyle(fonts.large, textColor.green));
+		scoreLabelPreRender.draw();
+		scorePreRender.draw();
+		
+		// draws the high score
+		var hscoretext = scores[0].score.toString();
+		var hscorePos = tile.toScreenPos(new vec2(12, 19)).plus(new vec2(0, 10));
+		var hscoreLabelPreRender = preRenderedText.fromString("high:", new vec2(hscorePos.x, hscorePos.y - 10), new textStyle(fonts.small));
+		var hscorePreRender = preRenderedText.fromString(hscoretext, hscorePos, new textStyle(fonts.small, textColor.green, 1));
+		hscoreLabelPreRender.draw();
+		hscorePreRender.draw();
 	}
 	draw(){
 		// renders tiled background
