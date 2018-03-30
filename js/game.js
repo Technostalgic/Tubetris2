@@ -14,9 +14,6 @@ var debug = true;
 var config = {},
 	scores = {};
 	
-var currentScore = 0,
-	ballScore = 0;
-	
 var effects = [];
 	
 var fonts = {},

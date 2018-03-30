@@ -16,19 +16,22 @@ class effect{
 		var e = animatedSpriteEffect.build(gfx.effect_poof, 33, animatedSpriteEffect.getFrames(gfx.effect_poof, 10));
 		e.pos = pos;
 		
-		effects.push(e);
+		e.add();
 		return e;
 	}
 	static createExplosion(pos){
 		var e = animatedSpriteEffect.build(gfx.effect_explosion, 33, animatedSpriteEffect.getFrames(gfx.effect_explosion, 12));
 		e.pos = pos;
 		
-		effects.push(e);
+		e.add();
 		return e;
 	}
 	
 	update(dt){ }
 	draw(){ }
+	add(){
+		effects.push(this);
+	}
 	remove(){
 		// removes an effect from the effect array
 		effects.splice(effects.indexOf(this), 1);
@@ -98,5 +101,67 @@ class animatedSpriteEffect extends effect{
 		spriteBounds.setCenter(this.pos);
 		var sprite = new spriteContainer(this.spriteSheet, frame, spriteBounds);
 		sprite.draw();
+	}
+}
+
+// a type of effect that temporarily shows floating text on the screen
+class splashText extends effect{
+	constructor(){
+		super();
+		
+		this.text = "";
+		this.pos = new vec2();
+		this.style = textStyle.getDefault();
+		this.animStartTime = gameState.current.timeElapsed;
+		this.maxLife = 500;
+		this.preRender = null;
+		this.anim = null;
+	}
+	
+	static build(text, pos, lifetime = 500, style = textStyle.getDefault(), anim = null){
+		// bulds a splashText effect from the specified data
+		var r = new splashText;
+		
+		r.text = text;
+		r.pos = pos;
+		r.style = style;
+		r.anim = anim;
+		
+		return r;
+	}
+	
+	setLifetime(ms){
+		// resets the animation start time and sets the animation end time as specified in milliseconds
+		this.animStartTime = gameState.current.timeElapsed;
+		this.maxLife = ms;
+		return this;
+	}
+	getAnimProgress(){
+		// returns a number between 0 and 1 indicating how close to the end of the animation the effect currently is
+		var endTime = this.animStartTime + this.maxLife;
+		if(endTime < gameState.current.timeElapsed || this.animStartTime > gameState.current.timeElapsed) return null;
+		
+		var dtime = gameState.current.timeElapsed - this.animStartTime;
+		
+		log(dtime);
+		return dtime / this.maxLife;
+	}
+	
+	preRenderText(){
+		// generates the text preRender object
+		this.preRender = preRenderedText.fromString(this.text, this.pos, this.style);
+	}
+	draw(){
+		// renders the splash text
+		if(!this.preRender) this.preRenderText();
+		var prog = this.getAnimProgress();
+		if(prog == null){
+			this.remove();
+			return;
+		}
+		
+		if(this.anim)
+			this.preRender.animated(this.anim).draw();
+		else this.preRender.draw();
 	}
 }

@@ -622,8 +622,8 @@ class preRenderedText{
 			this.spriteContainers[this.spriteContainers.length - 1].bounds.bottom,);
 	}
 	
-	// returns a new instance of the preRender with an animation applied
 	animated(anim){
+		// returns a new instance of the preRender with an animation applied
 		if(!config.animText || !anim) return this;
 		var c = this.clone();
 		
@@ -632,8 +632,8 @@ class preRenderedText{
 		return c;
 	}
 	
-	// returns a new preRenderedText instance with the same values
 	clone(){
+		// returns a new preRenderedText instance with the same values
 		var r = new preRenderedText();
 		
 		r.spriteContainers = [];

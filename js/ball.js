@@ -84,11 +84,16 @@ class ball{
 		var gpos = tile.toTilePos(this.drawPos);
 		var ttile = tile.at(gpos);
 		if(!ttile.isEmpty()){
-			if(!this.tilesTagged.includes(ttile)){
-				this.tilesTagged.push(tile.at(gpos));
-				ttile.rollThrough(this);
-			}
+			if(!this.tilesTagged.includes(ttile))
+				this.tagTile(ttile);
 		}
+	}
+	tagTile(tileOb){
+		// tags the specified tile
+		this.tilesTagged.push(tileOb);
+		tileOb.rollThrough(this);
+		// test splashText
+		//scoring.createScoreSplashEffect(100, tile.toScreenPos(tileOb.gridPos));
 	}
 	
 	pause(){

@@ -1089,6 +1089,7 @@ class state_gameplayState extends gameState{
 	constructor(){
 		super();
 		
+		this.currentScore = 0;
 		this.nextTileforms = [];
 		this.generateNextTileforms(3, tileform.getPiece_ball());
 		//this.generateNextTileforms(0, tileform.getPiece_bomb());
