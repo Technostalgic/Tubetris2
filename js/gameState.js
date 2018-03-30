@@ -16,13 +16,14 @@ var buttonSwitchMode = {
 }
 
 // the current gameMode object (to reference, it's recommended to use the 'gameState.current' static field)
-var gameMode;
+var gameMode = null;
 
 // a generic gameState object, designed as a template base class to be extended from
 class gameState{
 	constructor(){ 
 		// initializes a generic gamestate object which is never really used
 		this.timeElapsed = 0;
+		this.previousState = null;
 	}
 	
 	update(dt){
@@ -46,7 +47,7 @@ class gameState{
 				gameState.current.constructor.name : 
 				"UNDEFINED" )
 			+ " to " + tostate.constructor.name, logType.notify);
-			
+		
 		if(gameMode)
 			gameMode.switchFrom(tostate);
 		tostate.switchTo(gameMode);
@@ -57,7 +58,10 @@ class gameState{
 	// called when a gameState is being switched away from
 	switchFrom(tostate = null){}
 	// called when a gameState is being switched to
-	switchTo(fromstate = null){}
+	switchTo(fromstate = null){
+		if(!this.previousState)
+			this.previousState = fromstate;
+	}
 	
 	// override these:
 	// called when a control is tapped (the first frame the control action is triggered)
@@ -410,12 +414,13 @@ class state_menuState extends gameState{
 	initialize(){
 		// list of menu buttons
 		this.buttons = [];
+		// currently selected button
 		this.currentSelection = 0;
+		
 		this.addButtons();
-
 		this.initialized = true;
 	}
-	addButtons(){}
+	addButtons(){} // for override
 	
 	selectionDown(){
 		// moves the menu cursor down to the next selectable menu item
@@ -452,6 +457,11 @@ class state_menuState extends gameState{
 			this.selectedButton.navRight();
 			audioMgr.playSound(sfx.moveCursor);
 		}
+	}
+	switchToPreviousState(){
+		if(this.previousState instanceof state_menuState)
+			this.previousState.initialize();
+		gameState.switchState(this.previousState);
 	}
 	
 	get selectedButton(){
@@ -546,8 +556,8 @@ class state_confirmationDialogue extends state_menuState{
 		this.titleAnim = new textAnim_compound([titleAnim, titleBlink]);
 		
 		var ths = this;
-		this.action_confirm = function(){ log("confirmation accepted", logType.unimportant); confirmAction(); gameState.switchState(ths.lastState); };
-		this.action_deny = function(){ log("confirmation denied", logType.unimportant); denyAction(); gameState.switchState(ths.lastState); };
+		this.action_confirm = function(){ log("confirmation accepted", logType.unimportant); confirmAction(); gameState.switchState(ths.previousState); };
+		this.action_deny = function(){ log("confirmation denied", logType.unimportant); denyAction(); gameState.switchState(ths.previousState); };
 		
 		this.currentSelection = 1;
 	}
@@ -579,8 +589,8 @@ class state_confirmationDialogue extends state_menuState{
 	}
 	
 	switchTo(fromstate = null){
-		this.lastState = fromstate;
-		log("gameState '" + this.lastState.constructor.name + "' asking for confirmation", logType.notify);
+		super.switchTo(fromstate);
+		log("gameState '" + this.previousState.constructor.name + "' asking for confirmation", logType.notify);
 	}
 }
 
@@ -634,7 +644,7 @@ class state_mainMenu extends state_menuState{
 		
 	}
 	switchTo(fromstate = null){
-		
+		super.switchTo(fromstate);
 	}
 }
 // a gameState object that represents the scoreboard screen interface
@@ -670,16 +680,23 @@ class state_scoreboard extends state_menuState{
 			textStyle.getDefault()
 		];
 		this.addScoreboardText();
+		
+		this.previousMenu = null;
 	}
 	
 	addButtons(){
 		this.buttons = [];
+		var ths = this;
 		var off = 0;
 		var dif = 55;
 		var tpos = new vec2(screenBounds.center.x, screenBounds.bottom - 200);
 		
-		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
-		this.buttons.push(new menuButton().construct("Main Menu", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to the main menu", action_switchToMainMenu));
+		var action_switchToPreviousMenu = function(){
+			let state = !ths.previousMenu ? new state_mainMenu() : ths.previousMenu;
+			state.initialize();
+			gameState.switchState(state); 
+		};
+		this.buttons.push(new menuButton().construct("Back", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to the previous menu", action_switchToPreviousMenu));
 	}
 	addScoreboardText(){
 		var off = new vec2(-screenBounds.width % 32 - 2, -screenBounds.height % 32 - 2);
@@ -741,10 +758,12 @@ class state_optionsMenu extends state_menuState{
 		titleEntrance.animType = textAnimType.easeOut;
 		
 		this.titleAnim = titleEntrance;
+		this.previousMenu = null;
 	}
 	
 	addButtons(){
 		this.buttons = [];
+		var ths = this;
 		var off = 0;
 		var dif = 45;
 		var tpos = new vec2(screenBounds.center.x, screenBounds.top + 200);
@@ -766,9 +785,12 @@ class state_optionsMenu extends state_menuState{
 		this.buttons.push(new menuButton().construct("Set Controls", tpos.plus(new vec2(0, off * dif)), "customize the controls", action_gotoControlSettings)); 
 		off++;
 		
-		// main menu button
-		var action_switchToMainMenu = function(){ gameState.switchState(new state_mainMenu()); };
-		this.buttons.push(new menuButton().construct("Main Menu", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to the main menu", action_switchToMainMenu));
+		// back button
+		var action_switchToPreviousMenu = function(){
+			if(ths.previousState) ths.switchToPreviousState();
+			else gameState.switchState(new state_mainMenu());
+		};
+		this.buttons.push(new menuButton().construct("Back", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to the previous menu", action_switchToPreviousMenu));
 	}
 	
 	switchFrom(tostate = null){
@@ -794,11 +816,15 @@ class state_optionsSubMenu extends state_menuState{
 	}
 	
 	addButtons(){
+		var ths = this;
 		this.buttons = [];
 		this.addSubMenuButtions();
 		
 		// back button
-		var action_backToOptions = function(){ gameState.switchState(new state_optionsMenu()); };
+		var action_backToOptions = function(){ 
+			if(ths.previousState) ths.switchToPreviousState();
+			else gameState.switchState(new state_mainMenu());
+		};
 		this.buttons.push(new menuButton().construct("Back", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to previous menu", action_backToOptions));
 	}
 	addSubMenuButtions(){}
@@ -986,7 +1012,10 @@ class state_controlSettings extends state_menuState{
 			action_setDefaultControls));
 		
 		// back button
-		var action_backToOptions = function(){ gameState.switchState(new state_optionsMenu()); };
+		var action_backToOptions = function(){ 
+			if(ths.previousState) ths.switchToPreviousState();
+			else gameState.switchState(new state_mainMenu());
+		};
 		this.buttons.push(new menuButton().construct("Back", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to previous menu", action_backToOptions));
 	}
 	getControls(){
@@ -1017,6 +1046,7 @@ class state_pauseMenu extends state_menuState{
 	addButtons(){
 		// adds buttons to the interface
 		this.buttons = [];
+		var ths = this;
 		var off = 0;
 		var dif = 55;
 		
