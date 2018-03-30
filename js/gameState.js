@@ -656,6 +656,7 @@ class state_scoreboard extends state_menuState{
 		titleEntrance.animType = textAnimType.easeOut;
 		this.titleAnim = titleEntrance;
 		
+		// text animations for first place
 		this.anim_value1 = new textAnim_rainbow();
 		var anim_p1 = new textAnim_scale(500, 0.75, 1.25, 0.1);
 		anim_p1.looping = true;
@@ -664,6 +665,8 @@ class state_scoreboard extends state_menuState{
 			this.anim_value1,
 			anim_p1
 		]);
+		
+		// text animations for second place
 		this.anim_value2 = new textAnim_blink(500, 0.5, textColor.yellow);
 		var anim_p2 = new textAnim_yOffset(500, 3, 0.5);
 		this.anim_place2 = new textAnim_compound([
