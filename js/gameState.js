@@ -680,7 +680,8 @@ class state_scoreboard extends state_menuState{
 			textStyle.getDefault().setColor(textColor.yellow),
 			textStyle.getDefault().setColor(textColor.green),
 			textStyle.getDefault().setColor(textColor.cyan),
-			textStyle.getDefault()
+			textStyle.getDefault().setColor(textColor.blue),
+			textStyle.getDefault().setColor(textColor.pink)
 		];
 		this.addScoreboardText();
 		
@@ -943,7 +944,12 @@ class state_gameOptions extends state_optionsSubMenu{
 		var action_resetConfig = function(){ gameState.switchState(new state_confirmationDialogue(function(){ setDefaultConfig(); saveConfig(); ths.addButtons() })); };
 		this.buttons.push(new menuButton().construct("Reset Config", tpos.plus(new vec2(0, off * dif)), "resets the game configuration and settings back to default", action_resetConfig));
 		off += 1.2;
-		var action_resetScores = function(){ gameState.switchState(new state_confirmationDialogue(function(){ setDefaultScores(); localStorage.setItem(storageKeys.scoreboard, null); })); };
+		var action_resetScores = function(){ 
+			gameState.switchState(new state_confirmationDialogue(function(){ setDefaultScores(); 
+				localStorage.removeItem(storageKeys.scoreboard); 
+				loadScores();
+			})); 
+		};
 		this.buttons.push(new menuButton().construct("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_resetScores));
 	}
 	
