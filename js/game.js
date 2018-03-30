@@ -715,9 +715,11 @@ function getCanvas(){
 }
 
 function updateEffects(dt){
-	effects.forEach(function(effectOb){
-		effectOb.update(dt);
-	});
+	// updates all the effects
+	// must be iterated through backwards, so that when an effect is removed from the effect list during its update step, the 
+	// loop won't lose its place
+	for(var i = effects.length - 1; i >= 0; i--)
+		effects[i].update(dt);
 }
 function drawEffects(){
 	effects.forEach(function(effectOb){

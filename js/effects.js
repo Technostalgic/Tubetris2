@@ -9,6 +9,7 @@
 class effect{
 	constructor(){
 		this.pos = new vec2();
+		this.dead = false;
 	}
 	
 	static createPoof(pos){
@@ -27,14 +28,18 @@ class effect{
 		return e;
 	}
 	
-	update(dt){ }
+	update(dt){ 
+		if(this.dead)
+			effects.splice(effects.indexOf(this), 1);
+	}
 	draw(){ }
+	
 	add(){
 		effects.push(this);
 	}
-	remove(){
+	kill(){
 		// removes an effect from the effect array
-		effects.splice(effects.indexOf(this), 1);
+		this.dead = true;
 	}
 }
 
@@ -92,7 +97,7 @@ class animatedSpriteEffect extends effect{
 		// renders the animation at it's current position
 		var frameNum = this.getCurrentAnimFrame();
 		if(frameNum == null) {
-			this.remove(); 
+			this.kill(); 
 			return;
 		}
 		var frame = this.frames[frameNum];
@@ -156,7 +161,7 @@ class splashText extends effect{
 		if(!this.preRender) this.preRenderText();
 		var prog = this.getAnimProgress();
 		if(prog == null){
-			this.remove();
+			this.kill();
 			return;
 		}
 		
