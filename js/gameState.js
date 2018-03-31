@@ -1270,6 +1270,7 @@ class phase_placeTileform extends gameplayPhase{
 		super(parentState); 
 		
 		this.currentTileform = null; // the falling tileform that the player can control
+		this.arrowIndicators = null;
 		this.tfBumpInterval = 1000;
 		this.tfLastBumpTime = this.parentState.timeElapsed;
 	}
@@ -1305,6 +1306,9 @@ class phase_placeTileform extends gameplayPhase{
 		// sets the current tileform
 		this.currentTileform = tf;
 		this.currentTileform.bumpDown();
+		
+		if(this.currentTileform.hasEntityType(entities.ball))
+			this.calculateArrowIndicators();
 	}
 	placeTileform(){
 		// places the current tileform and does all the necessary checks
@@ -1345,10 +1349,53 @@ class phase_placeTileform extends gameplayPhase{
 		}
 	}
 
+	calculateArrowIndicators(){
+		// calculates all the arrow indicators and stores the info in this.arrowIndicators
+		var indicators = [];
+		tile.iterateGrid(function(tileOb, x, y){
+			if(tileOb.isEmpty()) return; // continue if empty tile
+			let openDirs = tileOb.getUnblockedSides(); // get all the sides the ball can enter from
+			let ind = []; // arrow indicators for this tile will be stored here
+			openDirs.forEach(function(dir){
+				if(dir == side.down) return; // continue if direction is downward, because the ball can never travel upward on the first tick
+				let tpos = new vec2(x, y).plus(vec2.fromSide(dir)); // the position next to the tile in the direction of the open side
+				//if the tile's neighbor is empty, it may be able to place an indicator there
+				if(tile.at(tpos).isEmpty()){
+					// if the open side is facing upward, add an indicator and continue
+					if(dir == side.up){
+						ind.push({pos: tpos, direction: side.down});
+						return;
+					}
+					// if the open side is facing sideways, check to make sure there is ground below it's neighbor so that the ball can
+					// enter. If there is, add an indicator and continue
+					if(!tile.at(tpos.plus(vec2.fromSide(side.down))).getUnblockedSides().includes(side.up)){
+						ind.push({pos: tpos, direction: invertedSide(dir)})
+						return;
+					}
+				}
+			});
+			
+			// add all the arrow indicators from 'ind'
+			indicators = indicators.concat(ind);
+		});
+		
+		// set the arrow indicators variable
+		this.arrowIndicators = indicators;
+	}
+	
+	drawArrowIndicators(){
+		// draws each arrow indicator to suggest wher to place the ball
+		this.arrowIndicators.forEach(function(indicator){
+			var tpos = tile.toScreenPos(indicator.pos).plus(vec2.fromSide(indicator.direction).multiply(tile.tilesize / 4));
+			drawArrow(tpos, indicator.direction);
+		});
+	}
 	draw(){
 		// draws the current tileform
 		if(this.currentTileform)
 			this.currentTileform.draw();
+		if(this.arrowIndicators)
+			this.drawArrowIndicators();
 	}
 }
 // the gameplay phase that handles the movement and logic for ball objects

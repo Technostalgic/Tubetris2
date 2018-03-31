@@ -164,6 +164,12 @@ class tile{
 			});
 		});
 	}
+	static iterateGrid(func = function(tileOb, x, y){}){
+		// iterates through each tile in the tile grid applying the specified function
+		for(let x = tile.gridBounds.left; x < tile.gridBounds.right; x++)
+			for(let y = tile.gridBounds.top; y < tile.gridBounds.bottom; y++)
+				func(tile.grid[x][y], x, y);
+	}
 	
 	static getEmpty(pos = null){ 
 		// returns an empty tile
@@ -458,7 +464,7 @@ class tile{
 	}
 	
 	m_checkPlacement(self = null){}
-	m_rollThrough(self = null, ballOb = null, virtual = false){}
+	m_rollThrough(self = null, ballOb = null){}
 	m_destroy(self){}
 	
 	clone(){
@@ -647,6 +653,22 @@ class tileform{
 		return center.plus(min).multiply(tile.tilesize);
 	}
 	
+	hasEntity(entityID, entityType = entities.tube){
+		// checks to see if the tileform contains any of the specified entity
+		for(let tileOb of this.tiles){
+			if(tileOb.isEntity(entityID, entityType))
+				return true;
+		}
+		return false;
+	}
+	hasEntityType(entityType){
+		// checks to see if the tileform contains any entities of the specified type
+		for(let tileOb of this.tiles){
+			if(tileOb.entityType == entityType)
+				return true;
+		}
+		return false;
+	}
 	getTopLeftTilePos(){
 		var minX = null;
 		var minY = null;
