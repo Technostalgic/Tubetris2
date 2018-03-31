@@ -631,6 +631,20 @@ class preRenderedText{
 		
 		return c;
 	}
+	scaled(scale = 1){
+		// scaletransforms the preRendered text object even if animated text is disabled
+		var r = this.clone();
+		
+		var ctr = this.findCenter();
+		for(let i = 0; i < r.spriteContainers.length; i++){
+			var rc = r.spriteContainers[i].bounds.center.minus(ctr);
+			
+			r.spriteContainers[i].bounds.size = r.spriteContainers[i].bounds.size.multiply(scale);
+			r.spriteContainers[i].bounds.setCenter(ctr.plus(rc.multiply(scale)));
+		}
+		
+		return r;
+	}
 	
 	clone(){
 		// returns a new preRenderedText instance with the same values

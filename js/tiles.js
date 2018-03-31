@@ -315,9 +315,10 @@ class tile{
 		return uid - off;
 	}
 	
-	static explodeAt(pos){
+	static explodeAt(pos, earnpoints = true){
 		// causes a destructive explosion at the specified position
 		effect.createExplosion(tile.toScreenPos(pos));
+		var tilesDestroyed = 0;
 		for(let y = pos.y - 1; y <= pos.y + 1; y++){
 			for(let x = pos.x - 1; x <= pos.x + 1; x++){
 				var ttile = tile.at(x, y);
@@ -326,11 +327,18 @@ class tile{
 						if(ttile.isEntity(blocks.block_bomb, entities.block))
 							gameState.current.phase.tilesTagged.push(ttile);
 						else ttile.destroy();
+						tilesDestroyed += 1;
 					}
-					else ttile.destroy();
+					else {
+						ttile.destroy();
+						tilesDestroyed += 1;
+					}
 				}
 			}
 		}
+		
+		if(earnpoints)
+			scoring.addScore(100 + tilesDestroyed * 50, tile.toScreenPos(pos), scoreTypes.bonus);
 	}
 	
 	static CP_ball(self){

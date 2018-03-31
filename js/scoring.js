@@ -53,7 +53,36 @@ class scoring{
 	}
 	static createScoreSplashEffect(value, pos, scoreType = scoreTypes.roll){
 		// creates splash text at the specified pos
-		var splash = splashText.build(value.toString(), pos);
+		
+		var anim = null;
+		var style = textStyle.getDefault();
+		var time = 500 + Math.min(value * 2, 500);
+		
+		switch(scoreType){
+			case scoreTypes.roll:
+				style.font = fonts.small;
+				if(value >= 100)
+					anim = new textAnim_blink(100, 0, textColor.yellow, fonts.small.charSize.y);
+				if(value >= 90)
+					style.scale = 2;
+				if(value >= 80)
+					style.color = textColor.green;
+				else if(value >= 40)
+					style.color = textColor.cyan;
+				break;
+			case scoreTypes.bonus:
+				if(value >= 1200)
+					anim = new textAnim_rainbow(400, 0.1);
+				else if(value >= 800)
+					anim = new textAnim_blink(300, 0.2, textColor.yellow);
+				if(value >= 500)
+					style.color = textColor.green;
+				else if(value >= 100)
+					style.color = textColor.cyan;
+				break;
+		}
+		
+		var splash = splashText.build(value.toString(), pos, time, style, anim);
 		splash.add();
 	}
 }

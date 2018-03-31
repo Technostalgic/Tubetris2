@@ -45,12 +45,12 @@ var logType = {
 }
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function log(obj = null, type = logType.log){
+function log(obj = undefined, type = logType.log){
 	// logs the spcified object to the console
 	if(!debug) return;
 	
 	var ob = obj;
-	if(obj == null) ob = "console logged @" + timeElapsed + "ms";
+	if(obj == undefined) ob = "console logged @" + timeElapsed + "ms";
 	
 	// sets the console styling if the object is stylable (if it's a string)
 	var style;

@@ -1095,7 +1095,7 @@ class state_gameplayState extends gameState{
 		this.scoreEmphasisAnim.animType = textAnimType.easeIn;
 		
 		this.nextTileforms = [];
-		this.generateNextTileforms(3, tileform.getPiece_ball());
+		this.generateNextTileforms(5, tileform.getPiece_ball());
 		//this.generateNextTileforms(0, tileform.getPiece_bomb());
 		//this.generateNextTileforms(0, tileform.getPiece_ball());
 		this.switchGameplayPhase(new phase_placeTileform(this));
@@ -1384,7 +1384,7 @@ class phase_placeTileform extends gameplayPhase{
 	}
 	
 	drawArrowIndicators(){
-		// draws each arrow indicator to suggest wher to place the ball
+		// draws each arrow indicator to suggest where to place the ball
 		this.arrowIndicators.forEach(function(indicator){
 			var tpos = tile.toScreenPos(indicator.pos).plus(vec2.fromSide(indicator.direction).multiply(tile.tilesize / 4));
 			drawArrow(tpos, indicator.direction);
@@ -1472,6 +1472,9 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 	constructor(parentState){
 		super(parentState);
 		
+		this.tilesDestroyed = 0;
+		this.bombsDetonated = 0;
+		
 		this.lastTileDestroyed = parentState.timeElapsed;
 		this.tilesTagged = [];
 		this.fallHeights = [];
@@ -1507,6 +1510,20 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		// destroys the tile and sets the corresponding fall height
 		this.concatFallHeight(tileOb.gridPos.x, tileOb.gridPos.y);
 		tileOb.destroy();
+		
+		var earnpts = true;
+		
+		if(tileOb.isEntity(blocks.block_bomb, entities.block)){
+			this.bombsDetonated += 1;
+			earnpts = false;
+		}
+		log(earnpts);
+		
+		if(earnpts){
+			this.tilesDestroyed += 1;
+			var comboMult = Math.min(this.tilesDestroyed, 10);
+			scoring.addScore(comboMult * 10, tile.toScreenPos(tileOb.gridPos), scoreTypes.roll);
+		}
 	}
 	
 	concatFallHeights(heightArray = []){

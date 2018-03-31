@@ -121,6 +121,7 @@ class splashText extends effect{
 		this.maxLife = 500;
 		this.preRender = null;
 		this.anim = null;
+		this.scaling = true;
 	}
 	
 	static build(text, pos, lifetime = 500, style = textStyle.getDefault(), anim = null){
@@ -148,7 +149,6 @@ class splashText extends effect{
 		
 		var dtime = gameState.current.timeElapsed - this.animStartTime;
 		
-		log(dtime);
 		return dtime / this.maxLife;
 	}
 	
@@ -165,8 +165,12 @@ class splashText extends effect{
 			return;
 		}
 		
-		if(this.anim)
-			this.preRender.animated(this.anim).draw();
-		else this.preRender.draw();
+		var pr = !!this.anim ? this.preRender.animated(this.anim) : this.preRender;
+		if(this.scaling) {
+			var scl = Math.sin(prog * Math.PI);
+			pr = pr.scaled(scl);
+		}
+		
+		pr.draw();
 	}
 }

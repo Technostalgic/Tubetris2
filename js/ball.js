@@ -92,9 +92,6 @@ class ball{
 		// tags the specified tile
 		this.tilesTagged.push(tileOb);
 		tileOb.rollThrough(this);
-		
-		// test score effects
-		//scoring.addScore(50, tile.toScreenPos(tileOb.gridPos));
 	}
 	
 	pause(){
@@ -280,7 +277,6 @@ class ball{
 		if(this.state == ballStates.dead) return;
 		this.state = ballStates.dead;
 		
-		log(this.isVirtual);
 		if(this.isVirtual) return;
 		effect.createPoof(this.drawPos);
 	}
