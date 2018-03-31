@@ -409,6 +409,10 @@ class state_menuState extends gameState{
 		
 		this.initialized = false;
 		this.selectionFocus = false;
+		
+		this.title = new preRenderedText();
+		this.titleStyle = new textStyle(fonts.large, textColor.green, 2);
+		this.titleAnim = null;
 	}
 	
 	initialize(){
@@ -421,6 +425,17 @@ class state_menuState extends gameState{
 		this.initialized = true;
 	}
 	addButtons(){} // for override
+	setTitle(titlename, style = null, anim = null){
+		this.titleStyle = style || new textStyle(fonts.large, textColor.green, 2);
+		
+		if(!anim){
+			this.titleAnim = new textAnim_scaleTransform(300, 0, 1, 0);
+			this.titleAnim.animType = textAnimType.easeOut;
+		} 
+		else this.titleAnim = anim;
+		
+		this.title = preRenderedText.fromString(titlename, new vec2(screenBounds.center.x, screenBounds.top + 100), this.titleStyle);
+	}
 	
 	selectionDown(){
 		// moves the menu cursor down to the next selectable menu item
@@ -519,6 +534,10 @@ class state_menuState extends gameState{
 		}
 	}
 
+	drawTitle(){
+		var pr = !!this.titleAnim ? this.title.animated(this.titleAnim) : this.title;
+		pr.draw();
+	}
 	drawInternals(){}
 	draw(){
 		// draws the menuState
@@ -528,6 +547,7 @@ class state_menuState extends gameState{
 
 		// draws all the user-defined graphics that aren't buttons
 		this.drawInternals();
+		this.drawTitle();
 		
 		// renders all the buttons
 		var ths = this;
@@ -599,14 +619,18 @@ class state_mainMenu extends state_menuState{
 	constructor(){
 		// initializes a main menu gameState
 		super();
+		
+		// set the title and title animation
 		var tubetrisEntrance = new textAnim_scale(300, 0, 1, 0.4);
 		tubetrisEntrance.animType = textAnimType.bulgeIn;
 		tubetrisEntrance.animDelay = 200;
+		this.setTitle("TUBETRIS", new textStyle(fonts.large, textColor.green, 3), tubetrisEntrance);
+		
+		// "deluxe" text animation
 		var deluxeEntrance = new textAnim_scale(100, 0, 1, 0);
 		deluxeEntrance.animType = textAnimType.linear;
 		deluxeEntrance.animDelay = 1300;
 		
-		this.titleAnim = tubetrisEntrance;
 		this.titleDeluxeAnim = new textAnim_compound([
 			deluxeEntrance,
 			new textAnim_yOffset(2000 / 3, 15, 1/4),
@@ -631,10 +655,8 @@ class state_mainMenu extends state_menuState{
 		this.buttons.push(new menuButton().construct("Credits", screenBounds.center.plus(new vec2(0, off * dif)), "see who contributed to making the game!")); off++;
 	}
 	
-	drawInternals(){
-		// draws the the main menu title
-		var style = new textStyle(fonts.large, textColor.green, 3);
-		textRenderer.drawText("TUBETRIS", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
+	drawTitle(){
+		super.drawTitle();
 		
 		var animStyle = new textStyle(fonts.large, textColor.yellow, 2);
 		textRenderer.drawText("DELUXE", new vec2(screenBounds.center.x, screenBounds.top + 180), animStyle, this.titleDeluxeAnim);
@@ -652,9 +674,7 @@ class state_scoreboard extends state_menuState{
 	constructor(){
 		super();
 		
-		var titleEntrance = new textAnim_scaleTransform(300, 0, 1, 0);
-		titleEntrance.animType = textAnimType.easeOut;
-		this.titleAnim = titleEntrance;
+		this.setTitle("SCOREBOARD");
 		
 		// text animations for first place
 		this.anim_value1 = new textAnim_rainbow();
@@ -758,10 +778,7 @@ class state_optionsMenu extends state_menuState{
 	constructor(){
 		super();
 		
-		var titleEntrance = new textAnim_scaleTransform(300, 0, 1, 0);
-		titleEntrance.animType = textAnimType.easeOut;
-		
-		this.titleAnim = titleEntrance;
+		this.setTitle("OPTIONS");
 		this.previousMenu = null;
 	}
 	
@@ -801,20 +818,11 @@ class state_optionsMenu extends state_menuState{
 		applyConfig();
 		saveConfig();
 	}
-	
-	drawInternals(){
-		var style = new textStyle(fonts.large, textColor.green, 2);
-		textRenderer.drawText("OPTIONS", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
-	}
 }
 // generic options submenu that will be inherited from submenus of the the options menu
 class state_optionsSubMenu extends state_menuState{
 	constructor(){
 		super();
-		
-		this.titleAnim = new textAnim_scaleTransform(300, 0, 1, 0);
-		this.titleAnim.animType = textAnimType.easeOut;
-		this.TitleText = "SUBMENU";
 		
 		this.buttonStartPos = screenBounds.top + 200;
 	}
@@ -837,21 +845,11 @@ class state_optionsSubMenu extends state_menuState{
 		applyConfig();
 		saveConfig();
 	}
-	
-	drawInternals(){
-		var style = new textStyle(fonts.large, textColor.green, 2);
-		textRenderer.drawText(this.TitleText, new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
-	}
 }
 class state_audioOptions extends state_optionsSubMenu{
 	constructor(){
 		super();
-		
-		var titleEntrance = new textAnim_scaleTransform(300, 0, 1, 0);
-		titleEntrance.animType = textAnimType.easeOut;
-		
-		this.titleAnim = titleEntrance;
-		
+		this.setTitle("AUDIO");		
 	}
 	
 	addSubMenuButtions(){
@@ -874,21 +872,11 @@ class state_audioOptions extends state_optionsSubMenu{
 			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_sound"), settingButton.generateSetValueFunc("volume_sound")
 			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() );
 	}
-	
-	drawInternals(){
-		var style = new textStyle(fonts.large, textColor.green, 2);
-		textRenderer.drawText("AUDIO", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
-	}
 }
 class state_videoOptions extends state_optionsSubMenu{
 	constructor(){
 		super();
-		
-		var titleEntrance = new textAnim_scaleTransform(300, 0, 1, 0);
-		titleEntrance.animType = textAnimType.easeOut;
-		
-		this.titleAnim = titleEntrance;
-		
+		this.setTitle("VIDEO");
 	}
 	
 	addSubMenuButtions(){
@@ -907,21 +895,11 @@ class state_videoOptions extends state_optionsSubMenu{
 			).setGettersAndSetters(settingButton.generateGetValueFunc("animSpeed"), settingButton.generateSetValueFunc("animSpeed")
 			).setValueBounds(0.5, 2.5, 0.5, buttonSwitchMode.percentInfinite).generateSettingPreRenders() ); off++;
 	}
-	
-	drawInternals(){
-		var style = new textStyle(fonts.large, textColor.green, 2);
-		textRenderer.drawText("VIDEO", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
-	}
 }
 class state_gameOptions extends state_optionsSubMenu{
 	constructor(){
 		super();
-		
-		var titleEntrance = new textAnim_scaleTransform(300, 0, 1, 0);
-		titleEntrance.animType = textAnimType.easeOut;
-		
-		this.titleAnim = titleEntrance;
-		
+		this.setTitle("GAME");
 	}
 	
 	addSubMenuButtions(){
@@ -952,21 +930,12 @@ class state_gameOptions extends state_optionsSubMenu{
 		};
 		this.buttons.push(new menuButton().construct("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_resetScores));
 	}
-	
-	drawInternals(){
-		var style = new textStyle(fonts.large, textColor.green, 2);
-		textRenderer.drawText("GAME", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
-	}
 }
 // a control configuration screen
 class state_controlSettings extends state_menuState{
 	constructor(){
 		super();
-		
-		var titleEntrance = new textAnim_scaleTransform(300, 0, 1, 0);
-		titleEntrance.animType = textAnimType.easeOut;
-		
-		this.titleAnim = titleEntrance;
+		this.setTitle("CONTROLS");
 	}
 	
 	addButtons(){
@@ -1034,11 +1003,6 @@ class state_controlSettings extends state_menuState{
 		});
 		return c;
 	}
-	
-	drawInternals(){
-		var style = new textStyle(fonts.large, textColor.green, 2);
-		textRenderer.drawText("CONTROLS", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
-	}
 
 	switchFrom(tostate = null){
 		controlState.setControls(this.controls);
@@ -1050,6 +1014,7 @@ class state_pauseMenu extends state_menuState{
 	constructor(){
 		super();
 		this.resumeState = null;
+		this.setTitle("GAME PAUSED");
 	}
 	
 	addButtons(){
@@ -1075,12 +1040,6 @@ class state_pauseMenu extends state_menuState{
 	}
 	resume(){
 		gameState.switchState(this.resumeState);
-	}
-
-	drawInternals(){
-		// draws the the main menu title
-		var style = new textStyle(fonts.large, textColor.green, 2);
-		textRenderer.drawText("GAME PAUSED", new vec2(screenBounds.center.x, screenBounds.top + 100), style);
 	}
 }
 

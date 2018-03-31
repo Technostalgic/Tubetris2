@@ -280,12 +280,11 @@ class textAnim_yOffset extends textAnim{
 }
 // an animation that changes the color of the text by incrementing its hue
 class textAnim_rainbow extends textAnim{
-	constructor(animLength = 500, charOff = 0.1, charHeight = fonts.small.charSize.y){
+	constructor(animLength = 500, charOff = 0.1){
 		super();
 		this.animType = textAnimType.looping;
 		this.animCharOffset = charOff;
 		this.animLength = animLength;
-		this.charHeight = charHeight;
 	}
 	
 	applyAnim(pr){
@@ -302,12 +301,11 @@ class textAnim_rainbow extends textAnim{
 }
 // an animation where the text blinks between its stylized color and a defined color
 class textAnim_blink extends textAnim{
-	constructor(animLength = 500, charOff = 0.1, color = textColor.dark, charHeight = fonts.large.charSize.y){
+	constructor(animLength = 500, charOff = 0.1, color = textColor.dark){
 		super();
 		this.animType = textAnimType.linear;
 		this.animCharOffset = charOff;
 		this.animLength = animLength;
-		this.charHeight = charHeight;
 		this.color = color;
 	}
 	
