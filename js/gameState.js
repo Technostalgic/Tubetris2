@@ -1163,17 +1163,16 @@ class state_gameplayState extends gameState{
 	}
 	checkTilePlacement(ctiles = null){
 		// checks the tile placement of all the specified tiles
-		// if no tiles are specified, check all the tiles in the tile grid
-		if(!ctiles){
-			ctiles = [];
-			tile.grid.forEach(function(tileArray){
-				ctiles = ctiles.concat(tileArray);
-			});
-		}
-		ctiles.forEach(function(tileOb){
+		
+		// the iteration function that is called on each specified tile
+		var iterator = function(tileOb){
 			if(tileOb.isEmpty()) return;
 			tileOb.checkPlacement();
-		});
+		};
+		
+		// if no tiles are specified, check all the tiles in the tile grid
+		if(!ctiles) tile.iterateGrid(iterator);
+		else ctiles.forEach(iterator);
 	}
 	pauseGame(){
 		var pauseState = new state_pauseMenu();
@@ -1517,7 +1516,6 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 			this.bombsDetonated += 1;
 			earnpts = false;
 		}
-		log(earnpts);
 		
 		if(earnpts){
 			this.tilesDestroyed += 1;

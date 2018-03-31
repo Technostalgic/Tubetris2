@@ -218,7 +218,7 @@ function init(){
 	loadScores();
 
 	//gameState.switchState(new state_mainMenu());	
-	gameState.switchState(new state_gameplayState());	
+	gameState.switchState(new state_mainMenu());	
 	log("intitialized game!");
 }
 

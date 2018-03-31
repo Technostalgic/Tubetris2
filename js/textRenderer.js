@@ -280,7 +280,7 @@ class textAnim_yOffset extends textAnim{
 }
 // an animation that changes the color of the text by incrementing its hue
 class textAnim_rainbow extends textAnim{
-	constructor(animLength = 500, charOff = 0.1, charHeight = fonts.large.charSize.y){
+	constructor(animLength = 500, charOff = 0.1, charHeight = fonts.small.charSize.y){
 		super();
 		this.animType = textAnimType.looping;
 		this.animCharOffset = charOff;
@@ -291,8 +291,9 @@ class textAnim_rainbow extends textAnim{
 	applyAnim(pr){
 		for(let i = 0; i < pr.spriteContainers.length; i++){
 			var col = Math.floor(2 + this.getAnimProgress(i) * 6);
-			var colOff = col * this.charHeight * 3;
-			var sy = pr.spriteContainers[i].sprite.pos.y % (this.charHeight * 3);
+			var charHeight = pr.spriteContainers[i].sprite.size.y;
+			var colOff = col * charHeight * 3;
+			var sy = pr.spriteContainers[i].sprite.pos.y % (charHeight * 3);
 			sy += colOff;
 			
 			pr.spriteContainers[i].sprite.pos.y = sy;
@@ -313,8 +314,9 @@ class textAnim_blink extends textAnim{
 	applyAnim(pr){
 		for(let i = 0; i < pr.spriteContainers.length; i++){
 			if(this.getAnimProgress(i) < 0.5) continue;
-			var colOff = this.color * this.charHeight * 3;
-			var sy = pr.spriteContainers[i].sprite.pos.y % (this.charHeight * 3);
+			var charHeight = pr.spriteContainers[i].sprite.size.y;
+			var colOff = this.color * charHeight * 3;
+			var sy = pr.spriteContainers[i].sprite.pos.y % (charHeight * 3);
 			sy += colOff;
 			
 			pr.spriteContainers[i].sprite.pos.y = sy;
