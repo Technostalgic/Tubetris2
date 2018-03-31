@@ -321,6 +321,7 @@ class tile{
 		var tilesDestroyed = 0;
 		for(let y = pos.y - 1; y <= pos.y + 1; y++){
 			for(let x = pos.x - 1; x <= pos.x + 1; x++){
+				if(tile.isOutOfBounds(x, y)) continue;
 				var ttile = tile.at(x, y);
 				if(!ttile.isEmpty()){
 					if(gameState.current.phase instanceof phase_destroyTaggedTiles){

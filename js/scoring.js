@@ -71,9 +71,9 @@ class scoring{
 					style.color = textColor.cyan;
 				break;
 			case scoreTypes.bonus:
-				if(value >= 1200)
+				if(value >= 1000)
 					anim = new textAnim_rainbow(400, 0.1);
-				else if(value >= 800)
+				else if(value >= 750)
 					anim = new textAnim_blink(300, 0.2, textColor.yellow);
 				if(value >= 500)
 					style.color = textColor.green;
