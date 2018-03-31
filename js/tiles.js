@@ -507,7 +507,7 @@ class tile{
 // a data structure that represents an assortment of tiles that can be moved and rotated as one, basically tubtris' version of a tetromino
 class tileform{
 	constructor(){
-		this.gridPos = new vec2(4, -1);
+		this.gridPos = new vec2();
 		this.tiles = [];
 		this.swappable = true;
 		this.anchoredRotation = false;
@@ -515,7 +515,7 @@ class tileform{
 		
 		// animation stuff for smooth transformations
 		this.animOffset_translate = gameState.current.timeElapsed;
-		this.drawPos = tile.toScreenPos(this.gridPos, false);
+		this.drawPos = tile.toScreenPos(this.gridPos);
 		this.lastDrawPos = this.drawPos.clone();
 		this.animOffset_rotate = gameState.current.timeElapsed - 1000;
 		this.lastDrawRot = 0;
@@ -765,6 +765,11 @@ class tileform{
 		return true;
 	}
 	
+	setPos(gridPos){
+		this.gridPos = gridPos;
+		this.drawPos = tile.toScreenPos(gridPos, false);
+		this.lastDrawPos = this.drawPos.clone();
+	}
 	setColor(tubecolor = tubeColors.grey){
 		// sets the tubecolor of this tileform and all the tiles within it
 		this.tubeColor = tubecolor;
@@ -781,6 +786,7 @@ class tileform{
 		this.gridPos = this.gridPos.plus(translation);
 		
 		// animation stuff for smooth translation
+		if(!this.drawPos) this.drawPos = tile.toScreenPos(this.gridPos);
 		this.lastDrawPos = this.drawPos.clone();
 		this.animOffset_translate = gameState.current.timeElapsed;
 	}
@@ -880,6 +886,7 @@ class tileform{
 	draw(){
 		// draws the tileform's tiles
 		// calculates the draw position and rotation based on the smooth movement animation speed
+		if(!this.lastDrawPos) this.lastDrawPos = tile.toScreenPos(this.gridPos);
 		this.drawPos = this.lastDrawPos.plus(this.getTranslateAnimOffset());
 		var drawRot = this.getRotateAnimOffset();
 		

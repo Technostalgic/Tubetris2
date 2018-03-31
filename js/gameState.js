@@ -1133,10 +1133,17 @@ class state_gameplayState extends gameState{
 		if(!ctiles) tile.iterateGrid(iterator);
 		else ctiles.forEach(iterator);
 	}
+	
 	pauseGame(){
 		var pauseState = new state_pauseMenu();
 		pauseState.setResumeState(this);
 		gameState.switchState(pauseState);
+	}
+	loseGame(){
+		// called when the player loses a game
+		log("Game Ended", logType.notify);
+		
+		this.switchGameplayPhase(new phase_gameOver);
 	}
 	
 	update(dt){
@@ -1263,7 +1270,8 @@ class phase_placeTileform extends gameplayPhase{
 	setTileform(tf){
 		// sets the current tileform
 		this.currentTileform = tf;
-		this.currentTileform.bumpDown();
+		this.currentTileform.setPos(new vec2(Math.floor((tile.gridBounds.size.x - 1) / 2), -1));
+		this.bumpDownTF();
 		
 		if(this.currentTileform.hasEntityType(entities.ball))
 			this.calculateArrowIndicators();
@@ -1271,6 +1279,7 @@ class phase_placeTileform extends gameplayPhase{
 	placeTileform(){
 		// places the current tileform and does all the necessary checks
 		this.currentTileform.setInPlace();
+		this.tileformOverflowCheck();
 		this.currentTileform = null;
 		
 		this.parentState.checkTilePlacement();
@@ -1278,6 +1287,14 @@ class phase_placeTileform extends gameplayPhase{
 		// if the gameplay phase hasn't changed, get the next tileForm
 		if(this.parentState.phase == this) 
 			this.parentState.getNextTileform();
+	}
+	tileformOverflowCheck(){
+		for(let tileOb of this.currentTileform.tiles){
+			if(tileOb.gridPos.y < 0){
+				this.parentState.loseGame();
+				return;
+			}
+		}
 	}
 	bumpDownTF(){
 		// bumps the current tileform object downward
@@ -1605,5 +1622,19 @@ class phase_fellTiles extends gameplayPhase{
 
 	nextPhase(){
 		this.parentState.getNextTileform();
+	}
+}
+//
+class phase_gameOver extends gameplayPhase{
+	constructor(parentState){
+		super(parentState);
+	}
+	
+	update(dt){
+	}
+	
+	draw(){
+		var rect = new collisionBox(tile.offset.clone(), tile.gridBounds.size.multiply(tile.tilesize));
+		rect.drawFill(renderContext, "rgba(0, 0, 0, 0.5)");
 	}
 }
