@@ -1238,10 +1238,15 @@ class phase_placeTileform extends gameplayPhase{
 		this.arrowIndicators = null;
 		this.tfBumpInterval = 1000;
 		this.tfLastBumpTime = this.parentState.timeElapsed;
+		this.bumpStop = true; // used to stop tileforms from immediately being dropped because the down key is held
 	}
 	
 	update(dt){
 		this.handleTileform();
+		
+		// if down is not being held, reset bumpstop flag so that the tileform can be bumped downward
+		if(!controlState.isControlDown(controlAction.down))
+			this.bumpStop = false;
 	}
 	end(){
 	}
@@ -1250,7 +1255,8 @@ class phase_placeTileform extends gameplayPhase{
 		if(!this.currentTileform) return;
 		switch(control){
 			case controlAction.down:
-				this.bumpDownTF(); 
+				if(!this.bumpStop)
+					this.bumpDownTF(); 
 				break;
 			case controlAction.rotateCW:
 				this.currentTileform.rotateCW();
