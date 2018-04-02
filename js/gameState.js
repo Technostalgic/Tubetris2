@@ -1042,7 +1042,23 @@ class state_pauseMenu extends state_menuState{
 		gameState.switchState(this.resumeState);
 	}
 }
-
+// the screen that displays when the player loses
+class state_gameOverState extends gameState{
+	constructor(){
+		super();
+		this.lostGame = null;
+	}
+	
+	setLostGame(gameplaystate){
+		this.lostGame = gameplaystate;
+	}
+	
+	draw(){
+		this.lostGame.draw();
+		var rect = new collisionBox(new vec2(), new vec2(renderTarget.width, renderTarget.height));
+		rect.drawFill(renderContext, "rgba(0, 0, 0, 0.5)");
+	}
+}
 // when the player is playing the game
 class state_gameplayState extends gameState{
 	constructor(){
@@ -1143,7 +1159,7 @@ class state_gameplayState extends gameState{
 		// called when the player loses a game
 		log("Game Ended", logType.notify);
 		
-		this.switchGameplayPhase(new phase_gameOver);
+		this.switchGameplayPhase(new phase_gameOver());
 	}
 	
 	update(dt){
@@ -1187,7 +1203,7 @@ class state_gameplayState extends gameState{
 		
 		//draw the score
 		var scorePos = tile.toScreenPos(new vec2(12, 18));
-		var scoreText = scoring.getCurrentScore().toString();
+		var scoreText = this.currentScore.toString();
 		var scoreLabelPreRender = preRenderedText.fromString("score:", new vec2(scorePos.x, scorePos.y - 22), new textStyle(fonts.small));
 		var scorePreRender = preRenderedText.fromString(scoreText, scorePos, new textStyle(fonts.large, textColor.green));
 		scoreLabelPreRender.draw();
@@ -1277,17 +1293,20 @@ class phase_placeTileform extends gameplayPhase{
 		// sets the current tileform
 		this.currentTileform = tf;
 		this.currentTileform.setPos(new vec2(Math.floor((tile.gridBounds.size.x - 1) / 2), -1));
-		this.bumpDownTF();
 		
 		if(this.currentTileform.hasEntityType(entities.ball))
 			this.calculateArrowIndicators();
+
+		this.bumpDownTF();
 	}
 	placeTileform(){
 		// places the current tileform and does all the necessary checks
 		this.currentTileform.setInPlace();
-		this.tileformOverflowCheck();
-		this.currentTileform = null;
 		
+		if(this.tileformOverflowCheck())
+			return;
+		
+		this.currentTileform = null;
 		this.parentState.checkTilePlacement();
 		
 		// if the gameplay phase hasn't changed, get the next tileForm
@@ -1298,9 +1317,10 @@ class phase_placeTileform extends gameplayPhase{
 		for(let tileOb of this.currentTileform.tiles){
 			if(tileOb.gridPos.y < 0){
 				this.parentState.loseGame();
-				return;
+				return true;
 			}
 		}
+		return false;
 	}
 	bumpDownTF(){
 		// bumps the current tileform object downward
@@ -1634,12 +1654,24 @@ class phase_fellTiles extends gameplayPhase{
 class phase_gameOver extends gameplayPhase{
 	constructor(parentState){
 		super(parentState);
+		
+		this.isFinished = false;
 	}
 	
 	update(dt){
+		this.finishLoss();
+	}
+	finishLoss(){
+		this.isFinished = true;
+		scoring.rememberScore();
+		
+		var loseState = new state_gameOverState();
+		loseState.setLostGame(this.parentState);
+		gameState.switchState(loseState);
 	}
 	
 	draw(){
+		if(this.isFinished) return;
 		var rect = new collisionBox(tile.offset.clone(), tile.gridBounds.size.multiply(tile.tilesize));
 		rect.drawFill(renderContext, "rgba(0, 0, 0, 0.5)");
 	}
