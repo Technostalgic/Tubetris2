@@ -16,8 +16,9 @@ var controlAction = {
 	nudgeDown: 5,
 	rotateCW: 6,
 	rotateCCW: 7,
-	select: 8,
-	pause: 9
+	swap: 8,
+	select: 9,
+	pause: 10
 }
 
 class controlState{
@@ -68,20 +69,16 @@ class controlState{
 	}
 	static isControlDown(action = controlAction.none){
 		// checks to see if a control action is currently being triggered
+		var key = Object.keys(controlAction)[action + 1];
+		
 		switch(action){
-			case controlAction.none: return false;
-			case controlAction.left: return controlState.isKeyDown(controlState.controls.left);
-			case controlAction.right: return controlState.isKeyDown(controlState.controls.right);
-			case controlAction.up: return controlState.isKeyDown(controlState.controls.up);
-			case controlAction.down: return controlState.isKeyDown(controlState.controls.down);
-			case controlAction.quickDrop: return controlState.isKeyDown(controlState.controls.quickDrop);
-			case controlAction.nudgeDown: return controlState.isKeyDown(controlState.controls.nudgeDown);
-			case controlAction.rotateCW: return controlState.isKeyDown(controlState.controls.rotateCW);
-			case controlAction.rotateCCW: return controlState.isKeyDown(controlState.controls.rotateCCW);
 			case controlAction.select: return (controlState.isKeyDown(controlState.controls.select) || 
 				controlState.isKeyDown(13)); // non-overridable default key 'enter'
 			case controlAction.pause: return (controlState.isKeyDown(controlState.controls.pause) || 
 				controlState.isKeyDown(27)); // non-overridable default key 'escape'
+			default:
+				return controlState.isKeyDown(controlState.controls[key]);
+			
 		}
 		return false;
 	}

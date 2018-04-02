@@ -938,8 +938,9 @@ class state_controlSettings extends state_menuState{
 		this.setTitle("CONTROLS");
 	}
 	
-	addButtons(){
-		this.controls = this.getControls();
+	addButtons(retrievecontrols = true){
+		if(retrievecontrols)
+			this.controls = this.getControls();
 		this.buttons = [];
 		var off = 0;
 		var dif = 32;
@@ -980,7 +981,7 @@ class state_controlSettings extends state_menuState{
 		// defaults button
 		var action_setDefaultControls = function(){ 
 			ths.controls = getDefaultControls(); // sets the controls to the default controls
-			ths.addButtons(); // refresh the buttons
+			ths.addButtons(false); // refresh the buttons
 			ths.currentSelection = ths.buttons.length - 2; // sets the currently selected button to be on the defaults button
 		};
 		this.buttons.push(new menuButton().construct(
@@ -1650,7 +1651,7 @@ class phase_fellTiles extends gameplayPhase{
 		this.parentState.getNextTileform();
 	}
 }
-//
+// the game over animation
 class phase_gameOver extends gameplayPhase{
 	constructor(parentState){
 		super(parentState);

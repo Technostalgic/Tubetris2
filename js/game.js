@@ -501,10 +501,11 @@ function getDefaultControls(){
 		right: 39,
 		up: 38,
 		down: 40,
-		quickDrop: 0,
+		quickDrop: 88,
 		nudgeDown: 40,
 		rotateCW: 38,
 		rotateCCW: 0,
+		swap: 90,
 		select: 32,
 		pause: 13
 	};
