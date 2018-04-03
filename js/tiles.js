@@ -375,9 +375,28 @@ class tile{
 		}
 	}
 	static RT_normal(self, ball){
-		// tag
-		if(!ball.isVirtual)
-			this.tag();
+		// tag the tile
+		// return if the ball is just a tracer
+		if(ball.isVirtual) return;
+		
+		this.tag();
+		// add score based on the ball and tube color (if the tile is a tube)
+		if(this.entityType == entities.tube){
+			var score = 0;
+			if(ball.ballType == balls.grey){
+				if(self.tileVariant == tubeColors.grey)
+					score = 10; // if they are both grey, score 10 pts
+			}
+			else if(ball.ballType == self.tileVariant || self.tileVariant == tubeColors.gold){
+				score = 50; // if they aren't grey, but match colors, score 50 pts
+				if(ball.ballType == balls.gold)
+					score = 150; // if they are both gold, score 150 pts
+			}
+			
+			// add the score if it is non zero
+			if(score)
+				scoring.addScore(score, tile.toScreenPos(self.gridPos), scoreTypes.roll);
+		}
 	}
 	static RT_bomb(self, ball){
 		if(!ball.isVirtual)
@@ -637,7 +656,7 @@ class tileform{
 	static getPiece_ball(type = null){
 		var r = new tileform();
 		
-		if(type == null) type = Math.floor(Math.random() * (Object.keys(balls).length - 1));
+		if(type == null) type = balls.gold; //type = Math.floor(Math.random() * (Object.keys(balls).length - 1));
 		r.tiles = [
 			tile.fromData(new vec2(), type, entities.ball)
 		];

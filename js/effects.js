@@ -132,6 +132,7 @@ class splashText extends effect{
 		r.pos = pos;
 		r.style = style;
 		r.anim = anim;
+		r.setLifetime(lifetime);
 		
 		return r;
 	}

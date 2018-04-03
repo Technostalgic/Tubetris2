@@ -1474,7 +1474,7 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 	constructor(parentState){
 		super(parentState);
 		
-		this.tilesDestroyed = 0;
+		this.tileCombo = 0;
 		this.bombsDetonated = 0;
 		
 		this.lastTileDestroyed = parentState.timeElapsed;
@@ -1513,17 +1513,20 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		this.concatFallHeight(tileOb.gridPos.x, tileOb.gridPos.y);
 		tileOb.destroy();
 		
-		var earnpts = true;
+		var rollpts = true;
 		
 		if(tileOb.isEntity(blocks.block_bomb, entities.block)){
 			this.bombsDetonated += 1;
-			earnpts = false;
+			rollpts = false;
 		}
 		
-		if(earnpts){
-			this.tilesDestroyed += 1;
-			var comboMult = Math.min(this.tilesDestroyed, 10);
-			scoring.addScore(comboMult * 10, tile.toScreenPos(tileOb.gridPos), scoreTypes.roll);
+		if(rollpts){
+			var comboAdd = 1;
+			if(this.tileCombo >= 10)
+				comboAdd = 0.5;
+			this.tileCombo += comboAdd;
+			var comboMult = Math.min(Math.floor(this.tileCombo), 15);
+			scoring.addScore(comboMult * 10, tile.toScreenPos(tileOb.gridPos), scoreTypes.pop);
 		}
 	}
 	
@@ -1648,7 +1651,10 @@ class phase_fellTiles extends gameplayPhase{
 	}
 
 	nextPhase(){
-		this.parentState.getNextTileform();
+		// check the tile placement and then progress to the next tileform if the gameplayPhase hasn't changed
+		this.parentState.checkTilePlacement();
+		if(this.parentState.phase == this)
+			this.parentState.getNextTileform();
 	}
 }
 // the game over animation

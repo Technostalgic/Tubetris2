@@ -9,10 +9,11 @@
 var scoreTypes = {
 	none: -1,
 	roll: 0,
-	combo: 1,
-	bonus: 2,
-	roundEnd: 3,
-	levelEnd: 4
+	pop: 1,
+	combo: 2,
+	bonus: 3,
+	roundEnd: 4,
+	levelEnd: 5
 };
 
 // static class used for keeping track of and adjusting the current player's score
@@ -61,9 +62,21 @@ class scoring{
 		switch(scoreType){
 			case scoreTypes.roll:
 				style.font = fonts.small;
+				style.scale = 2;
+				if(value >= 150){
+					anim = new textAnim_rainbow(400, 0.1);
+					style.color = textColor.green;
+				}
+				else if(value >= 50)
+					style.color = textColor.cyan;
+				break;
+			case scoreTypes.pop:
+				style.font = fonts.small;
+				if(value >= 150)
+					anim = new textAnim_rainbow(400, 0.1);
+				else if(value >= 120)
+					anim = new textAnim_blink(100, 0, textColor.yellow);
 				if(value >= 100)
-					anim = new textAnim_blink(100, 0, textColor.yellow, fonts.small.charSize.y);
-				if(value >= 90)
 					style.scale = 2;
 				if(value >= 80)
 					style.color = textColor.green;
@@ -71,6 +84,7 @@ class scoring{
 					style.color = textColor.cyan;
 				break;
 			case scoreTypes.bonus:
+				time += 250;
 				if(value >= 1000)
 					anim = new textAnim_rainbow(400, 0.1);
 				else if(value >= 750)
