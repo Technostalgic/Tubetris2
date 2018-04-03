@@ -449,6 +449,11 @@ class tile{
 		return r;
 	}
 	
+	setTubeColor(tubecolor = tubeColors.grey){
+		// sets the tube color if the tile entity is a tube type
+		if(this.entityType != entities.tube) return;
+		this.tileVariant = tubecolor;
+	}
 	place(pos = null){
 		if(pos) this.gridPos = pos;
 		tile.setTileAt(this, this.gridPos);
@@ -493,6 +498,14 @@ class tile{
 			this.drawTintAtScreenPos(pos);
 		
 		var sprite = this.getSprite();
+		
+		if(this.entityType == entities.tube){
+			var sp = sprite.clone();
+			var spriteYOff = Math.floor(this.tileVariant * tile.tilesize * 2);
+			sp.sprite.pos.y += spriteYOff;
+			sprite = sp;
+		}
+		
 		if(!sprite) return;
 		sprite.bounds.pos = pos;
 		if(rotation) sprite.rotation = rotation;
@@ -774,7 +787,7 @@ class tileform{
 		// sets the tubecolor of this tileform and all the tiles within it
 		this.tubeColor = tubecolor;
 		this.tiles.forEach(function(tileOb){
-			tileOb.tileVariant = tubecolor;
+			tileOb.setTubeColor(tubecolor);
 		});
 	}
 	translate(translation, forced = false){
