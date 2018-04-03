@@ -665,33 +665,49 @@ class tileform{
 	}
 	
 	getCenterOff(){
+		// gets the offset of the tileform's center
+		var min = this.getMinGridPos();
+		var max = this.getMaxGridPos();
+		
+		if(this.tiles.length <= 0) return new vec2(tile.tilesize / 2);
+		
+		var center = new vec2((max.x - min.x + 1) / 2, (max.y - min.y + 1) / 2);
+		return center.plus(min).multiply(tile.tilesize);
+	}
+	getMinGridPos(){
 		var minY,
-			maxY;
-		var minX,
-			maxX;
+			minX;
 		
 		this.tiles.forEach(function(tileOb, i){
 			if(i == 0){
 				minY = tileOb.gridPos.y;
-				maxY = minY;
 				minX = tileOb.gridPos.x;
-				maxX = minX;
 				return;
 			}
 			
 			if(tileOb.gridPos.y < minY) minY = tileOb.gridPos.y;
-			if(tileOb.gridPos.y > maxY) maxY = tileOb.gridPos.y;
-			
 			if(tileOb.gridPos.x < minX) minX = tileOb.gridPos.x;
+		});
+		return new vec2(minX, minY);
+	}
+	getMaxGridPos(){
+		var maxY,
+			maxX;
+		
+		this.tiles.forEach(function(tileOb, i){
+			if(i == 0){
+				maxY = tileOb.gridPos.y;
+				maxX = tileOb.gridPos.x;
+				return;
+			}
+			
+			if(tileOb.gridPos.y > maxY) maxY = tileOb.gridPos.y;
 			if(tileOb.gridPos.x > maxX) maxX = tileOb.gridPos.x;
 		});
-		
-		if(minY == undefined) return new vec2(tile.tilesize / 2);
-		
-		var min = new vec2(minX, minY);
-		var center = new vec2((maxX - minX + 1) / 2, (maxY - minY + 1) / 2);
-		
-		return center.plus(min).multiply(tile.tilesize);
+		return new vec2(maxX, maxY);
+	}
+	getGridSize(){
+		return this.getMaxGridPos().minus(this.getMinGridPos());
 	}
 	
 	hasEntity(entityID, entityType = entities.tube){
@@ -759,17 +775,10 @@ class tileform{
 		// checks to see if the tileform overlaps any tiles or goes out of bounds with the specified translation applied
 		var lpos = this.gridPos;
 		this.gridPos = this.gridPos.plus(translation);
-		var dposes = this.getTileGridPositions();
 		
-		for(var i = dposes.length - 1; i >= 0; i--){
-			if(!tile.at(dposes[i]).isEmpty() || tile.isOutOfBounds(dposes[i])){
-				this.gridPos = lpos;
-				return false;
-			}
-		}
-		
+		var r = !this.isOverlappingTile();
 		this.gridPos = lpos;
-		return true;
+		return r;
 	}
 	canRotate(dir = 1, anchored = false){
 		// checks to see if the tileform can be rotated
@@ -795,6 +804,16 @@ class tileform{
 		}
 		
 		return true;
+	}
+	isOverlappingTile(){
+		var dposes = this.getTileGridPositions();
+		
+		// check to see if each tile in the tileform is overlapping a tile in the tile grid
+		for(let i = dposes.length - 1; i >= 0; i--){
+			if(!tile.at(dposes[i]).isEmpty() || tile.isOutOfBounds(dposes[i]))
+				return true;
+		}
+		return false;
 	}
 	
 	setPos(gridPos){
@@ -839,7 +858,7 @@ class tileform{
 		}
 		return true;
 	}
-	rotate(dir = 1, anchored = false, forced = false){
+	rotate(dir = 1, forced = false, anchored = this.anchoredRotation){
 		// rotates each tile 
 		// 'dir = 1' is clockwise 'dir = -1' is counter-clockwise
 		// 'anchored' determines whether or not the tileform should be translated so that the top left tile matches the same 
@@ -847,6 +866,7 @@ class tileform{
 		// 'forced' forces the piece to rotate if it overlaps a non-empty tile
 		if(!forced && !this.canRotate(dir, anchored)) return;
 		
+		log(forced);
 		// if anchored, stores the lop left tile position in tlPos0
 		var tlPos0;
 		if(anchored) tlPos0 = this.getTopLeftTilePos();
@@ -874,10 +894,10 @@ class tileform{
 		this.lastDrawRot = Math.PI / 2 * (dir == 1 ? -1 : 1);
 	}
 	rotateCW(){
-		this.rotate(1, this.anchoredRotation);
+		this.rotate(1);
 	}
 	rotateCCW(){
-		this.rotate(-1, this.anchoredRotation);
+		this.rotate(-1);
 	}
 	
 	setInPlace(){

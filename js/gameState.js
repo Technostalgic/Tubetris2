@@ -1287,6 +1287,9 @@ class phase_placeTileform extends gameplayPhase{
 			case controlAction.right: 
 				this.currentTileform.move(side.right);
 				break;
+			case controlAction.swap:
+				this.swapTileform();
+				break;
 		}
 	}
 	
@@ -1299,6 +1302,18 @@ class phase_placeTileform extends gameplayPhase{
 			this.calculateArrowIndicators();
 
 		this.bumpDownTF();
+	}
+	swapTileform(){
+		var ptf = this.parentState.nextTileforms[0];
+		ptf.setPos(this.currentTileform.gridPos.clone());
+		if(ptf.isOverlappingTile()){
+			ptf.setPos(0, 0);
+			return;
+		}
+		if(this.currentTileform.getGridSize().y + 1 > 2)
+			this.currentTileform.rotate(1, true);
+		this.currentTileform.setPos(new vec2());
+		this.currentTileform = this.parentState.nextTileforms.splice(0, 1, this.currentTileform)[0];
 	}
 	placeTileform(){
 		// places the current tileform and does all the necessary checks
