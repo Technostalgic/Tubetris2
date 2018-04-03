@@ -1102,6 +1102,7 @@ class state_gameplayState extends gameState{
 		var ptf = new phase_placeTileform(this);
 		ptf.setTileform(this.nextTileforms.splice(0, 1)[0]);
 		this.switchGameplayPhase(ptf);
+		this.phase.killFloatingScoreText();
 		
 		this.generateNextTileforms();
 		
@@ -1120,6 +1121,7 @@ class state_gameplayState extends gameState{
 	switchGameplayPhase(newphase){
 		// switches the active gameplayPhase from one to another
 		if(this.phase){
+			newphase.floatingScoreText = this.phase.floatingScoreText;
 			log("gameplayPhase switching from '" + this.phase.constructor.name + "' to '" + newphase.constructor.name + "'");
 			this.phase.end();
 		}
@@ -1230,7 +1232,7 @@ class state_gameplayState extends gameState{
 	}
 }
 
-// a state machine for a handler inside a different state machine! It's like stateception!
+// a state machine for a handler inside a different state machine, yay nested state machines!
 class gameplayPhase{
 	constructor(parentState){
 		this.parentState = parentState; 
@@ -1243,6 +1245,29 @@ class gameplayPhase{
 	draw(){}
 	end(){}
 	
+	constructFloatingScoreText(){
+		var tpos = tile.toScreenPos(new vec2(4.5, 9));
+		this.floatingScoreText = splashText.build("NO PTS", tpos, Infinity, textStyle.getDefault());
+		this.floatingScoreText.animLength = 500;
+	}
+	handleFloatingScoreText(){
+		if(!this.parentState.currentBallScore)
+			return;
+		if(!this.floatingScoreText) this.constructFloatingScoreText();
+		
+		var points = this.parentState.currentBallScore
+		var txt = points + " PTS";
+		var style = textStyle.getDefault();
+		
+		if(points >= 500)
+			style.color = textColor.cyan;
+		
+		this.floatingScoreText.style = style;
+		this.floatingScoreText.setText(txt);
+		
+		this.floatingScoreText.draw();
+	}
+	
 	// for override, called when a control is tapped
 	controlTap(control = controlAction.none){}
 }
@@ -1250,6 +1275,7 @@ class gameplayPhase{
 class phase_placeTileform extends gameplayPhase{
 	constructor(parentState){ 
 		super(parentState); 
+		this.parentState.currentBallScore = 0;
 		
 		this.currentTileform = null; // the falling tileform that the player can control
 		this.arrowIndicators = null;
@@ -1273,7 +1299,7 @@ class phase_placeTileform extends gameplayPhase{
 		switch(control){
 			case controlAction.down:
 				if(!this.bumpStop)
-					this.bumpDownTF(); 
+					this.bumpDownTF();
 				break;
 			case controlAction.rotateCW:
 				this.currentTileform.rotateCW();
@@ -1365,7 +1391,16 @@ class phase_placeTileform extends gameplayPhase{
 			this.tfLastBumpTime -= this.parentState.timeElapsed - nextBump;
 		}
 	}
-
+	
+	handleFloatingScoreText(){
+		if(!this.floatingScoreText) return;
+		this.floatingScoreText.draw();
+	}
+	killFloatingScoreText(){
+		if(!this.floatingScoreText) return;
+		this.floatingScoreText.startEndAnim();
+	}
+	
 	calculateArrowIndicators(){
 		// calculates all the arrow indicators and stores the info in this.arrowIndicators
 		var indicators = [];
@@ -1413,6 +1448,8 @@ class phase_placeTileform extends gameplayPhase{
 			this.currentTileform.draw();
 		if(this.arrowIndicators)
 			this.drawArrowIndicators();
+		
+		this.handleFloatingScoreText();
 	}
 }
 // the gameplay phase that handles the movement and logic for ball objects
@@ -1444,6 +1481,8 @@ class phase_ballPhysics extends gameplayPhase{
 		this.balls.forEach(function(ballOb){
 			ballOb.draw();
 		});
+		
+		this.handleFloatingScoreText();
 	}
 	end(){
 		
@@ -1510,6 +1549,9 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		
 		if(this.tilesTagged.length <= 0)
 			this.nextPhase();
+	}
+	draw(){
+		this.handleFloatingScoreText();
 	}
 	
 	setTilesTagged(tagged){
@@ -1606,6 +1648,8 @@ class phase_fellTiles extends gameplayPhase{
 					yOff
 				)));
 		});
+		
+		this.handleFloatingScoreText();
 	}
 	
 	handleFallingTiles(){

@@ -119,6 +119,7 @@ class splashText extends effect{
 		this.style = textStyle.getDefault();
 		this.animStartTime = gameState.current.timeElapsed;
 		this.maxLife = 500;
+		this.animLength = this.maxLife;
 		this.preRender = null;
 		this.anim = null;
 		this.scaling = true;
@@ -141,16 +142,40 @@ class splashText extends effect{
 		// resets the animation start time and sets the animation end time as specified in milliseconds
 		this.animStartTime = gameState.current.timeElapsed;
 		this.maxLife = ms;
+		this.animLength = this.maxLife;
 		return this;
+	}
+	setText(txt){
+		this.text = txt;
+		this.preRenderText();
 	}
 	getAnimProgress(){
 		// returns a number between 0 and 1 indicating how close to the end of the animation the effect currently is
 		var endTime = this.animStartTime + this.maxLife;
 		if(endTime < gameState.current.timeElapsed || this.animStartTime > gameState.current.timeElapsed) return null;
 		
+		// split into two different animations: enter and exit
+		var enterAnim_start = 0;
+		var enterAnim_end = this.animLength / 2;
+		var exitAnim_end = this.maxLife;
+		var exitAnim_start = exitAnim_end - (this.animLength / 2);
+		
+		// calculate delta time (how long the effect has existed in milliseconds)
 		var dtime = gameState.current.timeElapsed - this.animStartTime;
 		
-		return dtime / this.maxLife;
+		// if the deltaTime of the effect is between the two animations, return a the midpoint
+		if(dtime >= enterAnim_end && dtime <= exitAnim_start)
+			return 0.5;
+		
+		// if the enter anim is happening
+		if(dtime < exitAnim_start)
+			return dtime / this.animLength;
+		// if the exit anim is happening
+		return 0.5 + (dtime + exitAnim_start) / this.animLength;
+	}
+	startEndAnim(){
+		this.maxLife = gameState.current.timeElapsed - this.animStartTime + this.animLength / 2;
+		log(this.maxLife);
 	}
 	
 	preRenderText(){

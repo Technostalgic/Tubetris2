@@ -567,7 +567,7 @@ class tileform{
 		var i = Math.floor(r.length * Math.random());
 		
 		var t = tileform[r[i]](); 
-		t.setColor(tubeColors[ Object.keys(tubeColors)[Math.floor(Object.keys(tubeColors).length * Math.random())] ]);
+		t.setColor(tubeColors.gold);//tubeColors[ Object.keys(tubeColors)[Math.floor(Object.keys(tubeColors).length * Math.random())] ]);
 		return t;
 	}
 	
