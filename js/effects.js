@@ -174,8 +174,8 @@ class splashText extends effect{
 		return 0.5 + (dtime + exitAnim_start) / this.animLength;
 	}
 	startEndAnim(){
+		if(gameState.current.timeElapsed >= this.animStartTime + this.maxLife) return;
 		this.maxLife = gameState.current.timeElapsed - this.animStartTime + this.animLength / 2;
-		log(this.maxLife);
 	}
 	
 	preRenderText(){

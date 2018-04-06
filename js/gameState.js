@@ -1160,7 +1160,6 @@ class state_gameplayState extends gameState{
 		var ptf = new phase_placeTileform(this);
 		ptf.setTileform(this.nextTileforms.splice(0, 1)[0]);
 		this.switchGameplayPhase(ptf);
-		this.phase.killFloatingScoreText();
 		
 		this.generateNextTileforms();
 		
@@ -1176,14 +1175,53 @@ class state_gameplayState extends gameState{
 		if(backpiece) this.nextTileforms.push(backpiece);
 	}
 	
+	constructFloatingScoreText(){
+		// creates and initializes a new floating score text instance
+		var tpos = tile.toScreenPos(new vec2(4.5, 9));
+		this.floatingScoreText = splashText.build("NO PTS", tpos, Infinity, textStyle.getDefault());
+		this.floatingScoreText.animLength = 500;
+	}
+	killFloatingScoreText(){
+		// starts the floating score text's ending animation
+		if(!this.floatingScoreText) return;
+		this.floatingScoreText.startEndAnim();
+	}
+	drawFloatingScoreText(){
+		// renders the floating score text and nullifies if it's animation is over
+		if(!this.floatingScoreText) return;
+		this.floatingScoreText.draw();
+		
+		if(this.floatingScoreText.getAnimProgress() == null)
+			this.floatingScoreText = null;
+	}
+	updateFloatingScoreText(){
+		// increment the floating score text
+		if(!this.floatingScoreText) this.constructFloatingScoreText();
+		
+		var txt = this.currentBallScore + " PTS";
+		var style = textStyle.getDefault();
+		
+		//change the style based on the score
+		if(this.currentBallScore >= 500)
+			style.color = textColor.cyan;
+		
+		// apply the style and new text
+		this.floatingScoreText.style = style;
+		this.floatingScoreText.setText(txt);
+	}
+	updateScoreAnimations(pts = 10){
+		// makes the score animation pop and the floating score text increment
+		this.scoreEmphasisAnim.resetAnim();
+		this.updateFloatingScoreText();
+	}
+	
 	switchGameplayPhase(newphase){
 		// switches the active gameplayPhase from one to another
 		if(this.phase){
-			newphase.floatingScoreText = this.phase.floatingScoreText;
 			log("gameplayPhase switching from '" + this.phase.constructor.name + "' to '" + newphase.constructor.name + "'");
 			this.phase.end();
 		}
-		if(newphase instanceof phase_ballPhysics)
+		if(newphase instanceof phase_placeTileform)
 			this.currentBallScore = 0;
 		newphase.parentState = this;
 		this.phase = newphase;
@@ -1282,11 +1320,17 @@ class state_gameplayState extends gameState{
 		// renders tiled background
 		drawBackground(); 
 		
+		// draws all the tiles in the tile grid
 		tile.drawGrid();
+		
+		// member specific draw funciton for the current gameplayPhase
 		this.phase.draw();
 		
+		// draw's the current game session info
 		this.drawHUD();
+		
 		drawEffects();
+		this.drawFloatingScoreText();
 	}
 }
 
@@ -1303,29 +1347,6 @@ class gameplayPhase{
 	draw(){}
 	end(){}
 	
-	constructFloatingScoreText(){
-		var tpos = tile.toScreenPos(new vec2(4.5, 9));
-		this.floatingScoreText = splashText.build("NO PTS", tpos, Infinity, textStyle.getDefault());
-		this.floatingScoreText.animLength = 500;
-	}
-	handleFloatingScoreText(){
-		if(!this.parentState.currentBallScore)
-			return;
-		if(!this.floatingScoreText) this.constructFloatingScoreText();
-		
-		var points = this.parentState.currentBallScore
-		var txt = points + " PTS";
-		var style = textStyle.getDefault();
-		
-		if(points >= 500)
-			style.color = textColor.cyan;
-		
-		this.floatingScoreText.style = style;
-		this.floatingScoreText.setText(txt);
-		
-		this.floatingScoreText.draw();
-	}
-	
 	// for override, called when a control is tapped
 	controlTap(control = controlAction.none){}
 }
@@ -1340,6 +1361,7 @@ class phase_placeTileform extends gameplayPhase{
 		this.tfBumpInterval = 1000;
 		this.tfLastBumpTime = this.parentState.timeElapsed;
 		this.bumpStop = true; // used to stop tileforms from immediately being dropped because the down key is held
+		this.parentState.killFloatingScoreText();
 	}
 	
 	update(dt){
@@ -1450,15 +1472,6 @@ class phase_placeTileform extends gameplayPhase{
 		}
 	}
 	
-	handleFloatingScoreText(){
-		if(!this.floatingScoreText) return;
-		this.floatingScoreText.draw();
-	}
-	killFloatingScoreText(){
-		if(!this.floatingScoreText) return;
-		this.floatingScoreText.startEndAnim();
-	}
-	
 	calculateArrowIndicators(){
 		// calculates all the arrow indicators and stores the info in this.arrowIndicators
 		var indicators = [];
@@ -1506,8 +1519,6 @@ class phase_placeTileform extends gameplayPhase{
 			this.currentTileform.draw();
 		if(this.arrowIndicators)
 			this.drawArrowIndicators();
-		
-		this.handleFloatingScoreText();
 	}
 }
 // the gameplay phase that handles the movement and logic for ball objects
@@ -1539,8 +1550,6 @@ class phase_ballPhysics extends gameplayPhase{
 		this.balls.forEach(function(ballOb){
 			ballOb.draw();
 		});
-		
-		this.handleFloatingScoreText();
 	}
 	end(){
 		
@@ -1608,9 +1617,7 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		if(this.tilesTagged.length <= 0)
 			this.nextPhase();
 	}
-	draw(){
-		this.handleFloatingScoreText();
-	}
+	draw(){ }
 	
 	setTilesTagged(tagged){
 		// flags the tagged tiles for destruction
@@ -1706,8 +1713,6 @@ class phase_fellTiles extends gameplayPhase{
 					yOff
 				)));
 		});
-		
-		this.handleFloatingScoreText();
 	}
 	
 	handleFallingTiles(){
