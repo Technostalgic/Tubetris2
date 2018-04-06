@@ -45,7 +45,7 @@ var logType = {
 	unimportant: 4
 }
 ///
-/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Low-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Low-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function log(obj = undefined, type = logType.log){
 	// logs the spcified object to the console
@@ -195,7 +195,7 @@ function drawArrow(pos, dir = side.right){
 	drawImage(renderContext, gfx.arrows, pos.minus(new vec2(ssize / 2)), sprite);
 }
 ///
-/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }High-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }High-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function init(){
 	// initializes the game
@@ -206,12 +206,11 @@ function init(){
 	getCanvas();
 	addInputEventListeners();
 	
-	load();
-	
 	audioMgr.init();
 	controlState.init();
 	tile.init();
 	
+	load();
 
 	//gameState.switchState(new state_mainMenu());	
 	gameState.switchState(new state_mainMenu());	
@@ -276,7 +275,7 @@ function draw(){
 }
 
 ///
-/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global Functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global Functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function loadFonts(){
 	// downloads all the needed font spritesheets from the server and parses them into a textRenderer container
 	log("loading fonts... ")
@@ -287,53 +286,13 @@ function loadFonts(){
 	
 	// set individual character widths for each font
 	fonts.large.setSpecificCharacterWidths({
-		'1': 14,
-		'!': 12,
-		':': 12,
-		' ': 6,
-		'j': 16
+		'1': 14, '!': 12, ':': 12, ' ': 6, 'j': 16
 	});
 	fonts.small.setSpecificCharacterWidths({
-		'0': 9,
-		'1': 7,
-		'2': 9,
-		'3': 9,
-		'4': 10,
-		'5': 10,
-		'6': 9,
-		'7': 9,
-		'8': 9,
-		'9': 9,
-		'!': 5,
-		':': 5,
-		'-': 9,
-		' ': 4,
-		'a': 10,
-		'b': 9,
-		'c': 9,
-		'd': 10,
-		'e': 9,
-		'f': 7,
-		'g': 10,
-		'h': 10,
-		'i': 7,
-		'j': 9,
-		'k': 10,
-		'l': 8,
-		'm': 12,
-		'n': 11,
-		'o': 11,
-		'p': 10,
-		'q': 11,
-		'r': 10,
-		's': 9,
-		't': 9,
-		'u': 10,
-		'v': 10,
-		'w': 12,
-		'x': 12,
-		'y': 11,
-		'z': 10
+		'0': 9, '1': 7, '2': 9, '3': 9, '4': 10, '5': 10, '6': 9, '7': 9, '8': 9, '9': 9, '!': 5, ':': 5, '-': 9,
+		' ': 4,	'a': 10, 'b': 9, 'c': 9, 'd': 10, 'e': 9, 'f': 7, 'g': 10, 'h': 10, 'i': 7, 'j': 9, 'k': 10, 'l': 8,
+		'm': 12, 'n': 11, 'o': 11, 'p': 10, 'q': 11, 'r': 10, 's': 9, 't': 9, 'u': 10, 'v': 10, 'w': 12,'x': 12,
+		'y': 11, 'z': 10
 	});
 	
 	log(Object.keys(fonts).length.toString() + " fonts indexed", logType.notify);
@@ -423,7 +382,7 @@ function loadControls(){
 	});
 	
 	controlState.setControls(c);
-	log(splCStr.length - 1 + " controls loaded", logType.unimportant);
+	log(Object.keys(controlState.controls).length + " controls loaded", logType.unimportant);
 }
 function loadScores(){
 	// loads the scoreboard data from localStorage
@@ -835,7 +794,6 @@ function startNewGame(){
 	
 	gameState.switchState(state);
 }
-
 
 function drawBackground(){
 	// draws the tiled backgroumd image onto the canvas
