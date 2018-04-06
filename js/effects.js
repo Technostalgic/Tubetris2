@@ -171,7 +171,7 @@ class splashText extends effect{
 		if(dtime < exitAnim_start)
 			return dtime / this.animLength;
 		// if the exit anim is happening
-		return 0.5 + (dtime + exitAnim_start) / this.animLength;
+		return 0.5 + (dtime - exitAnim_start) / this.animLength ;
 	}
 	startEndAnim(){
 		if(gameState.current.timeElapsed >= this.animStartTime + this.maxLife) return;
@@ -196,6 +196,8 @@ class splashText extends effect{
 			var scl = Math.sin(prog * Math.PI);
 			pr = pr.scaled(scl);
 		}
+		
+		log(prog);
 		
 		pr.draw();
 	}
