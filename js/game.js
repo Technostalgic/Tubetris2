@@ -35,6 +35,7 @@ var storageKeys = {
 };
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global enumerators{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+
 // enumerates the different styles that console logs can be
 var logType = {
 	log: 0,
@@ -44,7 +45,8 @@ var logType = {
 	unimportant: 4
 }
 ///
-/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Low-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 function log(obj = undefined, type = logType.log){
 	// logs the spcified object to the console
 	if(!debug) return;
@@ -199,6 +201,7 @@ function drawArrow(pos, dir = side.right){
 }
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }High-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 function init(){
 	// initializes the game
 	log("initializing game @" + performance.now().toString() + "ms...", logType.notify);
@@ -208,20 +211,24 @@ function init(){
 	getCanvas();
 	addInputEventListeners();
 	
+	load();
+	
 	audioMgr.init();
 	controlState.init();
 	tile.init();
 	
-	loadAssets();
-	loadConfig();
-	loadControls();
-	loadScores();
 
 	//gameState.switchState(new state_mainMenu());	
 	gameState.switchState(new state_mainMenu());	
 	log("intitialized game!");
 }
-
+function load(){
+	// loads all the game data
+	loadAssets();
+	loadConfig();
+	loadControls();
+	loadScores();
+}
 function loadAssets(){
 	// downloads and prepares all the assets needed from the server
 	loadFonts();
@@ -233,6 +240,48 @@ function loadAssets(){
 	// a few times per second, when they are finished, finishLoading() is called
 	assetLoadingFinishCheck()
 }
+
+function startGameLoop(){
+	// sets an animation frame callback for the main gameloop step
+	log("initiating game loop...", logType.notify);
+	window.requestAnimationFrame(step);
+}
+function step(){
+	// a game step occurs, update logic is applied and the game is rendered
+	var dt = performance.now() - timeElapsed;
+	timeElapsed = performance.now();
+	
+	update(dt);
+	draw();
+	
+	window.requestAnimationFrame(step);
+}
+function update(dt){
+	// handles game logic that doesn't have to do with rendering
+	gameState.current.update(dt);
+}
+function draw(){
+	// draws the graphics onto the canvas
+	clearScreen();
+	
+	gameState.current.draw();
+	
+	// FOR TESTING textBlock object:
+	//var str = "Lorem Ipsum is simply (dummy text) of the [printing and typesetting industry]! Lorem Ipsum has been {the industrys standard} dummy text ever since the 1500s when an unknown printer took a galley of type and scrambled it to make a type specimen book It has survived <not only five centuries but also the leap> (into electronic typesetting) remaining essentially unchanged It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages and more recently with (desktop publishing)[ software like Aldus PageMaker] including versions <of Lorem Ipsum>";
+	//var style = new textStyle(fonts.large);
+	//var style0 = new textStyle(fonts.large, textColor.green);
+	//var style1 = new textStyle(fonts.large, textColor.dark);
+	//var style2 = new textStyle(fonts.small, textColor.light, 2);
+	//var style3 = new textStyle(fonts.small, textColor.dark);
+	//var textbox = new textBlock(str, style, collisionBox.fromSides(50, 200, 550, 500), [style0, style1, style2, style3]);
+	//textbox.clone().draw();
+	//textbox.bounds.drawOutline(renderContext);
+	
+	printScreen();
+}
+
+///
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global Functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function loadFonts(){
 	// downloads all the needed font spritesheets from the server and parses them into a textRenderer container
 	log("loading fonts... ")
@@ -792,44 +841,6 @@ function startNewGame(){
 	gameState.switchState(state);
 }
 
-function startGameLoop(){
-	// sets an animation frame callback for the main gameloop step
-	log("initiating game loop...", logType.notify);
-	window.requestAnimationFrame(step);
-}
-function step(){
-	// a game step occurs, update logic is applied and the game is rendered
-	var dt = performance.now() - timeElapsed;
-	timeElapsed = performance.now();
-	
-	update(dt);
-	draw();
-	
-	window.requestAnimationFrame(step);
-}
-function update(dt){
-	// handles game logic that doesn't have to do with rendering
-	gameState.current.update(dt);
-}
-function draw(){
-	// draws the graphics onto the canvas
-	clearScreen();
-	
-	gameState.current.draw();
-	
-	// FOR TESTING textBlock object:
-	//var str = "Lorem Ipsum is simply (dummy text) of the [printing and typesetting industry]! Lorem Ipsum has been {the industrys standard} dummy text ever since the 1500s when an unknown printer took a galley of type and scrambled it to make a type specimen book It has survived <not only five centuries but also the leap> (into electronic typesetting) remaining essentially unchanged It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages and more recently with (desktop publishing)[ software like Aldus PageMaker] including versions <of Lorem Ipsum>";
-	//var style = new textStyle(fonts.large);
-	//var style0 = new textStyle(fonts.large, textColor.green);
-	//var style1 = new textStyle(fonts.large, textColor.dark);
-	//var style2 = new textStyle(fonts.small, textColor.light, 2);
-	//var style3 = new textStyle(fonts.small, textColor.dark);
-	//var textbox = new textBlock(str, style, collisionBox.fromSides(50, 200, 550, 500), [style0, style1, style2, style3]);
-	//textbox.clone().draw();
-	//textbox.bounds.drawOutline(renderContext);
-	
-	printScreen();
-}
 
 function drawBackground(){
 	// draws the tiled backgroumd image onto the canvas
@@ -844,7 +855,8 @@ function drawForegroundOverlay(){
 	drawImage(renderContext, gfx.foreground_overlay, new vec2());
 }
 
-/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ { ------------------ } ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+///
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ { -Script Execution- } ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ///
 
 preventKeyScrolling();
