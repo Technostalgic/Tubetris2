@@ -1044,20 +1044,78 @@ class state_pauseMenu extends state_menuState{
 	}
 }
 // the screen that displays when the player loses
-class state_gameOverState extends gameState{
+class state_gameOverState extends state_menuState{
 	constructor(){
 		super();
 		this.lostGame = null;
+		this.setTitle("GAME OVER");
 	}
 	
+	addButtons(){
+		// adds buttons to the interface
+		this.buttons = [];
+		var ths = this;
+		var off = 0;
+		var dif = 55;
+		
+		var ths = this;
+		var action_restartGame = function(){ startNewGame(); };
+		var action_switchToScoreboard = function(){ gameState.switchState(new state_scoreboard()); };
+		var action_switchToOptions = function(){ gameState.switchState(new state_optionsMenu()); };
+		var action_quitSession = function(){ gameState.switchState(new state_mainMenu()); };
+		
+		this.buttons.push(new menuButton().construct(
+			"Main Menu", screenBounds.center.plus(new vec2(0, off * dif)),
+			"return to the main menu", action_quitSession)); off++;
+		this.buttons.push(new menuButton().construct(
+			"Scoreboard", screenBounds.center.plus(new vec2(0, off * dif)), 
+			"view the highest scoring players", action_switchToScoreboard)); off++;
+		this.buttons.push(new menuButton().construct(
+			"Restart", screenBounds.center.plus(new vec2(0, off * dif)), 
+			"start a new game", action_restartGame));
+	}
 	setLostGame(gameplaystate){
 		this.lostGame = gameplaystate;
+		this.checkRank();
+	}
+	checkRank(){
+		var place = null;
+		
+		for(let i = scores.length - 1; i >= 0; i--){
+			if(scores[i].score > this.lostGame.currentScore)
+				break;
+			place = i;
+		}
+		
+		var msg = !place ? "player did not rank in the scoreboard" : "player ranked #" + (place + 1);
+		log(msg, logType.notify);
+		
+		if(place)
+			/*store score in scoreboard*/;
+		
+		return place;
 	}
 	
 	draw(){
+		if(!this.initialized) this.initialize();
+		
 		this.lostGame.draw();
 		var rect = new collisionBox(new vec2(), new vec2(renderTarget.width, renderTarget.height));
 		rect.drawFill(renderContext, "rgba(0, 0, 0, 0.5)");
+
+		// draws all the user-defined graphics that aren't buttons
+		this.drawInternals();
+		this.drawTitle();
+		
+		// renders all the buttons
+		var ths = this;
+		this.buttons.forEach(function(btn, i){
+			let sel = i == ths.currentSelection;
+			btn.draw(sel);
+		});
+		
+		// renders the foreground border
+		drawForegroundBorder();
 	}
 }
 // when the player is playing the game
