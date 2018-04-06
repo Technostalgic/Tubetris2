@@ -90,6 +90,7 @@ function loadFont(assetname, filename, charsize, colorVariants = 8){
 	var r = new Image();
 	var f = new textRenderer(r, charsize, colorVariants);
 	
+	// sets flags when done loading so that the game knows when the assets are finished loading
 	r.onload = function(e){ this.loadedState = 1; f.loadedState = 1; };
 	r.onerror = function(e){ this.loadedState = e; f.loadedState = e; };
 	r.src = "gfx/" + filename;
@@ -104,8 +105,11 @@ function loadGraphic(assetname, filename){
 	var out = "load graphic '" + filename + "'... ";
 	
 	var r = new Image();
+	
+	// sets flags when done loading so that the game knows when the assets are finished loading
 	r.onload = function(e){ this.loadedState = 1; };
 	r.onerror = function(e){ this.loadedState = e; };
+	
 	r.src = "gfx/" + filename;
 	gfx[assetname] = r;
 	
@@ -118,8 +122,11 @@ function loadSound(assetname, filename){
 	var out = "load sound '" + filename + "'... ";
 	
 	var r = new Audio("sfx/" + filename);
+	
+	// sets flags when done loading so that the game knows when the assets are finished loading
 	r.oncanplay = function(e){ this.loadedState = 1; };
 	r.onerror = function(e){ this.loadedState = e; };
+	
 	sfx[assetname] = r;
 	
 	log(out, logType.unimportant);
@@ -140,18 +147,6 @@ function printScreen(){
 	scalingContext.drawImage(renderTarget, 0, 0, scalingTarget.width, scalingTarget.height);
 }
 
-function printImage(ctx, img, pos, sprite = null, scale = 1){
-	if(!sprite)
-		sprite = new spriteBox(new vec2, new vec2(img.width, img.height));
-	
-	ctx.drawImage(
-		img,
-		sprite.left, sprite.top,
-		sprite.width, sprite.height,
-		pos.x, pos.y,
-		sprite.width * scale, sprite.height * scale
-		);
-}
 function drawImage(ctx, img, pos, sprite = null, scale = 1){
 	// draws an image onto the specifed context
 	if(!sprite)
@@ -619,7 +614,7 @@ function generateBackground(){
 	for(let y = -1; y <= cY; y++){
 		for(let x = -1; x <= cX; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
-			printImage(bgctx, gfx.tiles_empty, tpos, sbox);
+			drawImage(bgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	
@@ -645,7 +640,7 @@ function generateForeground_border(){
 			1 : cX
 			){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
-			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
+			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	
@@ -672,28 +667,28 @@ function generateForeground_overlay(){
 			1 : cX
 			){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
-			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
+			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	// foreground tiles to the left of next piece area
 	for(let y = 2; y <= 3; y++){
 		for(let x = 11; x < 12; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
-			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
+			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	// foreground above next piece area
 	for(let y = 1; y <= 1; y++){
 		for(let x = 11; x < cX; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
-			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
+			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	// foreground tiles on the right side of the screen
 	for(let y = 4; y < cY; y++){
 		for(let x = 11; x < cX; x++){
 			var tpos = off.plus(new vec2(x * tilesize, y * tilesize));
-			printImage(fgctx, gfx.tiles_empty, tpos, sbox);
+			drawImage(fgctx, gfx.tiles_empty, tpos, sbox);
 		}
 	}
 	
