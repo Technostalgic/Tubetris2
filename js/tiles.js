@@ -747,9 +747,9 @@ class tileform{
 		var r = [];
 		var ths = this;
 		
-		// adds the tileform's gridPos to each of it's tile's gridPos and adds the result to a list
+		// adds the tileform's gridPos to each of its tile's gridPos and adds the result to a list
 		this.tiles.forEach(function(tileOb){
-			let gpos = tileOb.gridPos.plus(ths.gridPos);
+			let gpos = tileOb.gridPos.clone().plus(ths.gridPos);
 			r.push(gpos);
 		});
 		
@@ -773,7 +773,7 @@ class tileform{
 	}
 	canTranslate(translation){
 		// checks to see if the tileform overlaps any tiles or goes out of bounds with the specified translation applied
-		var lpos = this.gridPos;
+		var lpos = this.gridPos.clone();
 		this.gridPos = this.gridPos.plus(translation);
 		
 		var r = !this.isOverlappingTile();

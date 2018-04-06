@@ -1158,8 +1158,8 @@ class state_gameplayState extends gameState{
 		log("next tileform retrieved", logType.notify);
 		
 		var ptf = new phase_placeTileform(this);
-		ptf.setTileform(this.nextTileforms.splice(0, 1)[0]);
 		this.switchGameplayPhase(ptf);
+		ptf.setTileform(this.nextTileforms.splice(0, 1)[0]);
 		
 		this.generateNextTileforms();
 		
