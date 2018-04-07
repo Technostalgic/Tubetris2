@@ -567,7 +567,8 @@ class tileform{
 		var i = Math.floor(r.length * Math.random());
 		
 		var t = tileform[r[i]](); 
-		t.setColor(tubeColors.gold);//tubeColors[ Object.keys(tubeColors)[Math.floor(Object.keys(tubeColors).length * Math.random())] ]);
+		var tcolorKeys = Object.keys(tubeColors);
+		t.setColor(tubeColors[ tcolorKeys[Math.floor(tcolorKeys.length * Math.random())] ]);
 		return t;
 	}
 	
@@ -656,7 +657,7 @@ class tileform{
 	static getPiece_ball(type = null){
 		var r = new tileform();
 		
-		if(type == null) type = balls.gold; //type = Math.floor(Math.random() * (Object.keys(balls).length - 1));
+		if(type == null) type = Math.floor(Math.random() * (Object.keys(balls).length - 1));
 		r.tiles = [
 			tile.fromData(new vec2(), type, entities.ball)
 		];
