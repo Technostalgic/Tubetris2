@@ -553,7 +553,7 @@ class tileform{
 		this.lastDrawRot = 0;
 	}
 	
-	static getPiece_random(){
+	static getPiece_random(color = null){
 		var r = [
 			"getPiece_square",
 			"getPiece_straight",
@@ -567,8 +567,10 @@ class tileform{
 		var i = Math.floor(r.length * Math.random());
 		
 		var t = tileform[r[i]](); 
-		var tcolorKeys = Object.keys(tubeColors);
-		t.setColor(tubeColors[ tcolorKeys[Math.floor(tcolorKeys.length * Math.random())] ]);
+		
+		if(color == null) t.setColor( Math.floor(Object.keys(tubeColors).length * Math.random()) );
+		else t.setColor(color);
+		
 		return t;
 	}
 	
