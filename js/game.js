@@ -355,7 +355,7 @@ function loadConfig(){
 		let splOp = cOp.split(':');
 		if(splOp.length <= 1) return;
 		
-		for (var field in cfgFields){
+		for (var field of cfgFields){
 			if(field == splOp[0]){
 				config[field] = parseAny(splOp[1]);
 			}
@@ -699,18 +699,18 @@ function parseAny(str){
 function applyConfig(){
 	// applies the game configuration settings
 	// applies image smoothing
-	renderContext.mozImageSmoothingEnabled    	= config.imageSmoothing;
-	renderContext.oImageSmoothingEnabled      	= config.imageSmoothing;
-	renderContext.webkitImageSmoothingEnabled 	= config.imageSmoothing;
-	renderContext.msImageSmoothingEnabled     	= config.imageSmoothing;
-	renderContext.imageSmoothingEnabled       	= config.imageSmoothing;
-
+	renderContext.mozImageSmoothingEnabled     = config.imageSmoothing;
+	renderContext.oImageSmoothingEnabled       = config.imageSmoothing;
+	renderContext.webkitImageSmoothingEnabled  = config.imageSmoothing;
+	renderContext.msImageSmoothingEnabled      = config.imageSmoothing;
+	renderContext.imageSmoothingEnabled        = config.imageSmoothing;
+    
 	// applies scale smoothing
-	scalingContext.mozImageSmoothingEnabled    	= config.scaleSmoothing;
-	scalingContext.oImageSmoothingEnabled      	= config.scaleSmoothing;
-	scalingContext.webkitImageSmoothingEnabled	= config.scaleSmoothing;
-	scalingContext.msImageSmoothingEnabled     	= config.scaleSmoothing;
-	scalingContext.imageSmoothingEnabled       	= config.scaleSmoothing;
+	scalingContext.mozImageSmoothingEnabled    = config.scaleSmoothing;
+	scalingContext.oImageSmoothingEnabled      = config.scaleSmoothing;
+	scalingContext.webkitImageSmoothingEnabled = config.scaleSmoothing;
+	scalingContext.msImageSmoothingEnabled     = config.scaleSmoothing;
+	scalingContext.imageSmoothingEnabled       = config.scaleSmoothing;
 	
 	// applies canvasScaleMode
 	switch(config.canvasScaleMode){
