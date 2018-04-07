@@ -209,7 +209,7 @@ class settingButton extends menuButton{
 			config[optionVarName] = val;
 		}
 	}
-	
+
 	construct(text, pos, description = "", applyOnChange = false){
 		// see super.construct() for info ony why this is used in lue of a constructor
 		this.pos = pos;
@@ -267,6 +267,24 @@ class settingButton extends menuButton{
 		this.setValue = setter || this.setValue;
 		this.setStyles(textStyle.getDefault(), textStyle.getDefault().setColor(textColor.green));
 		this.calcSize();
+		return this;
+	}	
+	setEnumGetterAndSetter(enumObject, optionVarName){
+		// sets getters and setters specific to settingButtons that use enumerations
+		var keys = Object.keys(enumObject);
+		
+		// set the getters and setters
+		this.getValue = function(){ return config[optionVarName]; }
+		this.setValue = function(val){ config[optionVarName] = val; };
+		this.setStyles(textStyle.getDefault(), textStyle.getDefault().setColor(textColor.green));
+		
+		// so that getValueString returns a string that represent the enumeration, instead of just an integer
+		this.getValueString = function(){ return keys[this.getValue()]; };
+		
+		// sets the min and max value
+		this.setValueBounds(0, keys.length - 1, 1, buttonSwitchMode.enumeration);
+		this.calcSize();
+		
 		return this;
 	}
 	
@@ -912,20 +930,11 @@ class state_videoOptions extends state_optionsSubMenu{
 			).setValueBounds(0.5, 2.5, 0.5, buttonSwitchMode.percentInfinite).generateSettingPreRenders() ); off += 1.5;
 		
 		// fit to screen
-		// stretch
-		// native
 		var action_fitToScreen = function(){}
-		this.buttons.push(new menuButton().construct(
-			"Fit to Screen", tpos.plus(new vec2(0, off * dif)),
-			"expand or compress the game canvas to fit your browser window", action_fitToScreen)); off += 1.2;
-		var action_strech = function(){}
-		this.buttons.push(new menuButton().construct(
-			"Stretch", tpos.plus(new vec2(0, off * dif)),
-			"stretch or squash the game canvas to fill your browser window", action_strech)); off += 1.2;
-		var action_native = function(){}
-		this.buttons.push(new menuButton().construct(
-			"Native", tpos.plus(new vec2(0, off * dif)),
-			"sets the game canvas back to its native resolution", action_native));
+		this.buttons.push(new settingButton().construct(
+			"Screen Fit", tpos.plus(new vec2(0, off * dif)), 
+			"choose the way that the game canvas fits to the screen", true
+			).setEnumGetterAndSetter(canvasScaleMode, "canvasScaleMode")); off += 1.2;
 	}
 }
 class state_gameOptions extends state_optionsSubMenu{

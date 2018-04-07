@@ -5,12 +5,13 @@
 ///	twitter @technostalgicGM
 ///
 
-///
-/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global variables{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+/// =================================|----------------|===================================
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global variables{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// =================================|----------------|===================================
 var debug = true;
 	localStorageEnabled = true;
 	timeElapsed = 0;
-	
+
 var config = {},
 	scores = {};
 	
@@ -35,9 +36,9 @@ var storageKeys = {
 	controls: "technostalgic_tubetris2_keybind",
 	scoreboard: "technostalgic_tubetris2_scores"
 };
-///
-/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global enumerators{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
-
+/// ================================|------------------|==================================
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global enumerators{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// ================================|------------------|==================================
 // enumerates the different styles that console logs can be
 var logType = {
 	log: 0,
@@ -46,9 +47,15 @@ var logType = {
 	notify: 3,
 	unimportant: 4
 }
-///
+// enumerates the different ways that the canvas can be scaled
+var canvasScaleMode = {
+	native: 0,
+	fit: 1,
+	stretch: 2
+}
+/// ================================|-------------------|=================================
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Low-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+/// ================================|-------------------|=================================
 function log(obj = undefined, type = logType.log){
 	// logs the spcified object to the console
 	if(!debug) return;
@@ -196,9 +203,9 @@ function drawArrow(pos, dir = side.right){
 	
 	drawImage(renderContext, gfx.arrows, pos.minus(new vec2(ssize / 2)), sprite);
 }
-///
-/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }High-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+/// ================================|--------------------|================================
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }High-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// ================================|--------------------|================================
 function init(){
 	// initializes the game
 	log("initializing game @" + performance.now().toString() + "ms...", logType.notify);
@@ -275,9 +282,9 @@ function draw(){
 	
 	printScreen();
 }
-
-///
+/// ==================================|----------------|==================================
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global Functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// ==================================|----------------|==================================
 function loadFonts(){
 	// downloads all the needed font spritesheets from the server and parses them into a textRenderer container
 	log("loading fonts... ")
@@ -493,6 +500,7 @@ function setDefaultConfig(){
 		volume_sound: 1,
 		imageSmoothing: false,
 		scaleSmoothing: false,
+		canvasScaleMode: 0,
 		saving: true,
 		arrowIndicators: true,
 		pathIndicators: true
@@ -690,19 +698,26 @@ function parseAny(str){
 }
 function applyConfig(){
 	// applies the game configuration settings
-	var smoothing = config.imageSmoothing;
-	
-	renderContext.mozImageSmoothingEnabled    	= smoothing;
-	renderContext.oImageSmoothingEnabled      	= smoothing;
-	renderContext.webkitImageSmoothingEnabled 	= smoothing;
-	renderContext.msImageSmoothingEnabled     	= smoothing;
-	renderContext.imageSmoothingEnabled       	= smoothing;
+	// applies image smoothing
+	renderContext.mozImageSmoothingEnabled    	= config.imageSmoothing;
+	renderContext.oImageSmoothingEnabled      	= config.imageSmoothing;
+	renderContext.webkitImageSmoothingEnabled 	= config.imageSmoothing;
+	renderContext.msImageSmoothingEnabled     	= config.imageSmoothing;
+	renderContext.imageSmoothingEnabled       	= config.imageSmoothing;
 
-	scalingContext.mozImageSmoothingEnabled    	= smoothing;
-	scalingContext.oImageSmoothingEnabled      	= smoothing;
-	scalingContext.webkitImageSmoothingEnabled	= smoothing;
-	scalingContext.msImageSmoothingEnabled     	= smoothing;
-	scalingContext.imageSmoothingEnabled       	= smoothing;
+	// applies scale smoothing
+	scalingContext.mozImageSmoothingEnabled    	= config.scaleSmoothing;
+	scalingContext.oImageSmoothingEnabled      	= config.scaleSmoothing;
+	scalingContext.webkitImageSmoothingEnabled	= config.scaleSmoothing;
+	scalingContext.msImageSmoothingEnabled     	= config.scaleSmoothing;
+	scalingContext.imageSmoothingEnabled       	= config.scaleSmoothing;
+	
+	// applies canvasScaleMode
+	switch(config.canvasScaleMode){
+		case canvasScaleMode.native: setNativeResolution(); break;
+		case canvasScaleMode.fit: fitToScreen(); break;
+		case canvasScaleMode.stretch: stretchToScreen(); break;
+	}
 }
 
 function getCanvas(){
@@ -839,9 +854,9 @@ function drawForegroundOverlay(){
 	drawImage(renderContext, gfx.foreground_overlay, new vec2());
 }
 
-///
-/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ { -Script Execution- } ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-///
+/// ================================|--------------------|================================
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ { -Script Execution- } ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// ================================|--------------------|================================
 
 preventKeyScrolling();
 window.addEventListener("load", init);
