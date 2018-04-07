@@ -34,7 +34,13 @@ class controlState{
 	
 	static listenForMouseMove(e){
 		// the event listener that is triggered when the mouse is moved
-		controlState.mousePos = new vec2(e.offsetX, e.offsetY);
+		var fixedPos = new vec2(e.offsetX, e.offsetY);
+		
+		// adjust for the size of the canvas if it's different from the native resolution
+		fixedPos.x /= scalingTarget.width / nativeResolution.x;
+		fixedPos.y /= scalingTarget.height / nativeResolution.y;
+		
+		controlState.mousePos = fixedPos;
 		gameState.current.mouseMove(controlState.mousePos);
 	}
 	static listenForMouseDown(e){

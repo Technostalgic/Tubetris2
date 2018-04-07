@@ -866,7 +866,6 @@ class tileform{
 		// 'forced' forces the piece to rotate if it overlaps a non-empty tile
 		if(!forced && !this.canRotate(dir, anchored)) return;
 		
-		log(forced);
 		// if anchored, stores the lop left tile position in tlPos0
 		var tlPos0;
 		if(anchored) tlPos0 = this.getTopLeftTilePos();

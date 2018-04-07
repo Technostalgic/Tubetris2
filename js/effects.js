@@ -200,8 +200,6 @@ class splashText extends effect{
 			pr = pr.scaled(scl);
 		}
 		
-		log(prog);
-		
 		pr.draw();
 	}
 }

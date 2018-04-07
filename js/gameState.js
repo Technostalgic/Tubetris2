@@ -885,28 +885,47 @@ class state_videoOptions extends state_optionsSubMenu{
 		var tpos = new vec2(screenBounds.center.x, this.buttonStartPos);
 		
 		// Animated Text
+		// Explosions
 		// Image Smoothing
+		// Scale Smoothing
 		// Animation Speed
 		this.buttons.push(new settingButton().construct(
 			"Animated Text", tpos.plus(new vec2(0, off * dif)), 
 			"whether or not animated text is enabled - may increase performance if disabled"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("animText"), settingButton.generateSetValueFunc("animText")).generateSettingPreRenders() ); off++;
-			
 		this.buttons.push(new settingButton().construct(
 			"Explosions", tpos.plus(new vec2(0, off * dif)), 
 			"whether or not explosion or smoke effects appear when a tile is destroyed - may increase performance if disabled"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("explosionEffects"), settingButton.generateSetValueFunc("explosionEffects")).generateSettingPreRenders() ); off++;
-			
 		this.buttons.push(new settingButton().construct(
 			"Image Smoothing", tpos.plus(new vec2(0, off * dif)), 
 			"enable if you want ugly blurs or keep disabled for nice crispy pixel graphics", true
 			).setGettersAndSetters(settingButton.generateGetValueFunc("imageSmoothing"), settingButton.generateSetValueFunc("imageSmoothing")).generateSettingPreRenders() ); off++;
-			
+		this.buttons.push(new settingButton().construct(
+			"Scale Smoothing", tpos.plus(new vec2(0, off * dif)), 
+			"whether or not the scaled render context will be smoothed - generally looks better if the canvas is rendering at a smaller than native resolution", true
+			).setGettersAndSetters(settingButton.generateGetValueFunc("scaleSmoothing"), settingButton.generateSetValueFunc("scaleSmoothing")).generateSettingPreRenders() ); off++;
 		this.buttons.push(new settingButton().construct(
 			"Animation Speed", tpos.plus(new vec2(0, off * dif)), 
 			"how quickly the in-game animations are played"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("animSpeed"), settingButton.generateSetValueFunc("animSpeed")
-			).setValueBounds(0.5, 2.5, 0.5, buttonSwitchMode.percentInfinite).generateSettingPreRenders() ); off++;
+			).setValueBounds(0.5, 2.5, 0.5, buttonSwitchMode.percentInfinite).generateSettingPreRenders() ); off += 1.5;
+		
+		// fit to screen
+		// stretch
+		// native
+		var action_fitToScreen = function(){}
+		this.buttons.push(new menuButton().construct(
+			"Fit to Screen", tpos.plus(new vec2(0, off * dif)),
+			"expand or compress the game canvas to fit your browser window", action_fitToScreen)); off += 1.2;
+		var action_strech = function(){}
+		this.buttons.push(new menuButton().construct(
+			"Stretch", tpos.plus(new vec2(0, off * dif)),
+			"stretch or squash the game canvas to fill your browser window", action_strech)); off += 1.2;
+		var action_native = function(){}
+		this.buttons.push(new menuButton().construct(
+			"Native", tpos.plus(new vec2(0, off * dif)),
+			"sets the game canvas back to its native resolution", action_native));
 	}
 }
 class state_gameOptions extends state_optionsSubMenu{
@@ -932,6 +951,7 @@ class state_gameOptions extends state_optionsSubMenu{
 			).setGettersAndSetters(settingButton.generateGetValueFunc("pathIndicators"), settingButton.generateSetValueFunc("pathIndicators")
 			).generateSettingPreRenders() );
 		off += 1.5;
+		
 		var action_resetConfig = function(){ gameState.switchState(new state_confirmationDialogue(function(){ setDefaultConfig(); saveConfig(); ths.addButtons() })); };
 		this.buttons.push(new menuButton().construct("Reset Config", tpos.plus(new vec2(0, off * dif)), "resets the game configuration and settings back to default", action_resetConfig));
 		off += 1.2;

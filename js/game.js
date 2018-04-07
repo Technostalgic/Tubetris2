@@ -25,7 +25,9 @@ var renderTarget,
 	scalingTarget;
 var renderContext,
 	scalingContext;
-var screenBounds;
+	
+var screenBounds,
+	nativeResolution = new vec2(500, 660);
 
 // sets the keys that are used to retrieve saved information in localStorage
 var storageKeys = {
@@ -490,6 +492,7 @@ function setDefaultConfig(){
 		volume_music: 1,
 		volume_sound: 1,
 		imageSmoothing: false,
+		scaleSmoothing: false,
 		saving: true,
 		arrowIndicators: true,
 		pathIndicators: true
@@ -701,6 +704,7 @@ function applyConfig(){
 	scalingContext.msImageSmoothingEnabled     	= smoothing;
 	scalingContext.imageSmoothingEnabled       	= smoothing;
 }
+
 function getCanvas(){
 	// gets or creates the canvas and canvas contexts from the webpage and sets them to the global variables
 	log("retrieving canvas data... ");
@@ -711,12 +715,38 @@ function getCanvas(){
 	
 	// the rendering canvas is the canvas that everything is rendered to in the game's native resolution, it is then rescaled by the scaling canvas to the desired resolution before being drawn
 	renderTarget = document.createElement("canvas");
-	renderTarget.width = 500;
-	renderTarget.height = 660;
+	renderTarget.width = nativeResolution.x;
+	renderTarget.height = nativeResolution.y;
 	renderContext = renderTarget.getContext("2d");
 	
 	// sets the screen bounds
 	screenBounds = new collisionBox(new vec2(), new vec2(renderTarget.width, renderTarget.height));
+}
+function fitToScreen(){
+	// expands the canvas so that it fills the screen while keeping the native aspect ratio
+	var w = window.innerWidth;
+	var h = window.innerHeight;
+	var ratio = nativeResolution.x / nativeResolution.y;
+	
+	var fixedCanvasHeight = h;
+	var fixedCanvasWidth = h * ratio;
+	if(fixedCanvasWidth > w){
+		fixedCanvasWidth = w;
+		fixedCanvasHeight = w / ratio;
+	}
+	
+	scalingTarget.width = fixedCanvasWidth;
+	scalingTarget.height = fixedCanvasHeight;
+}
+function stretchToScreen(){
+	// stretches the canvas so that its covers the whole screen
+	scalingTarget.width = window.innerWidth;
+	scalingTarget.height = window.innerHeight;
+}
+function setNativeResolution(){
+	// sets the canvas back to native resolution
+	scalingTarget.width = nativeResolution.x;
+	scalingTarget.height = nativeResolution.y;
 }
 
 function updateEffects(dt){
