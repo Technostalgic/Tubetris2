@@ -486,6 +486,7 @@ function setDefaultConfig(){
 	config = {
 		animText: true,
 		animSpeed: 1,
+		explosionEffects: true,
 		volume_music: 1,
 		volume_sound: 1,
 		imageSmoothing: false,

@@ -887,11 +887,24 @@ class state_videoOptions extends state_optionsSubMenu{
 		// Animated Text
 		// Image Smoothing
 		// Animation Speed
-		this.buttons.push(new settingButton().construct("Animated Text", tpos.plus(new vec2(0, off * dif)), "whether or not animated text is enabled - may increase performance if disabled"
+		this.buttons.push(new settingButton().construct(
+			"Animated Text", tpos.plus(new vec2(0, off * dif)), 
+			"whether or not animated text is enabled - may increase performance if disabled"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("animText"), settingButton.generateSetValueFunc("animText")).generateSettingPreRenders() ); off++;
-		this.buttons.push(new settingButton().construct("Image Smoothing", tpos.plus(new vec2(0, off * dif)), "enable if you want ugly blurs or keep disabled for nice crispy pixel graphics", true
+			
+		this.buttons.push(new settingButton().construct(
+			"Explosions", tpos.plus(new vec2(0, off * dif)), 
+			"whether or not explosion or smoke effects appear when a tile is destroyed - may increase performance if disabled"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("explosionEffects"), settingButton.generateSetValueFunc("explosionEffects")).generateSettingPreRenders() ); off++;
+			
+		this.buttons.push(new settingButton().construct(
+			"Image Smoothing", tpos.plus(new vec2(0, off * dif)), 
+			"enable if you want ugly blurs or keep disabled for nice crispy pixel graphics", true
 			).setGettersAndSetters(settingButton.generateGetValueFunc("imageSmoothing"), settingButton.generateSetValueFunc("imageSmoothing")).generateSettingPreRenders() ); off++;
-		this.buttons.push(new settingButton().construct("Animation Speed", tpos.plus(new vec2(0, off * dif)), "how quickly the in-game animations are played"
+			
+		this.buttons.push(new settingButton().construct(
+			"Animation Speed", tpos.plus(new vec2(0, off * dif)), 
+			"how quickly the in-game animations are played"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("animSpeed"), settingButton.generateSetValueFunc("animSpeed")
 			).setValueBounds(0.5, 2.5, 0.5, buttonSwitchMode.percentInfinite).generateSettingPreRenders() ); off++;
 	}
