@@ -31,7 +31,7 @@ class level{
 		var thm = [tubeColors.blue, tubeColors.gold];
 		
 		// on the levels 2 - 4 there will be 3 colors
-		if(dif >= 1) 
+		if(dif > 1) 
 			thm = [tubeColors.blue, tubeColors.green, tubeColors.gold];
 		
 		// on levels 5 and above there will be 4 or more colors
@@ -84,7 +84,7 @@ class level{
 			if(Math.random() >= 0.5)
 				c = this.theme[Math.floor((this.theme.length - 1) * Math.random())];
 		
-		return this.theme[c];
+		return c;
 	}
 	getRandomPieces(count = 1){
 		var r = [];
