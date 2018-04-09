@@ -1167,6 +1167,7 @@ class state_gameplayState extends gameState{
 		
 		this.currentScore = 0;
 		this.currentBallScore = 0;
+		this.currentLevel = new level(1);
 		this.scoreEmphasisAnim = new textAnim_scaleTransform(100, 1.5, 1);
 		this.scoreEmphasisAnim.animType = textAnimType.easeIn;
 		
@@ -1175,10 +1176,6 @@ class state_gameplayState extends gameState{
 		//this.generateNextTileforms(0, tileform.getPiece_bomb());
 		//this.generateNextTileforms(0, tileform.getPiece_ball());
 		this.switchGameplayPhase(new phase_placeTileform(this));
-		
-		this.currentTileform = null; // the falling tileform that the player can control
-		this.tfDropInterval = 1000;
-		this.tfBumpTime = null;
 		
 		//animation stuff
 		this.anim_HUDNextTileOff = 0;
@@ -1201,7 +1198,7 @@ class state_gameplayState extends gameState{
 		
 		var ptf = new phase_placeTileform(this);
 		this.switchGameplayPhase(ptf);
-		ptf.setTileform(this.nextTileforms.splice(0, 1)[0]);
+		ptf.setTileform(this.nextTileforms.splice(0, 1)[0], this.currentLevel.tfDropInterval);
 		
 		this.generateNextTileforms();
 		
@@ -1210,10 +1207,9 @@ class state_gameplayState extends gameState{
 	}
 	generateNextTileforms(count = 1, backpiece = null){
 		// generates a specified amount of tileforms and adds them to this.nextTileforms
-		for(let i = count; i > 0; i--){
-			let r = tileform.getPiece_random();
-			this.nextTileforms.push(r);
-		}
+		this.nextTileforms = this.nextTileforms.concat(
+			this.currentLevel.getRandomPieces(count)
+		);
 		if(backpiece) this.nextTileforms.push(backpiece);
 	}
 	
@@ -1399,8 +1395,9 @@ class phase_placeTileform extends gameplayPhase{
 		this.parentState.currentBallScore = 0;
 		
 		this.currentTileform = null; // the falling tileform that the player can control
+		this.tfDropInterval = 1000;
+		
 		this.arrowIndicators = null;
-		this.tfBumpInterval = 1000;
 		this.tfLastBumpTime = this.parentState.timeElapsed;
 		this.bumpStop = true; // used to stop tileforms from immediately being dropped because the down key is held
 		this.parentState.killFloatingScoreText();
@@ -1441,10 +1438,11 @@ class phase_placeTileform extends gameplayPhase{
 		}
 	}
 	
-	setTileform(tf){
+	setTileform(tf, dropInterval = 1000){
 		// sets the current tileform
 		this.currentTileform = tf;
 		this.currentTileform.setPos(new vec2(Math.floor((tile.gridBounds.size.x - 1) / 2), -1));
+		this.tfDropInterval = dropInterval;
 		
 		if(this.currentTileform.hasEntityType(entities.ball))
 			this.calculateArrowIndicators();
@@ -1507,7 +1505,7 @@ class phase_placeTileform extends gameplayPhase{
 		if(!this.tfLastBumpTime) this.tfLastBumpTime = this.parentState.timeElapsed;
 		
 		// if the tileform drop interval has passed, bump the tileform down
-		var nextBump = this.tfLastBumpTime + this.tfBumpInterval;
+		var nextBump = this.tfLastBumpTime + this.tfDropInterval;
 		if(this.parentState.timeElapsed >= nextBump){
 			this.bumpDownTF();
 			this.tfLastBumpTime -= this.parentState.timeElapsed - nextBump;
