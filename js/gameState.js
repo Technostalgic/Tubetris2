@@ -1172,7 +1172,7 @@ class state_gameplayState extends gameState{
 		this.scoreEmphasisAnim.animType = textAnimType.easeIn;
 		
 		this.nextTileforms = [];
-		this.generateNextTileforms(5, tileform.getPiece_ball());
+		this.generateNextTileforms(4);
 		//this.generateNextTileforms(0, tileform.getPiece_bomb());
 		//this.generateNextTileforms(0, tileform.getPiece_ball());
 		this.switchGameplayPhase(new phase_placeTileform(this));
@@ -1344,7 +1344,9 @@ class state_gameplayState extends gameState{
 		nplPreRender.draw();
 		
 		// draw tileforms til next ball:
-		var nball = (this.currentLevel.tfTilBall);
+		var nball = this.currentLevel.ballFrequency % (
+			this.nextTileforms.length + 
+			this.currentLevel.tfTilBall);
 		var nballPos = tile.toScreenPos(new vec2(12, 7));
 		var nballLabelPreRender = preRenderedText.fromString("next ball:", nballPos.plus(new vec2(0, -22)), new textStyle(fonts.small));
 		var nballPreRender = preRenderedText.fromString(nball.toString(), nballPos, new textStyle(fonts.large, textColor.green));

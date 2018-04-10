@@ -93,7 +93,6 @@ class level{
 			return tubeColors.gold;
 		}
 		else this.goldLikenessInterval += this.goldFrequency;
-		log(gc);
 		
 		return c;
 	}
