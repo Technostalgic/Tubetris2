@@ -11,7 +11,8 @@ class level{
 		this.calculateTheme();
 		this.calculateBlockFrequency();
 		this.calculateIncrementors();
-
+		
+		this.goldLikenessInterval = 0;
 		this.tfTillBall = this.ballFrequency;
 	}
 	
@@ -27,26 +28,27 @@ class level{
 	calculateTheme(){
 		var dif = this.difficulty;
 		
-		// on the first level there will only be 3 colors
-		var thm = [tubeColors.blue, tubeColors.gold];
+		// on the first level there will only be 1 color
+		var thm = [tubeColors.blue];
 		
-		// on the levels 2 - 4 there will be 3 colors
+		// on the levels 2 - 4 there will be 2 colors
 		if(dif > 1) 
-			thm = [tubeColors.blue, tubeColors.green, tubeColors.gold];
+			thm = [tubeColors.blue, tubeColors.green];
 		
-		// on levels 5 and above there will be 4 or more colors
+		// on levels 5 and above there will be 3 or more colors
 		if(dif >= 5)
-			thm = [tubeColors.orange, tubeColors.blue, tubeColors.green, tubeColors.gold];
+			thm = [tubeColors.orange, tubeColors.blue, tubeColors.green];
 
-		// on level 15 there will be all 5 colors in the theme
+		// on level 15 there will be all 4 colors in the theme
 		if(dif >= 15)
 			this.theme.splice(0, 0, tubeColors.grey);
-		// on levels after 5 there will be only 4 colors but one of them will be replaced with grey, which yeilds the least points
+		// on levels after 5 there will be only 3 colors but one of them will be replaced with grey, which yeilds the least points
 		else if(dif > 5)
-			this.theme[Math.floor(Math.random() * this.theme.length - 1)] = tubeColors.grey;
+			this.theme[Math.floor(Math.random() * this.theme.length)] = tubeColors.grey;
+		
+		this.goldFrequency = 0.2 / (1 + this.difficulty / 5);
 		
 		this.theme = thm;
-		
 		return this.theme;
 	}
 	calculateBlockFrequency(){
@@ -83,6 +85,15 @@ class level{
 		if(c == this.theme.length - 1)
 			if(Math.random() >= 0.5)
 				c = this.theme[Math.floor((this.theme.length - 1) * Math.random())];
+		
+		// return gold if the player gets lucky
+		var gc = this.goldFrequency * (1 + this.goldLikenessInterval);
+		if(gc >= Math.random()){
+			this.goldLikenessInterval = 0;
+			return tubeColors.gold;
+		}
+		else this.goldLikenessInterval += this.goldFrequency;
+		log(gc);
 		
 		return c;
 	}

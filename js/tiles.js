@@ -137,10 +137,10 @@ class tile{
 			10,	// quad: 10,
 			0,	// block_brick: (11 - offIDCount) -> 0
 			1,	// block_bomb: (12 - offIDCount) -> 1
-			0,	// ball(grey): (13 - offIDCount) -> 0
-			1,	// ball(orange): (14 - offIDCount) -> 1
-			2,	// ball(blue): (15 - offIDCount) -> 2
-			3,	// ball(green): (16 - offIDCount) -> 3
+			1,	// ball(grey): (13 - offIDCount) -> 1
+			2,	// ball(orange): (14 - offIDCount) -> 2
+			3,	// ball(blue): (15 - offIDCount) -> 3
+			0,	// ball(green): (16 - offIDCount) -> 0
 			4,	// ball(gold): (17 - offIDCount) -> 4
 		];  
 	}       
