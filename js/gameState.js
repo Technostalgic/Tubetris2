@@ -1338,10 +1338,52 @@ class state_gameplayState extends gameState{
 		this.drawNextTileformAnim();
 		drawForegroundOverlay();
 		
-		//draw the score
+		// draw next piece label:
+		var nplPos = tile.toScreenPos(new vec2(12.5, 0));
+		var nplPreRender = preRenderedText.fromString("NEXT:", nplPos, textStyle.getDefault().setColor(textColor.yellow));
+		nplPreRender.draw();
+		
+		// draw tileforms til next ball:
+		var nball = (this.currentLevel.tfTilBall);
+		var nballPos = tile.toScreenPos(new vec2(12, 7));
+		var nballLabelPreRender = preRenderedText.fromString("next ball:", nballPos.plus(new vec2(0, -22)), new textStyle(fonts.small));
+		var nballPreRender = preRenderedText.fromString(nball.toString(), nballPos, new textStyle(fonts.large, textColor.green));
+		nballLabelPreRender.draw();
+		nballPreRender.draw();
+		
+		// draw tileforms til next bomb:
+		var nbomb = 0;
+		var nbombPos = tile.toScreenPos(new vec2(12, 9));
+		var nbombLabelPreRender = preRenderedText.fromString("next bomb:", nbombPos.plus(new vec2(0, -22)), new textStyle(fonts.small));
+		var nbombPreRender = preRenderedText.fromString(nbomb.toString(), nbombPos, new textStyle(fonts.large, textColor.red));
+		nbombLabelPreRender.draw();
+		nbombPreRender.draw();
+		
+		// ??
+		var bonus = "none";
+		var bonusPos = tile.toScreenPos(new vec2(12, 11));
+		var bonusLabelPreRender = preRenderedText.fromString("bonus:", bonusPos.plus(new vec2(0, -22)), new textStyle(fonts.small));
+		var bonusPreRender = preRenderedText.fromString(bonus.toString(), bonusPos, textStyle.getDefault());
+		bonusLabelPreRender.draw();
+		bonusPreRender.draw();
+		
+		// current level:
+		var lvlPos = tile.toScreenPos(new vec2(12, 16));
+		var lvlPreRender = preRenderedText.fromString("LEVEL " + this.currentLevel.difficulty, lvlPos, new textStyle(fonts.large, textColor.cyan));
+		lvlPreRender.draw();
+		
+		// draw tileforms til next level:
+		var progPos = lvlPos.plus(new vec2(0, 22));
+		var tftlvl = this.nextTileforms.length + this.currentLevel.tfTilProgression;
+		var progLabelPreRender = preRenderedText.fromString("next level in " + tftlvl, progPos, new textStyle(fonts.small));
+		progLabelPreRender.draw();
+		//var progPreRender = preRenderedText.fromString(tftlvl.toString(), progPos, new textStyle(fonts.large, textColor.green));
+		//progPreRender.draw();
+		
+		// draw the score
 		var scorePos = tile.toScreenPos(new vec2(12, 18));
 		var scoreText = this.currentScore.toString();
-		var scoreLabelPreRender = preRenderedText.fromString("score:", new vec2(scorePos.x, scorePos.y - 22), new textStyle(fonts.small));
+		var scoreLabelPreRender = preRenderedText.fromString("score:", scorePos.plus(new vec2(0, -22)), new textStyle(fonts.small));
 		var scorePreRender = preRenderedText.fromString(scoreText, scorePos, new textStyle(fonts.large, textColor.green));
 		scoreLabelPreRender.draw();
 		scorePreRender.animated(this.scoreEmphasisAnim).draw();

@@ -13,7 +13,7 @@ class level{
 		this.calculateIncrementors();
 		
 		this.goldLikenessInterval = 0;
-		this.tfTillBall = this.ballFrequency;
+		this.tfTilBall = this.ballFrequency;
 	}
 	
 	calculateIncrementors(){
@@ -100,8 +100,8 @@ class level{
 	getRandomPieces(count = 1){
 		var r = [];
 		while(count > 0){
-			if(this.tfTillBall <= 0){
-				this.tfTillBall = Math.max(this.ballFrequency, 1);
+			if(this.tfTilBall <= 0){
+				this.tfTilBall = Math.max(this.ballFrequency, 1);
 				r.push(tileform.getPiece_ball(this.getRandomColor()));
 				continue;
 			}
@@ -110,7 +110,8 @@ class level{
 			m.setColor(this.getRandomColor());
 			r.push(m);
 			
-			this.tfTillBall--;
+			this.tfTilProgression--;
+			this.tfTilBall--;
 			count--;
 		}
 		return r;
