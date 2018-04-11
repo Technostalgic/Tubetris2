@@ -78,6 +78,12 @@ class level{
 		
 	}
 	
+	getDifficultyColor(){
+		if(this.difficulty >= 20) return textColor.red;
+		if(this.difficulty >= 10) return textColor.yellow;
+		if(this.difficulty >= 5) return textColor.cyan;
+		return textColor.light;
+	}
 	getRandomColor(){
 		// returns a random color in the theme
 		var c = this.theme[Math.floor(this.theme.length * Math.random())];

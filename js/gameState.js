@@ -1176,6 +1176,9 @@ class state_gameplayState extends gameState{
 		this.generateNextTileforms();
 		this.switchGameplayPhase(new phase_placeTileform(this));
 		
+		this.initHudPreRenders();
+		this.updateHUDPreRenders();
+		
 		//animation stuff
 		this.anim_HUDNextTileOff = 0;
 	}
@@ -1203,6 +1206,7 @@ class state_gameplayState extends gameState{
 		
 		this.decrementUntil();
 		this.generateNextTileforms();
+		this.updateTileformDecrementPreRenders();
 		
 		// animation stuff
 		this.anim_HUDNextTileOff = this.timeElapsed;
@@ -1220,6 +1224,7 @@ class state_gameplayState extends gameState{
 	}
 	endLevel(){
 		this.currentLevel.completeLevel(this);
+		this.updateHUDPreRenders();
 	}
 	
 	initUntil(){
@@ -1300,10 +1305,11 @@ class state_gameplayState extends gameState{
 		this.floatingScoreText.style = style;
 		this.floatingScoreText.setText(txt);
 	}
-	updateScoreAnimations(pts = 10){
+	updateScoreVisuals(pts = 10){
 		// makes the score animation pop and the floating score text increment
 		this.scoreEmphasisAnim.resetAnim();
 		this.updateFloatingScoreText();
+		this.updateScorePreRender();
 	}
 	
 	switchGameplayPhase(newphase){
@@ -1360,6 +1366,90 @@ class state_gameplayState extends gameState{
 		this.phase.update(dt);
 	}
 	
+	initHudPreRenders(){
+		var hudPreRenders = {};
+		
+		// draw next piece label:
+		var nplPos = tile.toScreenPos(new vec2(12.5, 0));
+		hudPreRenders.nplPreRender = preRenderedText.fromString("NEXT:", nplPos, textStyle.getDefault().setColor(textColor.yellow));
+		
+		// draw tileforms til next ball:
+		var nballPos = tile.toScreenPos(new vec2(12, 7)).plus(new vec2(0, -22));
+		hudPreRenders.nballLabelPreRender = preRenderedText.fromString("next ball:", nballPos, new textStyle(fonts.small));
+		
+		// draw tileforms til next bomb:
+		var nbombPos = tile.toScreenPos(new vec2(12, 9)).plus(new vec2(0, -22));
+		hudPreRenders.nbombLabelPreRender = preRenderedText.fromString("next bomb:", nbombPos, new textStyle(fonts.small));
+		
+		// bonus
+		var bonusPos = tile.toScreenPos(new vec2(12, 11)).plus(new vec2(0, -22));
+		hudPreRenders.bonusLabelPreRender = preRenderedText.fromString("bonus:", bonusPos, new textStyle(fonts.small));
+		
+		// current score
+		var scorePos = tile.toScreenPos(new vec2(12, 18)).plus(new vec2(0, -22));
+		hudPreRenders.scoreLabelPreRender = preRenderedText.fromString("score:", scorePos, new textStyle(fonts.small));
+		
+		// high score
+		var hscoretext = scores[0].score.toString();
+		var hscorePos = tile.toScreenPos(new vec2(12, 19)).plus(new vec2(0, 10));
+		hudPreRenders.hscoreLabelPreRender = preRenderedText.fromString("high:", new vec2(hscorePos.x, hscorePos.y - 10), new textStyle(fonts.small));
+		hudPreRenders.hscorePreRender = preRenderedText.fromString(hscoretext, hscorePos, new textStyle(fonts.small, textColor.green, 1));
+		
+		this.hudPreRenders = hudPreRenders;
+	}
+	updateHUDPreRenders(){
+		this.updateTileformDecrementPreRenders();
+		this.updateScorePreRender();
+		
+		// current level:
+		var lvlPos = tile.toScreenPos(new vec2(12, 16));
+		this.hudPreRenders.lvlPreRender = preRenderedText.fromString("LEVEL " + this.currentLevel.difficulty, lvlPos, new textStyle(fonts.large, this.currentLevel.getDifficultyColor()));
+	}
+	updateScorePreRender(){
+		// draw the score
+		var scoreText = this.currentScore.toString();
+		var scorePos = tile.toScreenPos(new vec2(12, 18));
+		this.hudPreRenders.scorePreRender = preRenderedText.fromString(scoreText, scorePos, new textStyle(fonts.large, textColor.green));
+	}
+	updateTileformDecrementPreRenders(){
+		// draw tileforms til next ball:
+		var nball = this.until.ball;
+		if(nball == null) nball = "--";
+		var nballPos = tile.toScreenPos(new vec2(12, 7));
+		this.hudPreRenders.nballPreRender = preRenderedText.fromString(nball.toString(), nballPos, new textStyle(fonts.large, textColor.green));
+		
+		// draw tileforms til next bomb:
+		var nbomb = this.until.bomb;
+		if(nbomb == null) nbomb = "--";
+		var nbombPos = tile.toScreenPos(new vec2(12, 9));
+		this.hudPreRenders.nbombPreRender = preRenderedText.fromString(nbomb.toString(), nbombPos, new textStyle(fonts.large, textColor.red));
+		
+		// ??
+		var bonus = "none";
+		var bonusPos = tile.toScreenPos(new vec2(12, 11));
+		this.hudPreRenders.bonusPreRender = preRenderedText.fromString(bonus.toString(), bonusPos, textStyle.getDefault());
+		
+		// draw tileforms til next level:
+		var lvlPos = tile.toScreenPos(new vec2(12, 16));
+		var progPos = lvlPos.plus(new vec2(0, 22));
+		var tftlvl = this.nextTileforms.length + this.currentLevel.tfTilProgression;
+		this.hudPreRenders.progLabelPreRender = preRenderedText.fromString("next level in " + tftlvl, progPos, new textStyle(fonts.small));
+	}
+	
+	drawHUDPreRenders(){
+		var ths = this;
+		Object.keys(this.hudPreRenders).forEach(function(key){
+			ths.hudPreRenders[key].draw();
+		});
+	}
+	drawHUD(){
+		// draws the heads up display
+		this.drawNextTileformAnim();
+		drawForegroundOverlay();
+		
+		this.drawHUDPreRenders();
+	}
+
 	drawNextTileformAnim(){
 		// draws the next tile form on the HUD (and the current tileForm if it is still being animated off the screen)
 		var animLength = 200;
@@ -1385,71 +1475,6 @@ class state_gameplayState extends gameState{
 		
 		off = new vec2(0, off);
 		next.drawAtScreenPos(tile.nextTileformSlot.minus(next.getCenterOff()).plus(off));
-	}
-	drawHUD(){
-		// draws the heads up display
-		this.drawNextTileformAnim();
-		drawForegroundOverlay();
-		
-		// draw next piece label:
-		var nplPos = tile.toScreenPos(new vec2(12.5, 0));
-		var nplPreRender = preRenderedText.fromString("NEXT:", nplPos, textStyle.getDefault().setColor(textColor.yellow));
-		nplPreRender.draw();
-		
-		// draw tileforms til next ball:
-		var nball = this.until.ball;
-		if(nball == null) nball = "--";
-		var nballPos = tile.toScreenPos(new vec2(12, 7));
-		var nballLabelPreRender = preRenderedText.fromString("next ball:", nballPos.plus(new vec2(0, -22)), new textStyle(fonts.small));
-		nballLabelPreRender.draw();
-		var nballPreRender = preRenderedText.fromString(nball.toString(), nballPos, new textStyle(fonts.large, textColor.green));
-		nballPreRender.draw();
-		
-		// draw tileforms til next bomb:
-		var nbomb = this.until.bomb;
-		if(nbomb == null) nbomb = "--";
-		var nbombPos = tile.toScreenPos(new vec2(12, 9));
-		var nbombLabelPreRender = preRenderedText.fromString("next bomb:", nbombPos.plus(new vec2(0, -22)), new textStyle(fonts.small));
-		nbombLabelPreRender.draw();
-		var nbombPreRender = preRenderedText.fromString(nbomb.toString(), nbombPos, new textStyle(fonts.large, textColor.red));
-		nbombPreRender.draw();
-		
-		// ??
-		var bonus = "none";
-		var bonusPos = tile.toScreenPos(new vec2(12, 11));
-		var bonusLabelPreRender = preRenderedText.fromString("bonus:", bonusPos.plus(new vec2(0, -22)), new textStyle(fonts.small));
-		var bonusPreRender = preRenderedText.fromString(bonus.toString(), bonusPos, textStyle.getDefault());
-		bonusLabelPreRender.draw();
-		bonusPreRender.draw();
-		
-		// current level:
-		var lvlPos = tile.toScreenPos(new vec2(12, 16));
-		var lvlPreRender = preRenderedText.fromString("LEVEL " + this.currentLevel.difficulty, lvlPos, new textStyle(fonts.large, textColor.cyan));
-		lvlPreRender.draw();
-		
-		// draw tileforms til next level:
-		var progPos = lvlPos.plus(new vec2(0, 22));
-		var tftlvl = this.nextTileforms.length + this.currentLevel.tfTilProgression;
-		var progLabelPreRender = preRenderedText.fromString("next level in " + tftlvl, progPos, new textStyle(fonts.small));
-		progLabelPreRender.draw();
-		//var progPreRender = preRenderedText.fromString(tftlvl.toString(), progPos, new textStyle(fonts.large, textColor.green));
-		//progPreRender.draw();
-		
-		// draw the score
-		var scorePos = tile.toScreenPos(new vec2(12, 18));
-		var scoreText = this.currentScore.toString();
-		var scoreLabelPreRender = preRenderedText.fromString("score:", scorePos.plus(new vec2(0, -22)), new textStyle(fonts.small));
-		var scorePreRender = preRenderedText.fromString(scoreText, scorePos, new textStyle(fonts.large, textColor.green));
-		scoreLabelPreRender.draw();
-		scorePreRender.animated(this.scoreEmphasisAnim).draw();
-		
-		// draws the high score
-		var hscoretext = scores[0].score.toString();
-		var hscorePos = tile.toScreenPos(new vec2(12, 19)).plus(new vec2(0, 10));
-		var hscoreLabelPreRender = preRenderedText.fromString("high:", new vec2(hscorePos.x, hscorePos.y - 10), new textStyle(fonts.small));
-		var hscorePreRender = preRenderedText.fromString(hscoretext, hscorePos, new textStyle(fonts.small, textColor.green, 1));
-		hscoreLabelPreRender.draw();
-		hscorePreRender.draw();
 	}
 	draw(){
 		// renders tiled background

@@ -49,7 +49,7 @@ class scoring{
 		
 		// keep track of the round score
 		gameState.current.currentBallScore += points;
-		gameState.current.updateScoreAnimations(points);
+		gameState.current.updateScoreVisuals(points);
 		
 		// create a splash effect if there is a defined splash position
 		if(splashPos)
