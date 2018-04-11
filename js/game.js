@@ -11,6 +11,8 @@
 var debug = true;
 	localStorageEnabled = true;
 	timeElapsed = 0;
+	lastDrawTime = 0;
+	dtStamps = [];
 
 var config = {},
 	scores = {};
@@ -269,18 +271,18 @@ function draw(){
 	
 	gameState.current.draw();
 	
-	// FOR TESTING textBlock object:
-	//var str = "Lorem Ipsum is simply (dummy text) of the [printing and typesetting industry]! Lorem Ipsum has been {the industrys standard} dummy text ever since the 1500s when an unknown printer took a galley of type and scrambled it to make a type specimen book It has survived <not only five centuries but also the leap> (into electronic typesetting) remaining essentially unchanged It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages and more recently with (desktop publishing)[ software like Aldus PageMaker] including versions <of Lorem Ipsum>";
-	//var style = new textStyle(fonts.large);
-	//var style0 = new textStyle(fonts.large, textColor.green);
-	//var style1 = new textStyle(fonts.large, textColor.dark);
-	//var style2 = new textStyle(fonts.small, textColor.light, 2);
-	//var style3 = new textStyle(fonts.small, textColor.dark);
-	//var textbox = new textBlock(str, style, collisionBox.fromSides(50, 200, 550, 500), [style0, style1, style2, style3]);
-	//textbox.clone().draw();
-	//textbox.bounds.drawOutline(renderContext);
-	
 	printScreen();
+	
+	var dt = performance.now() - lastDrawTime;
+	dtStamps.splice(0, 0, dt);
+	if(dtStamps.length > 30)
+		dtStamps.splice(30);
+	lastDrawTime = performance.now();
+	
+	if(config.showFPS) drawFPS();
+}
+function drawFPS(){
+	textRenderer.drawText(Math.round(getAverageFramerate()).toString(), new vec2(0, 18), new textStyle(fonts.small));
 }
 /// ==================================|----------------|==================================
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global Functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -490,6 +492,21 @@ function saveScores(){
 	log("saved!", logType.success);
 }
 
+function getAverageDTStamp(){
+	if(dtStamps.length > 0){
+		var total = 0;
+		dtStamps.forEach(function(dt){
+			total += dt;
+		});
+		return total / dtStamps.length;
+	}
+	return 1000;
+}
+function getAverageFramerate(){
+	var avfleng = getAverageDTStamp();
+	return 1000 / avfleng;
+}
+
 function setDefaultConfig(){
 	// sets the default game configuration settings
 	config = {
@@ -503,7 +520,8 @@ function setDefaultConfig(){
 		canvasScaleMode: 0,
 		saving: true,
 		arrowIndicators: true,
-		pathIndicators: true
+		pathIndicators: true,
+		showFPS: false
 	};
 }
 function setDefaultControls(){
