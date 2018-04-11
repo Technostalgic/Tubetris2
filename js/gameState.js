@@ -1171,8 +1171,10 @@ class state_gameplayState extends gameState{
 		this.scoreEmphasisAnim = new textAnim_scaleTransform(100, 1.5, 1);
 		this.scoreEmphasisAnim.animType = textAnimType.easeIn;
 		
+		this.initUntil();
 		this.nextTileforms = [];
 		this.generateNextTileforms(4);
+		this.findUntil();
 		//this.generateNextTileforms(0, tileform.getPiece_bomb());
 		//this.generateNextTileforms(0, tileform.getPiece_ball());
 		this.switchGameplayPhase(new phase_placeTileform(this));
@@ -1201,6 +1203,7 @@ class state_gameplayState extends gameState{
 		ptf.setTileform(this.nextTileforms.splice(0, 1)[0], this.currentLevel.tfDropInterval);
 		
 		this.generateNextTileforms();
+		this.decrementUntil();
 		
 		// animation stuff
 		this.anim_HUDNextTileOff = this.timeElapsed;
@@ -1211,6 +1214,41 @@ class state_gameplayState extends gameState{
 			this.currentLevel.getRandomPieces(count)
 		);
 		if(backpiece) this.nextTileforms.push(backpiece);
+	}
+	
+	initUntil(){
+		// initialize the 'until' fields, which keep track of how many tileForms must be used until the
+		// specified peice type comes up
+		this.until = {
+			ball: null,
+			bomb: null
+		};
+	}
+	decrementUntil(){
+		// decrements all the tileform 'until' fields, each time a new piece is gotten, and if any of the
+		// fields reach below zero, the new 'until' counts are searched for
+		log(this.until);
+		var ths = this;
+		var doSearch = false;
+		Object.keys(this.until).forEach(function(key){
+			if(ths.until[key])
+				ths.until[key] -= 1;
+			if(ths.until[key] <= 0 || ths.until[key] == null) doSearch = true;
+		});
+		if(doSearch)
+			this.findUntil();
+	}
+	findUntil(){
+		// finds the amount of tileforms that come before the next ball, and the next bomb, and store those
+		// values in this.until
+		this.initUntil();
+		var ths = this;
+		this.nextTileforms.forEach(function(tf, i){
+			if(tf.hasEntityType(entities.ball))
+				ths.until.ball = i;
+			if(tf.hasEntity(blocks.block_bomb, entities.block))
+				ths.until.bomb = i;
+		});
 	}
 	
 	constructFloatingScoreText(){
@@ -1344,22 +1382,24 @@ class state_gameplayState extends gameState{
 		nplPreRender.draw();
 		
 		// draw tileforms til next ball:
-		var nball = this.currentLevel.ballFrequency % (
-			this.nextTileforms.length + 
-			this.currentLevel.tfTilBall);
+		var nball = this.until.ball;
 		var nballPos = tile.toScreenPos(new vec2(12, 7));
 		var nballLabelPreRender = preRenderedText.fromString("next ball:", nballPos.plus(new vec2(0, -22)), new textStyle(fonts.small));
-		var nballPreRender = preRenderedText.fromString(nball.toString(), nballPos, new textStyle(fonts.large, textColor.green));
 		nballLabelPreRender.draw();
-		nballPreRender.draw();
+		if(nball != null){
+			var nballPreRender = preRenderedText.fromString(nball.toString(), nballPos, new textStyle(fonts.large, textColor.green));
+			nballPreRender.draw();
+		}
 		
 		// draw tileforms til next bomb:
-		var nbomb = 0;
+		var nbomb = this.until.bomb;
 		var nbombPos = tile.toScreenPos(new vec2(12, 9));
 		var nbombLabelPreRender = preRenderedText.fromString("next bomb:", nbombPos.plus(new vec2(0, -22)), new textStyle(fonts.small));
-		var nbombPreRender = preRenderedText.fromString(nbomb.toString(), nbombPos, new textStyle(fonts.large, textColor.red));
 		nbombLabelPreRender.draw();
-		nbombPreRender.draw();
+		if(nbomb != null){
+			var nbombPreRender = preRenderedText.fromString(nbomb.toString(), nbombPos, new textStyle(fonts.large, textColor.red));
+			nbombPreRender.draw();
+		}
 		
 		// ??
 		var bonus = "none";
