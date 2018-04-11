@@ -19,7 +19,7 @@ class level{
 	
 	calculateIncrementors(){
 		// calculates the amount of tiles that need to be placed in order to progress to the next level
-		this.tfTilProgression = 15 + this.difficulty * 5;
+		this.tfTilProgression = 4; //15 + this.difficulty * 5;
 
 		// calculate how quickly the tileform will drop
 		this.tfDropInterval = Math.max(200, 1000 - 40 * this.difficulty);

@@ -1193,7 +1193,10 @@ class state_gameplayState extends gameState{
 	}
 	getNextTileform(){
 		// gets the next tileform and allows the player to control it
-		if(this.currentLevel.isOver && this.nextTileforms.length <= 0) this.endLevel();
+		if(this.currentLevel.isOver && this.nextTileforms.length <= 0) {
+			this.endLevel();
+			return;
+		}
 		
 		if(!this.nextTileforms[0])
 			this.generateNextTileforms();
@@ -1223,6 +1226,7 @@ class state_gameplayState extends gameState{
 		}
 	}
 	endLevel(){
+		this.switchGameplayPhase(new phase_levelComplete(this));
 		this.currentLevel.completeLevel(this);
 		this.updateHUDPreRenders();
 	}
@@ -1936,6 +1940,74 @@ class phase_fellTiles extends gameplayPhase{
 
 	nextPhase(){
 		// check the tile placement and then progress to the next tileform if the gameplayPhase hasn't changed
+		this.parentState.checkTilePlacement();
+		if(this.parentState.phase == this)
+			this.parentState.getNextTileform();
+	}
+}
+// the level complete animation
+class phase_levelComplete extends gameplayPhase{
+	constructor(parentState){
+		super(parentState);
+		this.parentState.killFloatingScoreText();
+		
+		this.startTime = this.parentState.timeElapsed;
+		this.constructPreRender();
+	}
+	
+	constructPreRender(){
+		// creates the preRender and the animations to be drawn
+		var box = new collisionBox(new vec2(), new vec2(10 * tile.tilesize, 4 * tile.tilesize)).setCenter(tile.toScreenPos(new vec2(4.5, 8)));
+		var textblock = new textBlock(
+			"Level " + this.parentState.currentLevel.difficulty + " Complete!", 
+			new textStyle(fonts.large, textColor.green, 2),
+			box, [], 70);
+		
+		// the "Level X Complete!" text preRender
+		this.preRender = preRenderedText.fromBlock(textblock);
+		
+		// determine how much points you earn from completing the level
+		var pts = 500 * this.parentState.currentLevel.difficulty;
+		scoring.addScore(pts);
+		
+		// the "X Points" text preRender
+		this.ptsPreRender = preRenderedText.fromString(pts + " Points", new vec2(box.center.x, box.bottom + 35), new textStyle(fonts.large, textColor.yellow));
+		
+		// the animation of the prerenders' entrance
+		var enterAnim = new textAnim_scaleTransform(300, 0, 1, 0.1);
+		enterAnim.animType = textAnimType.easeOut;
+		
+		// the emphasis animation of the prerenders
+		var anim = new textAnim_yOffset(500, 20, 0.15);
+		var anim2 = new textAnim_rainbow();
+		
+		// the animation of the prerenders' exit
+		var exitAnim = new textAnim_scaleTransform(300, 1, 0, 0.1);
+		exitAnim.animType = textAnimType.easeIn;
+		exitAnim.animDelay = 2500;
+		
+		this.textAnim = new textAnim_compound([enterAnim, exitAnim, anim]);
+		this.ptsAnim = new textAnim_compound([enterAnim, exitAnim, anim2]);
+		
+		this.textAnim.resetAnim();
+		this.ptsAnim.resetAnim();
+	}
+	
+	update(dt){
+		if(this.parentState.timeElapsed > this.startTime + 4000)
+			this.nextPhase();
+	}
+	draw(){
+		this.preRender.animated(this.textAnim).draw();
+		this.ptsPreRender.animated(this.ptsAnim).draw();
+	}
+	
+	controlTap(){
+		this.nextPhase();
+	}
+	
+	nextPhase(){
+		// proceeds to place the first tileform of the next level
 		this.parentState.checkTilePlacement();
 		if(this.parentState.phase == this)
 			this.parentState.getNextTileform();

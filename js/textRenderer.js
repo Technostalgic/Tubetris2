@@ -248,6 +248,12 @@ class textAnim_compound extends textAnim{
 		this.anims = textAnimations; // array of different text animations that are combined to make a compound animation
 	}
 	
+	resetAnim(){
+		this.anims.forEach(function(anim){
+			anim.resetAnim();
+		});
+	}
+	
 	// adds an animation to the anims array
 	addAnimation(anim){
 		this.anims.push(anim);
@@ -350,7 +356,7 @@ class textAnim_scaleTransform extends textAnim{
 	constructor(animLength = 500, minScale = 1, maxScale = 2, charOff = 0){
 		super();
 		
-		this.animType = textAnimType.once;
+		this.animType = textAnimType.linear;
 		this.animLength = animLength;
 		this.animCharOffset = charOff;
 		this.minScale = minScale;
