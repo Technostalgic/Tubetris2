@@ -1173,10 +1173,7 @@ class state_gameplayState extends gameState{
 		
 		this.initUntil();
 		this.nextTileforms = [];
-		this.generateNextTileforms(4);
-		this.findUntil();
-		//this.generateNextTileforms(0, tileform.getPiece_bomb());
-		//this.generateNextTileforms(0, tileform.getPiece_ball());
+		this.generateNextTileforms();
 		this.switchGameplayPhase(new phase_placeTileform(this));
 		
 		//animation stuff
@@ -1193,6 +1190,8 @@ class state_gameplayState extends gameState{
 	}
 	getNextTileform(){
 		// gets the next tileform and allows the player to control it
+		if(this.currentLevel.isOver && this.nextTileforms.length <= 0) this.endLevel();
+		
 		if(!this.nextTileforms[0])
 			this.generateNextTileforms();
 		
@@ -1202,18 +1201,25 @@ class state_gameplayState extends gameState{
 		this.switchGameplayPhase(ptf);
 		ptf.setTileform(this.nextTileforms.splice(0, 1)[0], this.currentLevel.tfDropInterval);
 		
-		this.generateNextTileforms();
 		this.decrementUntil();
+		this.generateNextTileforms();
 		
 		// animation stuff
 		this.anim_HUDNextTileOff = this.timeElapsed;
 	}
-	generateNextTileforms(count = 1, backpiece = null){
+	generateNextTileforms(){
 		// generates a specified amount of tileforms and adds them to this.nextTileforms
-		this.nextTileforms = this.nextTileforms.concat(
-			this.currentLevel.getRandomPieces(count)
-		);
-		if(backpiece) this.nextTileforms.push(backpiece);
+		var c = 1;
+		while(!this.untilHasValues() && !this.currentLevel.isOver){
+			this.nextTileforms = this.nextTileforms.concat(
+				this.currentLevel.getRandomPieces(c)
+			);
+			c++;
+			this.findUntil();
+		}
+	}
+	endLevel(){
+		this.currentLevel.completeLevel(this);
 	}
 	
 	initUntil(){
@@ -1243,12 +1249,21 @@ class state_gameplayState extends gameState{
 		// values in this.until
 		this.initUntil();
 		var ths = this;
-		this.nextTileforms.forEach(function(tf, i){
-			if(tf.hasEntityType(entities.ball))
+		for(let i = this.nextTileforms.length - 1; i >= 0; i --){
+			if(this.nextTileforms[i].hasEntityType(entities.ball))
 				ths.until.ball = i;
-			if(tf.hasEntity(blocks.block_bomb, entities.block))
+			if(this.nextTileforms[i].hasEntity(blocks.block_bomb, entities.block))
 				ths.until.bomb = i;
-		});
+		}
+	}
+	untilHasValues(){
+		// if any of the fields in this.until are null, this function returns false
+		var keys = Object.keys(this.until);
+		for(let i = keys.length - 1; i >= 0; i--){
+			let key = keys[i];
+			if(this.until[key] == null) return false;
+		}
+		return true;
 	}
 	
 	constructFloatingScoreText(){
@@ -1383,23 +1398,21 @@ class state_gameplayState extends gameState{
 		
 		// draw tileforms til next ball:
 		var nball = this.until.ball;
+		if(nball == null) nball = "--";
 		var nballPos = tile.toScreenPos(new vec2(12, 7));
 		var nballLabelPreRender = preRenderedText.fromString("next ball:", nballPos.plus(new vec2(0, -22)), new textStyle(fonts.small));
 		nballLabelPreRender.draw();
-		if(nball != null){
-			var nballPreRender = preRenderedText.fromString(nball.toString(), nballPos, new textStyle(fonts.large, textColor.green));
-			nballPreRender.draw();
-		}
+		var nballPreRender = preRenderedText.fromString(nball.toString(), nballPos, new textStyle(fonts.large, textColor.green));
+		nballPreRender.draw();
 		
 		// draw tileforms til next bomb:
 		var nbomb = this.until.bomb;
+		if(nbomb == null) nbomb = "--";
 		var nbombPos = tile.toScreenPos(new vec2(12, 9));
 		var nbombLabelPreRender = preRenderedText.fromString("next bomb:", nbombPos.plus(new vec2(0, -22)), new textStyle(fonts.small));
 		nbombLabelPreRender.draw();
-		if(nbomb != null){
-			var nbombPreRender = preRenderedText.fromString(nbomb.toString(), nbombPos, new textStyle(fonts.large, textColor.red));
-			nbombPreRender.draw();
-		}
+		var nbombPreRender = preRenderedText.fromString(nbomb.toString(), nbombPos, new textStyle(fonts.large, textColor.red));
+		nbombPreRender.draw();
 		
 		// ??
 		var bonus = "none";

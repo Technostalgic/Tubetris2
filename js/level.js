@@ -14,11 +14,12 @@ class level{
 		
 		this.goldLikenessInterval = 0;
 		this.tfTilBall = this.ballFrequency;
+		this.isOver = false;
 	}
 	
 	calculateIncrementors(){
 		// calculates the amount of tiles that need to be placed in order to progress to the next level
-		this.tfTilProgression = 50 + this.difficulty * 5;
+		this.tfTilProgression = 15 + this.difficulty * 5;
 
 		// calculate how quickly the tileform will drop
 		this.tfDropInterval = Math.max(200, 1000 - 40 * this.difficulty);
@@ -97,22 +98,42 @@ class level{
 		return c;
 	}
 	getRandomPieces(count = 1){
+		// returns a random set of tileforms that adhere to the level's theme
+		// returns nothing if level is over
+		if(this.isOver) return [];
 		var r = [];
+		
+		// iterates until the count reaches zero
 		while(count > 0){
+			// if the level is over or on the last piece, break the loop
+			if(this.tfTilProgression <= 1) break;
+			
+			// pushes a ball object to the set if the ball countdown is completed
 			if(this.tfTilBall <= 0){
 				this.tfTilBall = Math.max(this.ballFrequency, 1);
 				r.push(tileform.getPiece_ball(this.getRandomColor()));
 				continue;
 			}
 			
+			// push a random piece to the set
 			let m = tileform.getPiece_random(this.getRandomColor());
-			m.setColor(this.getRandomColor());
+			if(m.hasEntityType(entities.tube))
+				m.setColor(this.getRandomColor());
 			r.push(m);
 			
+			// decrement the counter variables
 			this.tfTilProgression--;
 			this.tfTilBall--;
 			count--;
 		}
+		if(count > 0 && this.tfTilProgression == 1){
+			r.push(tileform.getPiece_ball(balls.gold));
+			this.tfTilProgression--;
+			this.tfTilBall--;
+			count--;
+		}
+		if(this.tfTilProgression <= 0)
+			this.isOver = true;
 		return r;
 	}
 
