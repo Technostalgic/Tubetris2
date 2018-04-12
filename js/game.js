@@ -11,8 +11,7 @@
 var debug = true;
 	localStorageEnabled = true;
 	timeElapsed = 0;
-	lastDrawTime = 0;
-	dtStamps = [];
+	tStamps = [];
 
 var config = {},
 	scores = {};
@@ -271,18 +270,12 @@ function draw(){
 	
 	gameState.current.draw();
 	
+	if(config.showFPS) drawFPS();
 	printScreen();
 	
-	var dt = performance.now() - lastDrawTime;
-	dtStamps.splice(0, 0, dt);
-	if(dtStamps.length > 30)
-		dtStamps.splice(30);
-	lastDrawTime = performance.now();
-	
-	if(config.showFPS) drawFPS();
-}
-function drawFPS(){
-	textRenderer.drawText(Math.round(getAverageFramerate()).toString(), new vec2(0, 18), new textStyle(fonts.small));
+	var now = [performance.now()]
+	tStamps.push(now);
+	while(tStamps[0] < now - 1000) tStamps.splice(0, 1);
 }
 /// ==================================|----------------|==================================
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global Functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -494,21 +487,6 @@ function saveScores(){
 	localStorage.setItem(storageKeys.scoreboard, dataStr);
 	
 	log("saved!", logType.success);
-}
-
-function getAverageDTStamp(){
-	if(dtStamps.length > 0){
-		var total = 0;
-		dtStamps.forEach(function(dt){
-			total += dt;
-		});
-		return total / dtStamps.length;
-	}
-	return 1000;
-}
-function getAverageFramerate(){
-	var avfleng = getAverageDTStamp();
-	return 1000 / avfleng;
 }
 
 function setDefaultConfig(){
@@ -863,6 +841,9 @@ function startNewGame(){
 	gameState.switchState(state);
 }
 
+function drawFPS(){
+	textRenderer.drawText(tStamps.length.toString(), new vec2(10, 10), new textStyle(fonts.small));
+}
 function drawBackground(){
 	// draws the tiled backgroumd image onto the canvas
 	drawImage(renderContext, gfx.background, new vec2());
