@@ -318,6 +318,8 @@ class tile{
 	static explodeAt(pos, earnpoints = true){
 		// causes a destructive explosion at the specified position
 		effect.createExplosion(tile.toScreenPos(pos));
+		audioMgr.playSound(sfx.explosion);
+
 		var tilesDestroyed = 0;
 		for(let y = pos.y - 1; y <= pos.y + 1; y++){
 			for(let x = pos.x - 1; x <= pos.x + 1; x++){
@@ -403,6 +405,9 @@ class tile{
 			this.tag();
 		ball.destroy();
 	}
+	static DST_normal(self){
+		audioMgr.playSound(sfx.burst);
+	}
 	static DST_bomb(self){
 		// the custom destroy method for bombs
 		tile.explodeAt(self.gridPos);
@@ -424,11 +429,13 @@ class tile{
 		
 		switch(entityType){
 			case entities.tube:
+				this.m_destroy = tile.DST_normal;
 				break;
-			case entities.ball: 
+			case entities.ball:
 				this.m_checkPlacement = tile.CP_ball;
 				break;
 			case entities.block:
+				this.m_destroy = tile.DST_normal;
 				if(this.entityID == blocks.block_bomb){
 					this.m_checkPlacement = tile.CP_bomb;
 					this.m_rollThrough = tile.RT_bomb;
@@ -437,6 +444,7 @@ class tile{
 				break;
 			default: 
 				this.m_rollThrough = tile.RT_normal;
+				this.m_destroy = tile.DST_normal;
 				break;
 		}
 	}
@@ -851,6 +859,8 @@ class tileform{
 		
 		// applies the movement
 		this.translate(vec2.fromSide(dir));
+
+		audioMgr.playSound(sfx.bump);
 	}
 	bumpDown(){
 		// bumps the tileform downward if possible, otherwise sets it in place
@@ -891,6 +901,8 @@ class tileform{
 			this.translate(dtlPos);
 		}
 		
+		audioMgr.playSound(sfx.bump);
+
 		//animation stuff for smooth rotation
 		this.animOffset_rotate = gameState.current.timeElapsed;
 		this.lastDrawRot = Math.PI / 2 * (dir == 1 ? -1 : 1);
@@ -904,6 +916,7 @@ class tileform{
 	
 	setInPlace(){
 		// sets each tile in the tileform and applies it to the tile grid
+		audioMgr.playSound(sfx.placeTileform);
 		var ths = this;
 		this.tiles.forEach(function(tileOb){
 			let tpos = tileOb.gridPos.plus(ths.gridPos);
