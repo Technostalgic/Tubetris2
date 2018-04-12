@@ -19,7 +19,7 @@ class level{
 	
 	calculateIncrementors(){
 		// calculates the amount of tiles that need to be placed in order to progress to the next level
-		this.tfTilProgression = 4; //15 + this.difficulty * 5;
+		this.tfTilProgression = 15 + this.difficulty * 5;
 
 		// calculate how quickly the tileform will drop
 		this.tfDropInterval = Math.max(200, 1000 - 40 * this.difficulty);
@@ -42,10 +42,10 @@ class level{
 
 		// on level 15 there will be all 4 colors in the theme
 		if(dif >= 15)
-			this.theme.splice(0, 0, tubeColors.grey);
+		thm.splice(0, 0, tubeColors.grey);
 		// on levels after 5 there will be only 3 colors but one of them will be replaced with grey, which yeilds the least points
 		else if(dif > 5)
-			this.theme[Math.floor(Math.random() * this.theme.length)] = tubeColors.grey;
+		thm[Math.floor(Math.random() * thm.length)] = tubeColors.grey;
 		
 		this.goldFrequency = 0.2 / (1 + this.difficulty / 5);
 		
