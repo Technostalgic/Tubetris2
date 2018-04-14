@@ -1083,6 +1083,7 @@ class state_pauseMenu extends state_menuState{
 	}
 	resume(){
 		gameState.switchState(this.resumeState);
+		audioMgr.resumeMusic();
 	}
 }
 // the screen that displays when the player loses
@@ -1354,12 +1355,15 @@ class state_gameplayState extends gameState{
 		var pauseState = new state_pauseMenu();
 		pauseState.setResumeState(this);
 		gameState.switchState(pauseState);
+		
+		audioMgr.pauseMusic();
 	}
 	loseGame(){
 		// called when the player loses a game
 		log("Game Ended", logType.notify);
 		
 		this.switchGameplayPhase(new phase_gameOver());
+		audioMgr.stopMusic();
 	}
 	
 	update(dt){
