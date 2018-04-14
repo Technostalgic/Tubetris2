@@ -329,6 +329,9 @@ function loadSFX(){
 	loadSound("explosion", "explosion.wav");
 	loadSound("bump", "bump.wav");
 	loadSound("placeTileform", "placeTileform.wav");
+	loadSound("ballRoll", "ballRoll.wav");
+	loadSound("ballDirect", "ballDirect.wav");
+	loadSound("ballPause", "ballPause.wav");
 	
 	log(Object.keys(sfx).length.toString() + " sounds indexed", logType.notify);
 }

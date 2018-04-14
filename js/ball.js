@@ -60,6 +60,7 @@ class ball{
 		this.state = ballStates.choosing;
 		if(this.nextPos)
 			this.gridPos = this.nextPos.clone();
+		audioMgr.playSound(sfx.ballRoll);
 	}
 	move(){
 		// moves the ball to it's nextPos
@@ -100,6 +101,7 @@ class ball{
 		this.findPauseDirections();
 		if(config.pathIndicators)
 			this.findPausePaths();
+		audioMgr.playSound(sfx.ballPause);
 	}
 	findPauseDirections(){
 		// get the unblocked directions at the current tile
@@ -216,6 +218,7 @@ class ball{
 				break;
 			}
 		}
+		audioMgr.playSound(sfx.ballRoll);
 	}
 	
 	chooseNextTravelDir(){
@@ -279,6 +282,7 @@ class ball{
 		
 		if(this.isVirtual) return;
 		effect.createPoof(this.drawPos);
+		audioMgr.playSound(sfx.burst);
 	}
 	
 	draw(){
