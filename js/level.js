@@ -65,11 +65,11 @@ class level{
 		
 		// lower bomb frequency as level difficulty progresses
 		if(dif > 5)
-			bombFrequency -= 0.01;
+			this.bombFrequency -= 0.01;
 		if(dif > 10)
-			bombFrequency -= 0.025;
+			this.bombFrequency -= 0.025;
 		if(dif > 15)
-			bombFrequency -= 0.04
+			this.bombFrequency -= 0.04
 		
 		// lower ball frequency as level difficulty increases (ball frequency variable represents 
 		// the amount of tileforms between each ball)
