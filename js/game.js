@@ -20,7 +20,8 @@ var effects = [];
 	
 var fonts = {},
 	gfx = {},
-	sfx = {};
+	sfx = {},
+	music = {};
 	
 // canvas and contexts
 var renderTarget,
@@ -142,6 +143,19 @@ function loadSound(assetname, filename){
 	log(out, logType.unimportant);
 	return r;
 }
+function loadTrack(assetname, filename){
+	// downloads the specified music asset to the client
+	var out = "load track '" + filename + "'... ";
+	var r = new Audio("sfx/music/" + filename);
+	
+	// sets flags when done loading so that the game knows when the assets are finished loading
+	r.oncanplay = function(e){ this.loadedState = 1; };
+	r.onerror = function(e){ this.loadedState = e; };
+
+	music[assetname] = r;
+
+	log(out, logType.unimportant);
+}
 
 function clearScreen(color = "#aaa"){
 	// clears the screen to a solid color
@@ -238,6 +252,7 @@ function loadAssets(){
 	loadFonts();
 	loadGFX();
 	loadSFX();
+	loadMusic();
 	
 	log("waiting for assets to finish downloading... ");
 	// enters a recursive callback to check to see if the assets are finished loading 
@@ -334,6 +349,15 @@ function loadSFX(){
 	loadSound("ballPause", "ballPause.wav");
 	
 	log(Object.keys(sfx).length.toString() + " sounds indexed", logType.notify);
+}
+function loadMusic(){
+	// downloads the all the needed music tracks from the server to the client
+	log("loading music... ");
+	
+	// load tracks
+	loadTrack("modern", "modern.mp3");
+
+	log(Object.keys(sfx).length.toString() + " tracks indexed", logType.notify);
 }
 function loadConfig(){
 	// loads the game configuration from localStorage
@@ -811,6 +835,15 @@ function assetLoadingFinishCheck(){
 		else if (sfx[i].loadedState != 1)
 			errs.push({ obj: gfx[i], varName: "sfx." + i });
 	}
+	for(let i in music){
+		if(!music[i].loadedState){
+			setTimeout(assetLoadingFinishCheck, 100);
+			return false;
+		}
+		// if there is an error loading the asset, it is added to the errs array 
+		else if (music[i].loadedState != 1)
+			errs.push({ obj: gfx[i], varName: "music." + i });
+	}
 	
 	finishLoading(errs);
 	return true;
@@ -841,6 +874,7 @@ function startNewGame(){
 	currentScore = 0;
 	ballScore = 0;
 	
+	audioMgr.playMusic(music.modern);
 	gameState.switchState(state);
 }
 
