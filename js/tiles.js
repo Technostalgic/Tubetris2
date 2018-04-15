@@ -320,15 +320,23 @@ class tile{
 		effect.createExplosion(tile.toScreenPos(pos));
 		audioMgr.playSound(sfx.explosion);
 
+		// iterate through the 9 tiles the explosion covers centered at the specified tile pos
 		var tilesDestroyed = 0;
 		for(let y = pos.y - 1; y <= pos.y + 1; y++){
 			for(let x = pos.x - 1; x <= pos.x + 1; x++){
+				// ignore out of bounds positions
 				if(tile.isOutOfBounds(x, y)) continue;
 				var ttile = tile.at(x, y);
 				if(!ttile.isEmpty()){
 					if(gameState.current.phase instanceof phase_destroyTaggedTiles){
-						if(ttile.isEntity(blocks.block_bomb, entities.block))
+						// if the tile is a bomb, set it to be detonated next
+						if(ttile.isEntity(blocks.block_bomb, entities.block)){
+							// if the tile is already set to be detonated, ignore it
+							if(gameState.current.phase.tilesTagged.includes(ttile))
+								continue;
 							gameState.current.phase.tilesTagged.push(ttile);
+						}
+						// destroy the tile and add to the destruction counter
 						else ttile.destroy();
 						tilesDestroyed += 1;
 					}
@@ -340,6 +348,7 @@ class tile{
 			}
 		}
 		
+		// earn points based on how many tiles were destroyed
 		if(earnpoints)
 			scoring.addScore(100 + tilesDestroyed * 50, tile.toScreenPos(pos), scoreTypes.bonus);
 	}
@@ -366,7 +375,6 @@ class tile{
 			let ttile = tile.at(npos);
 			if(ttile.isEntity(blocks.block_bomb, entities.block)){
 				enterDestMode = true;
-				tagblocks.push(ttile);
 			}
 		});
 		
@@ -569,8 +577,6 @@ class tileform{
 			"getPiece_L1",
 			"getPiece_Z0",
 			"getPiece_Z1",
-			"getPiece_bomb",
-			"getPiece_brick"
 		];
 		var i = Math.floor(r.length * Math.random());
 		

@@ -54,22 +54,22 @@ class level{
 	}
 	calculateBlockFrequency(){
 		var dif = this.difficulty;
-		this.bombFrequency = 0.2;
+		this.bombFrequency = 0.15;
 		this.brickFrequency = 0;
 		this.ballFrequency = 5;
 		
 		// higher brick frequency as level difficulty increases
-		this.brickFrequency = Math.min(dif - 1 / 40, 0.25);
+		this.brickFrequency = Math.min((dif - 1) / 100, 0.175);
 		if(this.brickFrequency >= 20)
-			this.brickFrequency = 0.3;
+			this.brickFrequency = 0.2;
 		
 		// lower bomb frequency as level difficulty progresses
 		if(dif > 5)
-			this.bombFrequency -= 0.01;
-		if(dif > 10)
-			this.bombFrequency -= 0.025;
-		if(dif > 15)
-			this.bombFrequency -= 0.04
+			this.bombFrequency = 0.135;
+		else if(dif > 10)
+			this.bombFrequency = 0.125;
+		else if(dif > 15)
+			this.bombFrequency = 0.10;
 		
 		// lower ball frequency as level difficulty increases (ball frequency variable represents 
 		// the amount of tileforms between each ball)
@@ -122,7 +122,22 @@ class level{
 			}
 			
 			// push a random piece to the set
-			let m = tileform.getPiece_random(this.getRandomColor());
+			let m;
+			let blf = this.bombFrequency + this.brickFrequency;
+			let fd = Math.random();
+			
+			// allows 'm' to be set to a randomly selected piece according to the specified block frequency values 
+			// for this level
+			if(fd <= blf){
+				if(fd <= this.bombFrequency)
+					m = tileform.getPiece_bomb();
+				else 
+					m = tileform.getPiece_brick();
+			}
+			else
+				m = tileform.getPiece_random(this.getRandomColor());
+			
+			log(m);
 			if(m.hasEntityType(entities.tube))
 				m.setColor(this.getRandomColor());
 			r.push(m);
