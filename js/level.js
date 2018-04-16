@@ -54,7 +54,7 @@ class level{
 	}
 	calculateBlockFrequency(){
 		var dif = this.difficulty;
-		this.bombFrequency = 0.15;
+		this.bombFrequency = 0.45;
 		this.brickFrequency = 0;
 		this.ballFrequency = 5;
 		

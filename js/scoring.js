@@ -58,48 +58,57 @@ class scoring{
 	static createScoreSplashEffect(value, pos, scoreType = scoreTypes.roll){
 		// creates splash text at the specified pos
 		
-		var anim = null;
-		var style = textStyle.getDefault();
+		var style = scoring.getScoreStyle(value, scoreType);
+		
 		var time = 500 + Math.min(value * 2, 500);
+		if(scoreType == scoreTypes.bonus)
+			time += 250;
+		
+		var splash = splashText.build(value.toString(), pos, time, style, style.anim);
+		splash.add();
+	}
+	static getScoreStyle(score, scoreType = scoreTypes.roll){
+		// gets a textStyle appropriate for the specified score
+		var style = textStyle.getDefault();
+		var anim = null;
 		
 		switch(scoreType){
 			case scoreTypes.roll:
 				style.font = fonts.small;
 				style.scale = 2;
-				if(value >= 150){
+				if(score >= 150){
 					anim = new textAnim_rainbow(400, 0.1);
 					style.color = textColor.green;
 				}
-				else if(value >= 50)
+				else if(score >= 50)
 					style.color = textColor.cyan;
 				break;
 			case scoreTypes.pop:
 				style.font = fonts.small;
-				if(value >= 150)
+				if(score >= 150)
 					anim = new textAnim_rainbow(400, 0.1);
-				else if(value >= 120)
+				else if(score >= 120)
 					anim = new textAnim_blink(100, 0, textColor.yellow);
-				if(value >= 100)
+				if(score >= 100)
 					style.scale = 2;
-				if(value >= 80)
+				if(score >= 80)
 					style.color = textColor.green;
-				else if(value >= 40)
+				else if(score >= 40)
 					style.color = textColor.cyan;
 				break;
 			case scoreTypes.bonus:
-				time += 250;
-				if(value >= 1000)
+				if(score >= 1000)
 					anim = new textAnim_rainbow(400, 0.1);
-				else if(value >= 750)
+				else if(score >= 750)
 					anim = new textAnim_blink(300, 0.2, textColor.yellow);
-				if(value >= 500)
+				if(score >= 500)
 					style.color = textColor.green;
-				else if(value >= 100)
+				else if(score >= 100)
 					style.color = textColor.cyan;
 				break;
 		}
 		
-		var splash = splashText.build(value.toString(), pos, time, style, anim);
-		splash.add();
+		style.anim = anim;
+		return style;
 	}
 }

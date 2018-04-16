@@ -1325,6 +1325,10 @@ class state_gameplayState extends gameState{
 		}
 		if(newphase instanceof phase_placeTileform)
 			this.currentBallScore = 0;
+		if(newphase instanceof phase_destroyTaggedTiles)
+			if(this.phase.bombsDetonated)
+				newphase.bombsDetonated = this.phase.bombsDetonated;
+		
 		newphase.parentState = this;
 		this.phase = newphase;
 	}
@@ -1838,6 +1842,7 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		// enters the next gameplay phase
 		var phase = new phase_fellTiles(this.parentState);
 		phase.setFallHeights(this.fallHeights);
+		phase.bombsDetonated = this.bombsDetonated;
 		this.parentState.switchGameplayPhase(phase);
 	}
 }
@@ -1849,7 +1854,8 @@ class phase_fellTiles extends gameplayPhase{
 		this.fallHeights = [];
 		this.fallingTiles = null;
 		this.fallOffset = 0;
-
+		this.bombsDetonated = 0;
+		
 		this.lastOffReset = this.parentState.timeElapsed;
 	}
 	
@@ -1923,6 +1929,30 @@ class phase_fellTiles extends gameplayPhase{
 		this.fallOffset = Math.min(this.fallOffset, 1);
 	}
 	
+	doBombBonus(){
+		// gives the player extra points for detonating multiple bombs
+		var bombs = this.bombsDetonated;
+		this.bombsDetonated = 0;
+		
+		if(bombs < 2) return;
+		
+		var pts = bombs;
+		if(bombs < 3)
+			pts *= 200;
+		else if(bombs < 5)
+			pts *= 250;
+		else pts *= 300;
+		
+		var tpos = tile.toScreenPos(new vec2(4.5, 10));
+		var splashtext = splashText.build(bombs + "x Chain Reaction!", tpos, 1000, new textStyle(fonts.large, textColor.red));
+		var scoretext = splashText.build(pts + " pts", tpos.plus(new vec2(0, tile.tilesize)), 1000, scoring.getScoreStyle(pts, scoreTypes.bonus));
+		scoretext.animLength = 500;
+		splashtext.animLength = 500;
+		scoretext.add();
+		splashtext.add();
+		
+		scoring.addScore(pts);
+	}
 	setFallHeights(heights){
 		this.fallHeights = heights;
 	}
@@ -1947,6 +1977,9 @@ class phase_fellTiles extends gameplayPhase{
 		this.parentState.checkTilePlacement();
 		if(this.parentState.phase == this)
 			this.parentState.getNextTileform();
+		
+		if(this.bombsDetonated)
+			this.doBombBonus();
 	}
 }
 // the level complete animation
