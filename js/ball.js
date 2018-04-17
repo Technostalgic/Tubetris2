@@ -60,6 +60,7 @@ class ball{
 		this.state = ballStates.choosing;
 		if(this.nextPos)
 			this.gridPos = this.nextPos.clone();
+		
 		audioMgr.playSound(sfx.ballRoll);
 	}
 	move(){
@@ -101,6 +102,7 @@ class ball{
 		this.findPauseDirections();
 		if(config.pathIndicators)
 			this.findPausePaths();
+		
 		audioMgr.playSound(sfx.ballPause);
 	}
 	findPauseDirections(){
@@ -223,7 +225,8 @@ class ball{
 	
 	chooseNextTravelDir(){
 		// decides which way the ball will go next
-		var unblocked = tile.at(this.gridPos).getUnblockedSides();
+		var ttile = tile.at(this.gridPos);
+		var unblocked = ttile.getUnblockedSides();
 		var tdir;
 		
 		// if it's travel direction isn't none (which only ever happens on the first ball physics tick), 
@@ -236,6 +239,12 @@ class ball{
 			}
 		}
 		else this.travelDir = side.down;
+		
+		// if the ball comes to a 4 way intersection, pause it
+		if(ttile.isEntity(tubes.quad)){
+			this.pause();
+			return;
+		}
 		
 		// remove the opposite of the previous travelDirection from the array of possible travel directions
 		for(var i = unblocked.length; i >= 0; i--){
