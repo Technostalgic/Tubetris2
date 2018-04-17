@@ -581,12 +581,16 @@ class tileform{
 	
 	static getPiece_random(color = null){
 		var r = [
-			"getPiece_square",
-			"getPiece_straight",
+			"getPiece_square0",
+			"getPiece_square1",
+			"getPiece_straight0",
+			"getPiece_straight1",
 			"getPiece_L0",
 			"getPiece_L1",
 			"getPiece_Z0",
 			"getPiece_Z1",
+			"getPiece_T0",
+			"getPiece_T1",
 		];
 		var i = Math.floor(r.length * Math.random());
 		
@@ -598,7 +602,7 @@ class tileform{
 		return t;
 	}
 	
-	static getPiece_square(){
+	static getPiece_square0(){
 		var r = new tileform();
 		r.anchoredRotation = true;
 		r.tiles = [
@@ -609,13 +613,34 @@ class tileform{
 		];
 		return r;
 	}
-	static getPiece_straight(){
+	static getPiece_square1(){
+		var r = new tileform();
+		r.anchoredRotation = true;
+		r.tiles = [
+			tile.fromData(new vec2(0, 0), tubes.quad),
+			tile.fromData(new vec2(1, 0), tubes.L_upLeft),
+			tile.fromData(new vec2(1, -1), tubes.quad),
+			tile.fromData(new vec2(0, -1), tubes.L_downRight)
+		];
+		return r;
+	}
+	static getPiece_straight0(){
 		var r = new tileform();
 		r.tiles = [
 			tile.fromData(new vec2(-1, 0), tubes.T_horizontalDown),
 			tile.fromData(new vec2(0, 0), tubes.T_horizontalUp),
 			tile.fromData(new vec2(1, 0), tubes.T_horizontalDown),
 			tile.fromData(new vec2(2, 0), tubes.T_horizontalUp)
+		];
+		return r;
+	}
+	static getPiece_straight1(){
+		var r = new tileform();
+		r.tiles = [
+			tile.fromData(new vec2(-1, 0), tubes.quad),
+			tile.fromData(new vec2(0, 0), tubes.S_horizontal),
+			tile.fromData(new vec2(1, 0), tubes.S_horizontal),
+			tile.fromData(new vec2(2, 0), tubes.quad)
 		];
 		return r;
 	}
@@ -658,6 +683,26 @@ class tileform{
 			tile.fromData(new vec2(0, 0), tubes.L_upLeft),
 			tile.fromData(new vec2(0, -1), tubes.T_horizontalDown),
 			tile.fromData(new vec2(1, -1), tubes.L_downLeft)
+		];
+		return r;
+	}
+	static getPiece_T0(){		
+		var r = new tileform();
+		r.tiles = [
+			tile.fromData(new vec2(0, -1), tubes.T_horizontalDown),
+			tile.fromData(new vec2(-1, 0), tubes.T_horizontalUp),
+			tile.fromData(new vec2(0, 0), tubes.quad),
+			tile.fromData(new vec2(1, 0), tubes.T_horizontalUp)
+		];
+		return r;
+	}
+	static getPiece_T1(){		
+		var r = new tileform();
+		r.tiles = [
+			tile.fromData(new vec2(0, -1), tubes.S_vertical),
+			tile.fromData(new vec2(-1, 0), tubes.T_horizontalDown),
+			tile.fromData(new vec2(0, 0), tubes.quad),
+			tile.fromData(new vec2(1, 0), tubes.T_horizontalDown)
 		];
 		return r;
 	}
