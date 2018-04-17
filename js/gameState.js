@@ -1474,7 +1474,7 @@ class state_gameplayState extends gameState{
 		this.drawNextTileform(-off * animScale + animScale);
 	}
 	drawPrevNextTileform(off){
-		// draws the previous "nextTileform" (aka the current tileform) being animated off the screen
+		// draws the previous "nextTileform" (aka the current tileform) being animated off the HUD
 		if(!this.phase.currentTileform) return;
 		
 		off = new vec2(0, off);
@@ -1936,6 +1936,7 @@ class phase_fellTiles extends gameplayPhase{
 		
 		if(bombs < 2) return;
 		
+		// calculate amount of points earned from the combo
 		var pts = bombs;
 		if(bombs < 3)
 			pts *= 200;
@@ -1943,9 +1944,10 @@ class phase_fellTiles extends gameplayPhase{
 			pts *= 250;
 		else pts *= 300;
 		
+		// construct the splash text to notify the player of the combo
 		var tpos = tile.toScreenPos(new vec2(4.5, 10));
-		var splashtext = splashText.build(bombs + "x Chain Reaction!", tpos, 1000, new textStyle(fonts.large, textColor.red));
-		var scoretext = splashText.build(pts + " pts", tpos.plus(new vec2(0, tile.tilesize)), 1000, scoring.getScoreStyle(pts, scoreTypes.bonus));
+		var splashtext = splashText.build(bombs + "x Chain Reaction!", tpos, 2000, new textStyle(fonts.large, textColor.red), new textAnim_blink(250, 0, textColor.yellow));
+		var scoretext = splashText.build(pts + " pts", tpos.plus(new vec2(0, tile.tilesize)), 2000, scoring.getScoreStyle(pts, scoreTypes.bonus));
 		scoretext.animLength = 500;
 		splashtext.animLength = 500;
 		scoretext.add();
@@ -1994,7 +1996,7 @@ class phase_levelComplete extends gameplayPhase{
 	
 	constructPreRender(){
 		// creates the preRender and the animations to be drawn
-		var box = new collisionBox(new vec2(), new vec2(10 * tile.tilesize, 4 * tile.tilesize)).setCenter(tile.toScreenPos(new vec2(4.5, 8)));
+		var box = new collisionBox(new vec2(), new vec2(10 * tile.tilesize, 4 * tile.tilesize)).setCenter(tile.toScreenPos(new vec2(4.5, 5)));
 		var textblock = new textBlock(
 			"Level " + this.parentState.currentLevel.difficulty + " Complete!", 
 			new textStyle(fonts.large, textColor.green, 2),
@@ -2018,7 +2020,7 @@ class phase_levelComplete extends gameplayPhase{
 		var anim = new textAnim_yOffset(500, 20, 0.15);
 		var anim2 = new textAnim_rainbow();
 		
-		// the animation of the prerenders' exit
+		// the animation of the prerenders' exits
 		var exitAnim = new textAnim_scaleTransform(300, 1, 0, 0.1);
 		exitAnim.animType = textAnimType.easeIn;
 		exitAnim.animDelay = 2500;

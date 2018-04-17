@@ -19,7 +19,7 @@ class level{
 	
 	calculateIncrementors(){
 		// calculates the amount of tiles that need to be placed in order to progress to the next level
-		this.tfTilProgression = 15 + this.difficulty * 5;
+		this.tfTilProgression = 5//15 + this.difficulty * 5;
 
 		// calculate how quickly the tileform will drop
 		this.tfDropInterval = Math.max(200, 1000 - 40 * this.difficulty);
@@ -27,6 +27,7 @@ class level{
 			this.tfDropInterval = Math.max(150, this.tfDropInterval - (this.difficulty - 20) * 10);
 	}
 	calculateTheme(){
+		// calculates the different tube colors that the level will use
 		var dif = this.difficulty;
 		
 		// on the first level there will only be 1 color
@@ -53,6 +54,7 @@ class level{
 		return this.theme;
 	}
 	calculateBlockFrequency(){
+		// calculates the level's frequency that the different types of blocks appear
 		var dif = this.difficulty;
 		this.bombFrequency = 0.45;
 		this.brickFrequency = 0;
