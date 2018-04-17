@@ -57,6 +57,7 @@ class tile{
 		this.setEntity(entities.none, entities.none);
 		this.tintColor = new color();
 		this.tileVariant = -1;
+		this.item = null;
 	}
 	
 	static fromData(pos, entityID, entityType = entities.tube){
@@ -489,6 +490,10 @@ class tile{
 		if(this.entityType != entities.tube) return;
 		this.tileVariant = tubecolor;
 	}
+	setItem(itemOb){
+		itemOb.setToTile(this);
+	}
+	
 	place(pos = null){
 		if(pos) this.gridPos = pos;
 		tile.setTileAt(this, this.gridPos);
@@ -509,6 +514,8 @@ class tile{
 		this.m_checkPlacement(this);
 	}
 	rollThrough(ballOb = null){
+		if(this.item)
+			this.item.activate();
 		this.m_rollThrough(this, ballOb);
 	}
 	
@@ -545,6 +552,9 @@ class tile{
 		sprite.bounds.pos = pos;
 		if(rotation) sprite.rotation = rotation;
 		sprite.draw();
+		
+		if(this.item)
+			this.item.draw(pos.plus(new vec2(tile.tilesize / 2)));
 	}
 	drawTintAtScreenPos(pos){
 		this.tintColor.setFill();

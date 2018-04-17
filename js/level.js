@@ -139,9 +139,11 @@ class level{
 			else
 				m = tileform.getPiece_random(this.getRandomColor());
 			
-			log(m);
 			if(m.hasEntityType(entities.tube))
 				m.setColor(this.getRandomColor());
+			
+			m.tiles[Math.floor(Math.random() * m.tiles.length)].setItem(new item())
+			
 			r.push(m);
 			
 			// decrement the counter variables
