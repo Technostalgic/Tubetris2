@@ -19,7 +19,7 @@ class level{
 	
 	calculateIncrementors(){
 		// calculates the amount of tiles that need to be placed in order to progress to the next level
-		this.tfTilProgression = 5//15 + this.difficulty * 5;
+		this.tfTilProgression = 15 + this.difficulty * 5;
 
 		// calculate how quickly the tileform will drop
 		this.tfDropInterval = Math.max(200, 1000 - 40 * this.difficulty);
@@ -56,7 +56,7 @@ class level{
 	calculateBlockFrequency(){
 		// calculates the level's frequency that the different types of blocks appear
 		var dif = this.difficulty;
-		this.bombFrequency = 0.45;
+		this.bombFrequency = 0.15;
 		this.brickFrequency = 0;
 		this.ballFrequency = 5;
 		
