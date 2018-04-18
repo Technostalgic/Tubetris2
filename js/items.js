@@ -40,8 +40,6 @@ class item{
 	
 	draw(pos){
 		// draws the item at the specified position
-		var colbox = new collisionBox(new vec2(), new vec2(16)).setCenter(pos);
-		colbox.drawFill(renderContext, "rgba(255,255,255,0.5)");
-		colbox.drawOutline(renderContext, "#FFF");
+		drawCenteredImage(renderContext, gfx.items_backdrop, pos);
 	}
 }
