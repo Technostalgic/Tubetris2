@@ -94,6 +94,9 @@ class ball{
 		// tags the specified tile
 		this.tilesTagged.push(tileOb);
 		tileOb.rollThrough(this);
+
+		// if the tile has an item, activate the item
+		if(tileOb.item) tileOb.item.activate();
 	}
 	
 	pause(){

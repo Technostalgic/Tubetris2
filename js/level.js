@@ -131,10 +131,8 @@ class level{
 			// allows 'm' to be set to a randomly selected piece according to the specified block frequency values 
 			// for this level
 			if(fd <= blf){
-				if(fd <= this.bombFrequency)
-					m = tileform.getPiece_bomb();
-				else 
-					m = tileform.getPiece_brick();
+				if(fd <= this.bombFrequency) m = tileform.getPiece_bomb();
+				else m = tileform.getPiece_brick();
 			}
 			else
 				m = tileform.getPiece_random(this.getRandomColor());
@@ -142,7 +140,7 @@ class level{
 			if(m.hasEntityType(entities.tube))
 				m.setColor(this.getRandomColor());
 			
-			m.tiles[Math.floor(Math.random() * m.tiles.length)].setItem(new item())
+			m.tiles[Math.floor(Math.random() * m.tiles.length)].setItem(item.getItem_random())
 			
 			r.push(m);
 			

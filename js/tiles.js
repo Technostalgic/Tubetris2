@@ -514,8 +514,6 @@ class tile{
 		this.m_checkPlacement(this);
 	}
 	rollThrough(ballOb = null){
-		if(this.item)
-			this.item.activate();
 		this.m_rollThrough(this, ballOb);
 	}
 	
@@ -686,7 +684,7 @@ class tileform{
 		];
 		return r;
 	}
-	static getPiece_T0(){		
+	static getPiece_T0(){
 		var r = new tileform();
 		r.tiles = [
 			tile.fromData(new vec2(0, -1), tubes.T_horizontalDown),
@@ -696,7 +694,7 @@ class tileform{
 		];
 		return r;
 	}
-	static getPiece_T1(){		
+	static getPiece_T1(){
 		var r = new tileform();
 		r.tiles = [
 			tile.fromData(new vec2(0, -1), tubes.S_vertical),
