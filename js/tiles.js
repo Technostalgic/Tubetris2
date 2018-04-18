@@ -58,6 +58,7 @@ class tile{
 		this.tintColor = new color();
 		this.tileVariant = -1;
 		this.item = null;
+		this.tagged = false;
 	}
 	
 	static fromData(pos, entityID, entityType = entities.tube){
@@ -507,7 +508,7 @@ class tile{
 	}
 	tag(){
 		// gets tagged by ball rolling through it
-		this.tintColor = color.fromRGBA(255, 255, 255, 0.5);
+		this.tagged = true;
 	}
 	
 	checkPlacement(){
@@ -555,7 +556,10 @@ class tile{
 			this.item.draw(pos.plus(new vec2(tile.tilesize / 2)));
 	}
 	drawTintAtScreenPos(pos){
-		this.tintColor.setFill();
+		var col = this.tintColor;
+		if(this.tagged)
+			col = color.fromRGBA(255, 255, 255, 0.5);
+		col.setFill();
 		renderContext.fillRect(pos.x, pos.y, tile.tilesize, tile.tilesize);
 	}
 }
@@ -583,6 +587,7 @@ class tileform{
 			"getPiece_square1",
 			"getPiece_straight0",
 			"getPiece_straight1",
+			"getPiece_straight2",
 			"getPiece_L0",
 			"getPiece_L1",
 			"getPiece_Z0",
@@ -633,6 +638,16 @@ class tileform{
 		return r;
 	}
 	static getPiece_straight1(){
+		var r = new tileform();
+		r.tiles = [
+			tile.fromData(new vec2(-1, 0), tubes.T_horizontalUp),
+			tile.fromData(new vec2(0, 0), tubes.T_horizontalDown),
+			tile.fromData(new vec2(1, 0), tubes.T_horizontalUp),
+			tile.fromData(new vec2(2, 0), tubes.T_horizontalDown)
+		];
+		return r;
+	}
+	static getPiece_straight2(){
 		var r = new tileform();
 		r.tiles = [
 			tile.fromData(new vec2(-1, 0), tubes.quad),

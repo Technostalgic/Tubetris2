@@ -57,6 +57,7 @@ class item{
 
 	m_activate(self, ballOb){}
 	static ACT_extraPoints(self, ballOb){
+		// the activation method for the extra points item
 		scoring.addScore(
 			500 + 150 * gameState.current.currentLevel.difficulty, 
 			tile.toScreenPos(self.parentTile.gridPos),
