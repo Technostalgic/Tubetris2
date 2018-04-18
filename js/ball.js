@@ -30,6 +30,7 @@ class ball{
 		this.momentum = 0;
 		this.lastPosUpdate = gameState.current.timeElapsed;
 		
+		this.toPause = false;
 		this.tilesTagged = [];
 	}
 	
@@ -66,6 +67,7 @@ class ball{
 	move(){
 		// moves the ball to it's nextPos
 		var prog = this.getMoveAnimProgress();
+		this.checkTileForTagging();
 		
 		// if the movement animation is complete, decide where to go next
 		if(prog >= 1) {
@@ -78,8 +80,6 @@ class ball{
 		// movement animation is
 		var off = this.nextPos.minus(this.gridPos).multiply(prog * tile.tilesize);
 		this.drawPos = tile.toScreenPos(this.gridPos).plus(off);
-		
-		this.checkTileForTagging();
 	}
 	checkTileForTagging(){
 		// ensures the tile at the current draw position is tagged
@@ -101,7 +101,9 @@ class ball{
 	
 	pause(){
 		// pauses the ball to wait for player input
+		this.toPause = false;
 		this.state = ballStates.paused;
+
 		this.findPauseDirections();
 		if(config.pathIndicators)
 			this.findPausePaths();
@@ -244,8 +246,12 @@ class ball{
 		else this.travelDir = side.down;
 		
 		// if the ball comes to a 4 way intersection, pause it
-		if(ttile.isEntity(tubes.quad)){
-			this.pause();
+		//if(!ttile.tagged && ttile.isEntity(tubes.quad)){
+		//	this.pause();
+		//	return;
+		//}
+		if(this.toPause) {
+			this.pause() 
 			return;
 		}
 		

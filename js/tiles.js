@@ -386,12 +386,15 @@ class tile{
 			gameState.current.switchGameplayPhase(p);
 		}
 	}
-	static RT_normal(self, ball){
+	static RT_normal(self, ballOb){
 		// tag the tile
-		// return if the ball is just a tracer
-		if(ball.isVirtual) return;
+		if(!this.tagged && this.isEntity(tubes.quad))
+			ballOb.toPause = true;
 		
-		this.tag();
+		// return if the ball is just a tracer
+		if(ballOb.isVirtual) return;
+		
+		this.tag(ballOb);
 		// add score based on the ball and tube color (if the tile is a tube)
 		if(this.entityType == entities.tube){
 			var score = 0;
@@ -506,7 +509,7 @@ class tile{
 		effect.createPoof(tile.toScreenPos(tpos));
 		this.m_destroy(this);
 	}
-	tag(){
+	tag(ballOb){
 		// gets tagged by ball rolling through it
 		this.tagged = true;
 	}
