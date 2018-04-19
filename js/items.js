@@ -104,7 +104,7 @@ class item{
 	
 	draw(pos){
 		// draws the item at the specified position
-		drawCenteredImage(renderContext, gfx.items_backdrop, pos);
+		drawCenteredImage(renderContext, gfx.item_backdrop, pos);
 	}
 	drawIcon(){
 
