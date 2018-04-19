@@ -726,9 +726,9 @@ class tileform{
 		var r = new tileform();
 		r.tiles = [
 			tile.fromData(new vec2(0, -1), tubes.S_vertical),
-			tile.fromData(new vec2(-1, 0), tubes.T_horizontalDown),
+			tile.fromData(new vec2(-1, 0), tubes.L_downRight),
 			tile.fromData(new vec2(0, 0), tubes.quad),
-			tile.fromData(new vec2(1, 0), tubes.T_horizontalDown)
+			tile.fromData(new vec2(1, 0), tubes.L_downLeft)
 		];
 		return r;
 	}
