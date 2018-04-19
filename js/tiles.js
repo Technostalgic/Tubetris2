@@ -288,6 +288,16 @@ class tile{
 		return r;
 	}
 	
+	static getAllTilesOfType(entitytype = entities.tube){
+		// returns all the tiles in the tile grid that are of the specified type
+		var r = [];
+		var func = function(tileOb){
+			if(tileOb.entityType == entitytype) r.push(tileOb);
+		}
+		tile.iterateGrid(func);
+		
+		return r;
+	}
 	static getEntityUID(entityID, entityType = entities.tube){
 		var off = 0;
 		

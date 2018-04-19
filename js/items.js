@@ -13,11 +13,18 @@ class item{
 	
 	static getItem_random(){
 		var itemNames = [
-			"getItem_extraPoints"
+			"getItem_extraPoints",
+			"getItem_extraItems",
 		];
 
 		var itm = Math.floor(Math.random() * itemNames.length);
 		return item[itemNames[itm]]();
+	}
+	static getItem_extraItems(){
+		var r = new item();
+		r.icon = 0;
+		r.m_activate = item.ACT_extraItems;
+		return r;
 	}
 	static getItem_extraPoints(){
 		var r = new item();
@@ -56,6 +63,37 @@ class item{
 	}
 
 	m_activate(self, ballOb){}
+	static ACT_extraItems(self, ballOb){
+		// the activation method for the extra items item
+		// get all the tube tiles but remove the ones that are already tagged
+		var ttiles = tile.getAllTilesOfType(entities.tube);
+		for(let i = ttiles.length - 1; i >= 0; i--){
+			if(ttiles[i].tagged){
+				ttiles.splice(i, 1);
+			}
+		}
+		
+		// spawn 2 items if on level 1-10, otherwise spawn 3
+		var count = gameState.current.currentLevel.difficulty > 10 ? 3 : 2;
+		
+		// if the amount of items that are being spawned is greater than or equal to the amount
+		// of tiles that they can be spawned on, just spawn random items on all the tiles available
+		if(ttiles.length <= count){
+			ttiles.forEach(function(tileOb){
+				tileOb.setItem(item.getItem_random());
+			});
+			return;
+		}
+		
+		// push x amount of items to a random tube tile in the tile grid
+		var iposes = [];
+		for(let i = count; i > 0; i--){
+			let ipos = Math.floor(ttiles.length * Math.random());
+			while(iposes.includes(ipos)) ipos = Math.floor(ttiles.length * Math.random());
+			ttiles[ipos].setItem(item.getItem_random());
+			iposes.push(ipos);
+		}
+	}
 	static ACT_extraPoints(self, ballOb){
 		// the activation method for the extra points item
 		scoring.addScore(
