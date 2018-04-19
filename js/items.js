@@ -105,8 +105,11 @@ class item{
 	draw(pos){
 		// draws the item at the specified position
 		drawCenteredImage(renderContext, gfx.item_backdrop, pos);
+		this.drawIcon(pos);
 	}
-	drawIcon(){
-
+	drawIcon(pos){
+		var spr = new spriteBox(new vec2(), new vec2(gfx.item_icons.height));
+		spr.pos.x = this.icon * spr.size.x;
+		drawCenteredImage(renderContext, gfx.item_icons, pos, spr);
 	}
 }

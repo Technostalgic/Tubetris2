@@ -329,6 +329,7 @@ function loadGFX(){
 	loadGraphic("effect_explosion", "effect_explosion.png");
 	loadGraphic("pathIndicators", "pathIndicators.png");
 	loadGraphic("item_backdrop", "item_backdrop.png");
+	loadGraphic("item_icons", "item_icons.png");
 	loadGraphic("arrows", "arrows.png");
 	
 	log(Object.keys(gfx).length.toString() + " images indexed", logType.notify);
