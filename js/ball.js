@@ -245,11 +245,6 @@ class ball{
 		}
 		else this.travelDir = side.down;
 		
-		// if the ball comes to a 4 way intersection, pause it
-		//if(!ttile.tagged && ttile.isEntity(tubes.quad)){
-		//	this.pause();
-		//	return;
-		//}
 		if(this.toPause) {
 			this.pause() 
 			return;
