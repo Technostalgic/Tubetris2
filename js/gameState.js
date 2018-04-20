@@ -1323,12 +1323,14 @@ class state_gameplayState extends gameState{
 	}
 	checkScoreBonuses(){
 		if(!this.scoreBonus.extraBall)
-			if(this.ballScore >= 1000){
+			if(this.currentBallScore >= 1000){
+				this.scoreBonus.extraBall = true;
 				this.nextTileforms.splice(0, 0, tileform.getPiece_ball());
 			}
 		
 		if(!this.scoreBonus.goldBall)
-			if(this.ballScore >= 1500){
+			if(this.currentBallScore >= 1500){
+				this.scoreBonus.goldBall = true;
 				this.nextTileforms[0] = tileform.getPiece_ball(balls.gold);
 			}
 	}
@@ -1724,8 +1726,6 @@ class phase_ballPhysics extends gameplayPhase{
 			if(ballOb.state == ballStates.dead)
 				ths.killBall(ballOb);
 		});
-		
-		this.checkScoreBonuses();
 		
 		// if there are no more balls to be handled end this gameplayPhase
 		// Because, well what's the point of life without any balls to handle?
