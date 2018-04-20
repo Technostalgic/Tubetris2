@@ -288,6 +288,15 @@ class spriteContainer{
 		this.rotation = null;
 	}
 	
+	animated(anim){
+		// returns a spritecontainer that is animated according to the specified animation
+		var r = this.clone();
+		var pr = {spriteContainers: [r]};
+		
+		anim.applyAnim(pr);
+		
+		return pr.spriteContainers[0];
+	}
 	clone(){
 		var r = new spriteContainer();
 		

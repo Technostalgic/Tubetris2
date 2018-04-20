@@ -9,6 +9,9 @@ class item{
 	constructor(){
 		this.parentTile = null;
 		this.icon = null;
+		this.anim = new textAnim_scale();
+		this.anim.animType = textAnimType.trigonometricCycle;
+		this.anim.looping = true;
 	}
 	
 	static getItem_random(){
@@ -108,6 +111,7 @@ class item{
 		this.drawIcon(pos);
 	}
 	drawIcon(pos){
+		// draws the icon for the item
 		var spritesheet = gfx.item_icons;
 		var spr = new spriteBox(new vec2(), new vec2(gfx.item_icons.height));
 		spr.pos.x = this.icon * spr.size.x;
@@ -120,6 +124,9 @@ class item{
 			spr.pos.y = Math.floor((this.icon * spr.size.x) / spritesheet.width) * (spritesheet.height / 3);
 		}
 		
-		drawCenteredImage(renderContext, spritesheet, pos, spr);
+		var spCont = new spriteContainer(spritesheet, spr, new collisionBox(new vec2(), spr.size.clone()));
+		spCont.bounds.setCenter(pos);
+		
+		spCont.animated(this.anim).draw();
 	}
 }
