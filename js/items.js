@@ -108,8 +108,18 @@ class item{
 		this.drawIcon(pos);
 	}
 	drawIcon(pos){
+		var spritesheet = gfx.item_icons;
 		var spr = new spriteBox(new vec2(), new vec2(gfx.item_icons.height));
 		spr.pos.x = this.icon * spr.size.x;
-		drawCenteredImage(renderContext, gfx.item_icons, pos, spr);
+		
+		// if the icon doesn't exist, use an ascii character as a placeholder
+		if(spr.pos.x >= gfx.item_icons.width){
+			spritesheet = fonts.small.spritesheet;
+			spr.size = new vec2(12, 8);
+			spr.pos.x = (this.icon * spr.size.x) % spritesheet.width;
+			spr.pos.y = Math.floor((this.icon * spr.size.x) / spritesheet.width) * (spritesheet.height / 3);
+		}
+		
+		drawCenteredImage(renderContext, spritesheet, pos, spr);
 	}
 }
