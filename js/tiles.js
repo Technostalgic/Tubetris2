@@ -381,17 +381,23 @@ class tile{
 		// returns a list of the rows of tiles that are filled out
 		var r = [];
 		var g = tile.grid[0];
-		for(let i = g.length - 1; i >= 0; i--){
-			if(!g[i].isEmpty()) r.push(i);
-		}
 		
-		for(let x = 0; x < tile.gridBounds.size.x; x++){
-			let g = tile.grid[x];
+		// add each row to the list who's leftmost column has a non-empty tile in it
+		for(let i = g.length - 1; i >= 0; i--)
+			if(!g[i].isEmpty()) r.push(i);
+		
+		// iterate through each column and remove any rows that have an empty tile in that column
+		for(let x = 1; x < tile.gridBounds.size.x; x++){
+			g = tile.grid[x];
 			for(let i = r.length - 1; i >= 0; i--){
 				if(g[r[i]].isEmpty())
 					r.splice(i, 1);
 			}
+			// if all the rows have been eliminated, return an empty list
+			if(r.length <= 0) return [];
 		}
+		
+		// return the list of remaining rows
 		return r;
 	}
 	static checkForFullRows(){
@@ -405,6 +411,8 @@ class tile{
 					ttile.tileVariant = tubeColors.gold;
 			}
 		});
+		
+		// if any tiles were changed, check the tile placement
 		if(fr.length > 0) tile.checkTilePlacement();
 	}
 	

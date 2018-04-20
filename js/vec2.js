@@ -139,6 +139,8 @@ class spriteBox{
 	}
 	
 	static charSprite(charSize, xColumn = 0, yRow = 0, altwidth = null){
+		// simplified function that works well with getting the specific character sprite
+		// from a font spritesheet
 		altwidth = !!altwidth ? altwidth : charSize.x;
 		return new spriteBox(new vec2(charSize.x * xColumn, charSize.y * yRow), new vec2(altwidth, charSize.y));
 	}
@@ -164,6 +166,7 @@ class color{
 	}
 	
 	static fromRGBA(r = 0, g = 0, b = 0, a = 1){
+		// creates a color object from red, green, blue, and alpha channels
 		var col = new color();
 		
 		col.r = r;
@@ -174,6 +177,7 @@ class color{
 		return col;
 	}
 	static fromHex(hex = "#000", alpha = 1){
+		// creates a color object from a hexidecimal value
 		var sslength = hex.length == 4 ? 1 : 2;
 		var r = parseInt(hex.substr(1 + 0 * sslength, sslength), 16);
 		var g = parseInt(hex.substr(1 + 1 * sslength, sslength), 16);
@@ -189,6 +193,7 @@ class color{
 	}
 	
 	toRGB(){
+		// returns the RGB string of the color for styling (no alpha)
 		return (
 			"rgb(" + 
 			Math.floor(this.r).toString() + "," + 
@@ -196,6 +201,7 @@ class color{
 			Math.floor(this.b).toString() + ")" );
 	}
 	toRGBA(){
+		// returns the RGBA string of the color for styling
 		return (
 			"rgb(" + 
 			Math.floor(this.r).toString() + "," + 
@@ -204,6 +210,7 @@ class color{
 			this.a.toString() + ")" );
 	}
 	toHex(){
+		// returns the Hex string of the color for styling (no alpha)
 		var r = Math.floor(this.r).toString(16);
 		var g = Math.floor(this.g).toString(16);
 		var b = Math.floor(this.b).toString(16);
@@ -212,9 +219,11 @@ class color{
 	}
 	
 	setFill(ctx = renderContext){
+		// sets the specified context's fill style to this color
 		ctx.fillStyle = this.toRGBA();
 	}
 	setStroke(ctx = renderContext){
+		// sets the specified context's stroke style to this color
 		ctx.strokeStyle = this.toRGBA();
 	}
 }
@@ -225,6 +234,7 @@ class collisionBox{
 		this.size = size;
 	}
 	static fromSides(left, top, right, bottom){
+		// creates a collisionBox object from the specified x and y values for the box's sides
 		return new collisionBox(new vec2(left, top), new vec2(right - left, bottom - top));
 	}
 	
@@ -242,19 +252,24 @@ class collisionBox{
 	get bottomRight() { return this.pos.plus(this.size); }
 	
 	setCenter(newCenter){
+		// set's the center of the collisionBox to the specified position
 		this.pos = new vec2(newCenter.x - this.size.x / 2, newCenter.y - this.size.y / 2);
 		return this;
 	}
 	inflated(factor){
+		// returns a new instance of the collisionBox enlarged by the specified amount
 		var r = this.clone();
 
 		r.size = r.size.multiply(factor);
+		
+		// makes sure to keep the same centerpoint
 		r.setCenter(this.center);
 		
 		return r;
 	}
 	
 	overlapsPoint(point){
+		// returns true if the specified point is inside the collisionBox (inclusive)
 		return ( 
 			point.x >= this.left &&
 			point.x <= this.right && 
@@ -263,6 +278,7 @@ class collisionBox{
 	}
 	
 	clone(){
+		// returns a new instance with the same values
 		return new collisionBox(this.pos.clone(), this.size.clone());
 	}
 	
@@ -298,6 +314,7 @@ class spriteContainer{
 		return pr.spriteContainers[0];
 	}
 	clone(){
+		// creates a new spriteContainer instance with the same values as this instance
 		var r = new spriteContainer();
 		
 		r.spriteSheet = this.spriteSheet;
@@ -308,6 +325,7 @@ class spriteContainer{
 	}
 	
 	draw(ctx = renderContext){
+		// draws the sprite
 		if(this.sprite.size.x <= 0 || this.sprite.size.y <= 0) return;
 		if(this.rotation){
 			this.drawRotated(ctx);
@@ -322,6 +340,7 @@ class spriteContainer{
 			);
 	}
 	drawRotated(ctx = renderContext){
+		// draws the sprite with the specified rotation
 		if(this.sprite.size.x <= 0 || this.sprite.size.y <= 0) return;
 		var cCorrect = this.bounds.size.multiply(-0.5);
 		var tTot = this.bounds.pos.minus(cCorrect);
