@@ -96,32 +96,33 @@ class ball{
 		tileOb.rollThrough(this);
 
 		// if the tile has an item, activate the item
-		if(tileOb.item) tileOb.item.activate();
+		if(tileOb.item) tileOb.item.activate(this);
 	}
 	
-	pause(){
+	pause(backtracking = false){
 		// pauses the ball to wait for player input
 		this.toPause = false;
 		this.state = ballStates.paused;
 
-		this.findPauseDirections();
+		this.findPauseDirections(backtracking);
 		if(config.pathIndicators)
 			this.findPausePaths();
 		
 		audioMgr.playSound(sfx.ballPause);
 	}
-	findPauseDirections(){
+	findPauseDirections(backtracking = false){
 		// get the unblocked directions at the current tile
 		if(this.isVirtual) return;
 		var unblocked = tile.at(this.gridPos).getUnblockedSides();
 		
-		// remove the previous travelDirection's opposite from the possible travel directions
-		for(var i = unblocked.length; i >= 0; i--){
-			if(unblocked[i] == invertedSide(this.travelDir)){
-				unblocked.splice(i, 1);
-				break;
+		// remove the previous travelDirection's opposite from the possible travel directions if backtracking is disabled
+		if(!backtracking)
+			for(var i = unblocked.length; i >= 0; i--){
+				if(unblocked[i] == invertedSide(this.travelDir)){
+					unblocked.splice(i, 1);
+					break;
+				}
 			}
-		}
 		
 		this.pauseDirections = unblocked;
 	}
@@ -158,7 +159,8 @@ class ball{
 					pos:tball.gridPos, 
 					dir:tball.travelDir
 					});
-					
+				
+				if(tball.toPause) tball.pause();
 				if(tball.state == ballStates.paused || tball.state == ballStates.dead)
 					break;
 			}
@@ -234,7 +236,7 @@ class ball{
 		var unblocked = ttile.getUnblockedSides();
 		var tdir;
 		
-		// if it's travel direction isn't none (which only ever happens on the first ball physics tick), 
+		// if it's travel direction isn't none (which only ever happens on the first ball movement tick), 
 		// the ball will be destroyed if not inside a tube
 		// otherwise set the travelDir to down
 		if(this.travelDir != side.none){
@@ -245,8 +247,9 @@ class ball{
 		}
 		else this.travelDir = side.down;
 		
+		// if the ball has been set to pause by the tile it previously tagged, pause it
 		if(this.toPause) {
-			this.pause() 
+			this.pause(true); 
 			return;
 		}
 		
