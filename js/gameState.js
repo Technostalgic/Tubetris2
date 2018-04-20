@@ -1166,6 +1166,9 @@ class state_gameplayState extends gameState{
 	constructor(){
 		super();
 		
+		this.scoreBonus = {};
+		this.resetScoreBonuses();
+		
 		this.currentScore = 0;
 		this.currentBallScore = 0;
 		this.currentLevel = new level(1);
@@ -1211,6 +1214,8 @@ class state_gameplayState extends gameState{
 		this.decrementUntil();
 		this.generateNextTileforms();
 		this.updateTileformDecrementPreRenders();
+		
+		this.resetScoreBonuses();
 		
 		// animation stuff
 		this.anim_HUDNextTileOff = this.timeElapsed;
@@ -1316,6 +1321,23 @@ class state_gameplayState extends gameState{
 		this.updateFloatingScoreText();
 		this.updateScorePreRender();
 	}
+	checkScoreBonuses(){
+		if(!this.scoreBonus.extraBall)
+			if(this.ballScore >= 1000){
+				this.nextTileforms.splice(0, 0, tileform.getPiece_ball());
+			}
+		
+		if(!this.scoreBonus.goldBall)
+			if(this.ballScore >= 1500){
+				this.nextTileforms[0] = tileform.getPiece_ball(balls.gold);
+			}
+	}
+	resetScoreBonuses(){
+		this.scoreBonus = {
+			extraBall:false,
+			goldBall:false
+		};
+	}
 	
 	switchGameplayPhase(newphase){
 		// switches the active gameplayPhase from one to another
@@ -1363,6 +1385,7 @@ class state_gameplayState extends gameState{
 		
 		updateEffects(dt);
 		this.phase.update(dt);
+		this.checkScoreBonuses();
 	}
 	
 	initHudPreRenders(){
@@ -1701,6 +1724,8 @@ class phase_ballPhysics extends gameplayPhase{
 			if(ballOb.state == ballStates.dead)
 				ths.killBall(ballOb);
 		});
+		
+		this.checkScoreBonuses();
 		
 		// if there are no more balls to be handled end this gameplayPhase
 		// Because, well what's the point of life without any balls to handle?
