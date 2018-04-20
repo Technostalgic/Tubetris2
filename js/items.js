@@ -9,9 +9,7 @@ class item{
 	constructor(){
 		this.parentTile = null;
 		this.icon = null;
-		this.anim = new textAnim_scale();
-		this.anim.animType = textAnimType.trigonometricCycle;
-		this.anim.looping = true;
+		this.iconAnim = null;
 	}
 	
 	static getItem_random(){
@@ -27,13 +25,30 @@ class item{
 		var r = new item();
 		r.icon = 0;
 		r.m_activate = item.ACT_extraItems;
+		r.iconAnim = item.anim_pulsate();
 		return r;
 	}
 	static getItem_extraPoints(){
 		var r = new item();
 		r.icon = 1;
 		r.m_activate = item.ACT_extraPoints;
+		r.iconAnim = item.anim_pulsate();
 		return r;
+	}
+	
+	static anim_pulsate(){
+		// returns a pulsating animation
+		var r = new textAnim_scale();
+		r.animLength = 1000;
+		r.minScale = 0.85;
+		r.maxScale = 1.15;
+		r.looping = true;
+		r.animType = textAnimType.trigonometricCycle;
+		
+		return r;
+	}
+	static anim_teeter(){
+		return new textAnim_rotationOffset(1000);
 	}
 
 	get gridPos(){
@@ -127,6 +142,8 @@ class item{
 		var spCont = new spriteContainer(spritesheet, spr, new collisionBox(new vec2(), spr.size.clone()));
 		spCont.bounds.setCenter(pos);
 		
-		spCont.animated(this.anim).draw();
+		if(this.iconAnim)
+			spCont.animated(this.iconAnim).draw();
+		else spCont.draw();
 	}
 }

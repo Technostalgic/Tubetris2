@@ -376,6 +376,26 @@ class textAnim_scaleTransform extends textAnim{
 		}
 	}
 }
+// an animation that set's the texts rotation
+class textAnim_rotationOffset extends textAnim{
+	constructor(animLength = 500, rotVariance = 1, charOff = 0.1){
+		super();
+		
+		this.animType = textAnimType.trigonometricCycle;
+		this.animLength = animLength;
+		this.animCharOffset = charOff;
+		this.rotVariance = rotVariance;
+		this.looping = true;
+	}
+	
+	applyAnim(pr){
+		for(let i = 0; i < pr.spriteContainers.length; i++){
+			var rOff = this.getAnimProgress(i) * this.rotVariance - this.rotVariance / 2;
+			
+			pr.spriteContainers[i].rotation = rOff;
+		}
+	}
+}
 
 // allows a large amount of text with different styles to be drawn inline in the same 
 // paragraph with word wrapping and vertical/horizontal alignment rules
