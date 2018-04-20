@@ -30,6 +30,8 @@ class ball{
 		this.momentum = 0;
 		this.lastPosUpdate = gameState.current.timeElapsed;
 		
+		this.onDestroy = [];
+		
 		this.toPause = false;
 		this.tilesTagged = [];
 	}
@@ -297,8 +299,18 @@ class ball{
 		this.state = ballStates.dead;
 		
 		if(this.isVirtual) return;
+		this.triggerDestroyEvent();
 		effect.createPoof(this.drawPos);
 		audioMgr.playSound(sfx.burst);
+	}
+	addDestroyEventListener(func){
+		// adds a function that will be called when the ball is destroyed
+		if(func) this.onDestroy.push(func);
+	}
+	triggerDestroyEvent(){
+		// calls all the functions that are set to go off at the destruction event
+		for(var func of this.onDestroy)
+			func(this);
 	}
 	
 	draw(){

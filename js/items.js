@@ -14,14 +14,17 @@ class item{
 	
 	static getItem_random(){
 		var itemNames = [
-			"getItem_extraPoints",
 			"getItem_extraItems",
+			"getItem_extraPoints",
+			"getItem_rollingBomb",
+			"getItem_detonateBricks"
 		];
 
 		var itm = Math.floor(Math.random() * itemNames.length);
 		return item[itemNames[itm]]();
 	}
 	static getItem_extraItems(){
+		// returns the 'extra items' item
 		var r = new item();
 		r.icon = 0;
 		r.m_activate = item.ACT_extraItems;
@@ -29,9 +32,24 @@ class item{
 		return r;
 	}
 	static getItem_extraPoints(){
+		// returns the 'extra points' item
 		var r = new item();
 		r.icon = 1;
 		r.m_activate = item.ACT_extraPoints;
+		r.iconAnim = item.anim_pulsate();
+		return r;
+	}
+	static getItem_rollingBomb(){
+		var r = new item();
+		r.icon = 2;
+		r.m_activate = item.ACT_rollingBomb;
+		r.iconAnim = item.anim_pulsate();
+		return r;
+	}
+	static getItem_detonateBricks(){
+		var r = new item();
+		r.icon = 3;
+		r.m_activate = item.ACT_detonateBricks;
 		r.iconAnim = item.anim_pulsate();
 		return r;
 	}
@@ -118,6 +136,22 @@ class item{
 			500 + 150 * gameState.current.currentLevel.difficulty, 
 			tile.toScreenPos(self.parentTile.gridPos),
 			scoreTypes.bonus);
+	}
+	static ACT_rollingBomb(self, ballOb){
+		ballOb.addDestroyEventListener(function(self){
+			tile.explodeAt(new vec2(self.gridPos.x, self.gridPos.y));
+		});
+	}
+	static ACT_detonateBricks(self, ballOb){
+		var bricksDetonated = 0;
+		var iterator = function(tileOb, x, y){
+			if(tileOb.isEntity(blocks.brick, entities.block)){
+				tile.explodeAt(new vec2(x, y), false);
+				bricksDetonated++;
+				scoring.addScore(bricksDetonated *= 200, tile.toScreenPos(new vec2(x, y)), scoreTypes.bonus);
+			}
+		};
+		tile.iterateGrid(iterator);
 	}
 	
 	draw(pos){
