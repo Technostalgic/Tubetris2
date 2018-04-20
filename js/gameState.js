@@ -1341,19 +1341,6 @@ class state_gameplayState extends gameState{
 		
 		this.phase.controlTap(control);
 	}
-	checkTilePlacement(ctiles = null){
-		// checks the tile placement of all the specified tiles
-		
-		// the iteration function that is called on each specified tile
-		var iterator = function(tileOb){
-			if(tileOb.isEmpty()) return;
-			tileOb.checkPlacement();
-		};
-		
-		// if no tiles are specified, check all the tiles in the tile grid
-		if(!ctiles) tile.iterateGrid(iterator);
-		else ctiles.forEach(iterator);
-	}
 	
 	pauseGame(){
 		var pauseState = new state_pauseMenu();
@@ -1603,7 +1590,8 @@ class phase_placeTileform extends gameplayPhase{
 			return;
 		
 		this.currentTileform = null;
-		this.parentState.checkTilePlacement();
+		tile.checkForFullRows();
+		tile.checkTilePlacement();
 		
 		// if the gameplay phase hasn't changed, get the next tileForm
 		if(this.parentState.phase == this) 
@@ -1976,7 +1964,7 @@ class phase_fellTiles extends gameplayPhase{
 
 	nextPhase(){
 		// check the tile placement and then progress to the next tileform if the gameplayPhase hasn't changed
-		this.parentState.checkTilePlacement();
+		tile.checkTilePlacement();
 		if(this.parentState.phase == this)
 			this.parentState.getNextTileform();
 		
@@ -2047,7 +2035,7 @@ class phase_levelComplete extends gameplayPhase{
 	
 	nextPhase(){
 		// proceeds to place the first tileform of the next level
-		this.parentState.checkTilePlacement();
+		tile.checkTilePlacement();
 		if(this.parentState.phase == this)
 			this.parentState.getNextTileform();
 	}

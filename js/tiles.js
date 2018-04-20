@@ -364,6 +364,49 @@ class tile{
 		if(earnpoints)
 			scoring.addScore(100 + tilesDestroyed * 50, tile.toScreenPos(pos), scoreTypes.bonus);
 	}
+	static checkTilePlacement(ctiles = null){
+		// checks the tile placement of all the specified tiles
+		
+		// the iteration function that is called on each specified tile
+		var iterator = function(tileOb){
+			if(tileOb.isEmpty()) return;
+			tileOb.checkPlacement();
+		};
+		
+		// if no tiles are specified, check all the tiles in the tile grid
+		if(!ctiles) tile.iterateGrid(iterator);
+		else ctiles.forEach(iterator);
+	}
+	static getFullRows(){
+		// returns a list of the rows of tiles that are filled out
+		var r = [];
+		var g = tile.grid[0];
+		for(let i = g.length - 1; i >= 0; i--){
+			if(!g[i].isEmpty()) r.push(i);
+		}
+		
+		for(let x = 0; x < tile.gridBounds.size.x; x++){
+			let g = tile.grid[x];
+			for(let i = r.length - 1; i >= 0; i--){
+				if(g[r[i]].isEmpty())
+					r.splice(i, 1);
+			}
+		}
+		return r;
+	}
+	static checkForFullRows(){
+		// checks to see if any of the rows of tiles have been filled out
+		var fr = tile.getFullRows();
+		
+		fr.forEach(function(row){
+			for(let x = 0; x < tile.gridBounds.size.x; x++){
+				let ttile = tile.at(x, row);
+				if(ttile.entityType == entities.tube)
+					ttile.tileVariant = tubeColors.gold;
+			}
+		});
+		if(fr.length > 0) tile.checkTilePlacement();
+	}
 	
 	static CP_ball(self){
 		// the set in place action for a ball tile entity
