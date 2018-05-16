@@ -583,7 +583,7 @@ class state_menuState extends gameState{
 class state_confirmationDialogue extends state_menuState{
 	constructor(confirmAction, denyAction = function(){}){
 		super();
-		this.title = "Warning";
+		// title text = "Warning"
 		this.description = "this action cannot be undone";
 		this.prompt = "are you sure";
 		
@@ -592,6 +592,8 @@ class state_confirmationDialogue extends state_menuState{
 		titleAnim.animType = textAnimType.trigonometricCycle;
 		var titleBlink = new textAnim_blink(400, 0.025, textColor.yellow);
 		this.titleAnim = new textAnim_compound([titleAnim, titleBlink]);
+
+		this.setTitle("Warning", new textStyle(fonts.large, textColor.red, 2), new textAnim_compound([titleAnim, titleBlink]));
 		
 		var ths = this;
 		this.action_confirm = function(){ log("confirmation accepted", logType.unimportant); confirmAction(); gameState.switchState(ths.previousState); };
@@ -616,8 +618,7 @@ class state_confirmationDialogue extends state_menuState{
 	}
 	
 	drawInternals(){
-		var warnStyle = new textStyle(fonts.large, textColor.red, 2);
-		textRenderer.drawText(this.title, new vec2(screenBounds.center.x, screenBounds.top + 100), warnStyle, this.titleAnim);
+		// title prerender is drawn in this.draw()
 		
 		var descStyle = new textStyle(fonts.large, textColor.green, 1);
 		textRenderer.drawText(this.description, new vec2(screenBounds.center.x, screenBounds.top + 150), descStyle);
@@ -961,7 +962,11 @@ class state_gameOptions extends state_optionsSubMenu{
 			).generateSettingPreRenders() );
 		off += 1.5;
 		
-		var action_resetConfig = function(){ gameState.switchState(new state_confirmationDialogue(function(){ setDefaultConfig(); saveConfig(); ths.addButtons() })); };
+		var action_resetConfig = function(){
+			gameState.switchState(new state_confirmationDialogue(function(){
+				setDefaultConfig(); saveConfig(); ths.addButtons() 
+			}));
+		};
 		this.buttons.push(new menuButton().construct("Reset Config", tpos.plus(new vec2(0, off * dif)), "resets the game configuration and settings back to default", action_resetConfig));
 		off += 1.2;
 		var action_resetScores = function(){ 
