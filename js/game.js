@@ -236,8 +236,7 @@ function init(){
 	
 	load();
 
-	//gameState.switchState(new state_mainMenu());	
-	gameState.switchState(new state_mainMenu());	
+	goToMainMenu();
 	log("intitialized game!");
 }
 function load(){
@@ -358,6 +357,7 @@ function loadMusic(){
 	
 	// load tracks
 	loadTrack("modern", "modern.mp3");
+	loadTrack("menu", "menu.mp3");
 
 	log(Object.keys(sfx).length.toString() + " tracks indexed", logType.notify);
 }
@@ -878,6 +878,10 @@ function startNewGame(){
 	
 	audioMgr.playMusic(music.modern);
 	gameState.switchState(state);
+}
+function goToMainMenu(){
+	audioMgr.playMusic(music.menu);
+	gameState.switchState(new state_mainMenu());
 }
 
 function drawFPS(){

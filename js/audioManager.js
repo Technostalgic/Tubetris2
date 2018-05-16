@@ -20,17 +20,31 @@ class audioMgr{
 		
 		sound.play();
 	}
-	static playMusic(music){
+	static playMusic(track){
 		// starts looping a music track
 		if(audioMgr.currentMusic) audioMgr.stopMusic();
-		audioMgr.currentMusic = music;
-		music.currentTime = 0;
-		music.volume = config.volume_music;
-		music.onended = function(){
-			audioMgr.playMusic(music);
+		audioMgr.currentMusic = track;
+		track.currentTime = 0;
+		track.volume = config.volume_music;
+		track.onended = function(){
+			audioMgr.currentMusic.currentTime = 0;
+			audioMgr.currentMusic.play();
 		};
+
+		track.play();
 		
-		music.play();
+		// ensures that the music will begin playback when the browser allows it to
+		if(track.paused)
+			audioMgr.playMusicWhenPossible(track);
+	}
+	static playMusicWhenPossible(track){
+		// some browsers prevent playback of audio under certain circumstances. This ensures that the
+		// music will be played as soon as the browser allows it to if the initial playback request is
+		// denied
+		if(track.paused)
+			setTimeout(function(){
+				audioMgr.playMusic(track);
+			});
 	}
 	static pauseMusic(){
 		if(!audioMgr.currentMusic) return;
