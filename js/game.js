@@ -747,6 +747,10 @@ function applyConfig(){
 		case canvasScaleMode.fit: fitToScreen(); break;
 		case canvasScaleMode.stretch: stretchToScreen(); break;
 	}
+
+	// applies music volume
+	if(audioMgr.currentMusic)
+		audioMgr.currentMusic.volume = config.volume_music;
 }
 
 function getCanvas(){

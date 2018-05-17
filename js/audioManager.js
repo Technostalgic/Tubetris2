@@ -37,6 +37,7 @@ class audioMgr{
 		// ensures that the music will begin playback when the browser allows it to
 		if(track.paused)
 			audioMgr.playMusicWhenPossible(track);
+		// if a new track is played, cancel the callback for playing the old track
 		else if(audioMgr.musicPlayCallback != null)
 			clearTimeout(audioMgr.musicPlayCallback);
 	}
@@ -44,7 +45,10 @@ class audioMgr{
 		// some browsers prevent playback of audio under certain circumstances. This ensures that the
 		// music will be played as soon as the browser allows it to if the initial playback request is
 		// denied
+
 		if(track.paused)
+			// store the callback ID in audioMgr.musicPlayCallback so that it can be cancelled if new 
+			// track is played
 			audioMgr.musicPlayCallback = 
 			setTimeout(function(){
 				audioMgr.playMusic(track);
