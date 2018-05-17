@@ -48,7 +48,8 @@ var tubeColors = {
 	orange: 1,
 	blue: 2,
 	green: 3,
-	gold: 4
+	gold: 4,
+	black: 5
 }
 
 class tile{
@@ -607,6 +608,8 @@ class tile{
 		if(this.entityType == entities.tube){
 			var sp = sprite.clone();
 			var spriteYOff = Math.floor(this.tileVariant * tile.tilesize * 2);
+			if(this.tagged)
+				spriteYOff = Math.floor(tubeColors.black * tile.tilesize * 2);
 			sp.sprite.pos.y += spriteYOff;
 			sprite = sp;
 		}
