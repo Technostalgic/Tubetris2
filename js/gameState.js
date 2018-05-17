@@ -723,8 +723,6 @@ class state_scoreboard extends state_menuState{
 			textStyle.getDefault().setColor(textColor.pink)
 		];
 		this.addScoreboardText();
-		
-		this.previousMenu = null;
 	}
 	
 	addButtons(){
@@ -735,7 +733,7 @@ class state_scoreboard extends state_menuState{
 		var tpos = new vec2(screenBounds.center.x, screenBounds.bottom - 200);
 		
 		var action_switchToPreviousMenu = function(){
-			let state = !ths.previousMenu ? new state_mainMenu() : ths.previousMenu;
+			let state = !ths.previousState ? new state_mainMenu() : ths.previousState;
 			state.initialize();
 			gameState.switchState(state); 
 		};
@@ -1076,7 +1074,7 @@ class state_pauseMenu extends state_menuState{
 		var action_resumeGame = function(){ ths.resume(); };
 		var action_switchToScoreboard = function(){ gameState.switchState(new state_scoreboard()); };
 		var action_switchToOptions = function(){ gameState.switchState(new state_optionsMenu()); };
-		var action_quitSession = function(){ gameState.switchState(new state_mainMenu()); };
+		var action_quitSession = function(){ goToMainMenu(); };
 		
 		this.buttons.push(new menuButton().construct("Resume", screenBounds.center.plus(new vec2(0, off * dif)), "resumes the gameplay", action_resumeGame)); off++;
 		this.buttons.push(new menuButton().construct("Scoreboard", screenBounds.center.plus(new vec2(0, off * dif)), "view the highest scoring players", action_switchToScoreboard)); off++;
