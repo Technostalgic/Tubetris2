@@ -21,6 +21,7 @@ class audioMgr{
 		
 		sound.play();
 	}
+
 	static playMusic(track){
 		// starts looping a music track
 		if(audioMgr.currentMusic) audioMgr.stopMusic();
@@ -65,7 +66,7 @@ class audioMgr{
 
 		// if the track successfully plays, cancel the previous unsuccessful music playback calls
 		if(!track.paused)
-			audioMgr.musicPlayCallback = [];
+			audioMgr.musicPlayCallback = null;
 	}
 
 	static pauseMusic(){
