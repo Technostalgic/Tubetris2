@@ -1108,7 +1108,7 @@ class state_gameOverState extends state_menuState{
 		var action_restartGame = function(){ startNewGame(); };
 		var action_switchToScoreboard = function(){ gameState.switchState(new state_scoreboard()); };
 		var action_switchToOptions = function(){ gameState.switchState(new state_optionsMenu()); };
-		var action_quitSession = function(){ gameState.switchState(new state_mainMenu()); };
+		var action_quitSession = function(){ goToMainMenu(); };
 		
 		this.buttons.push(new menuButton().construct(
 			"Main Menu", screenBounds.center.plus(new vec2(0, off * dif)),
@@ -1140,6 +1140,17 @@ class state_gameOverState extends state_menuState{
 			/*store score in scoreboard*/;
 		
 		return place;
+	}
+
+	switchFrom(tostate){
+		audioMgr.resumeMusic();
+		if(!audioMgr.currentMusic){
+			var song = tostate instanceof state_gameplayState ? music.modern : music.menu;
+			audioMgr.playMusic(song);
+		}
+	}
+	switchTo(fromstate){
+		audioMgr.pauseMusic();
 	}
 	
 	draw(){
