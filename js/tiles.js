@@ -60,6 +60,7 @@ class tile{
 		this.tileVariant = -1;
 		this.item = null;
 		this.tagged = false;
+		this.charged = false;
 	}
 	
 	static fromData(pos, entityID, entityType = entities.tube){
@@ -410,6 +411,7 @@ class tile{
 				let ttile = tile.at(x, row);
 				if(ttile.entityType == entities.tube)
 					ttile.tileVariant = tubeColors.gold;
+				ttile.charged = true;
 			}
 		});
 		
@@ -527,6 +529,27 @@ class tile{
 		return(this.entityID == entityID && this.entityType == entityType);
 	}
 	
+	getDirectNeighbors(){
+		// returns the neighbors to the left, right, top, and bottom of this tile
+		var npos = [
+			this.gridPos.plus(new vec2(0, 1)),
+			this.gridPos.plus(new vec2(0, -1)),
+			this.gridPos.plus(new vec2(1, 0)),
+			this.gridPos.plus(new vec2(-1, 0))
+		];
+		
+		var r = [];
+		for(let i = npos.length - 1; i >= 0; i--){
+			if(tile.isOutOfBounds(npos[i])) continue;
+
+			let ttile = tile.at(npos[i]);
+			if(!ttile.isEmpty())
+				r.push(ttile);
+			
+		};
+
+		return r;
+	}
 	getOpenSides(){
 		if(this.entityID == entities.none) return [side.left, side.right, side.up, side.down];
 		return tile.getEntityOpenSides(this.entityID, this.entityType);
@@ -570,6 +593,15 @@ class tile{
 		tile.setTileAt(tile.getEmpty(tpos), tpos);
 		effect.createPoof(tile.toScreenPos(tpos));
 		this.m_destroy(this);
+
+		if(this.charged){
+			var ttiles = this.getDirectNeighbors();
+			for(let i = ttiles.length - 1; i >= 0; i--){
+				if(ttiles[i].charged)
+					if(!gameState.current.phase.tilesTagged.includes(ttiles[i]))
+						gameState.current.phase.tilesTagged.push(ttiles[i]);
+			}
+		}
 	}
 	tag(ballOb){
 		// gets tagged by ball rolling through it
@@ -624,7 +656,9 @@ class tile{
 	}
 	drawTintAtScreenPos(pos){
 		var col = this.tintColor;
-		if(this.tagged)
+		if(this.charged)
+			col = color.fromRGBA(100, 100, 0, 0.5);
+		else if(this.tagged)
 			col = color.fromRGBA(255, 255, 255, 0.5);
 		col.setFill();
 		renderContext.fillRect(pos.x, pos.y, tile.tilesize, tile.tilesize);
