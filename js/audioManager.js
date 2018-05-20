@@ -37,23 +37,37 @@ class audioMgr{
 		// ensures that the music will begin playback when the browser allows it to
 		if(track.paused)
 			audioMgr.playMusicWhenPossible(track);
-		// if a new track is played, cancel the callback for playing the old track
-		else if(audioMgr.musicPlayCallback != null)
-			clearTimeout(audioMgr.musicPlayCallback);
+		
+		// if music playback is successfull, remove previous music playback call
+		else audioMgr.musicPlayCallback = null;
 	}
 	static playMusicWhenPossible(track){
 		// some browsers prevent playback of audio under certain circumstances. This ensures that the
 		// music will be played as soon as the browser allows it to if the initial playback request is
 		// denied
 
-		if(track.paused)
-			// store the callback ID in audioMgr.musicPlayCallback so that it can be cancelled if new 
-			// track is played
-			audioMgr.musicPlayCallback = 
+		if(track.paused){
+			// store the track in audioMgr.musicPlayCallback so that only the most recent song that is
+			// attempted to be played starts playing when available
+			audioMgr.musicPlayCallback = track;
 			setTimeout(function(){
-				audioMgr.playMusic(track);
+				audioMgr.tryStartMusic();
 			});
+		}
 	}
+	static tryStartMusic(){
+		// tries to start the track that was most recently attempted to be played
+		if(!audioMgr.musicPlayCallback)
+			return;
+		var track = audioMgr.musicPlayCallback;
+		log(track.src);
+		this.playMusic(track);
+
+		// if the track successfully plays, cancel the previous unsuccessful music playback calls
+		if(!track.paused)
+			audioMgr.musicPlayCallback = [];
+	}
+
 	static pauseMusic(){
 		if(!audioMgr.currentMusic) return;
 		audioMgr.currentMusic.onended = null;
