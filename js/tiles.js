@@ -337,8 +337,6 @@ class tile{
 		// switches the game phase to destroy tiles phase if it's not already an instance of the destroy tiles phase
 		if(!(gameState.current.phase instanceof phase_destroyTaggedTiles)){
 			var phase = new phase_destroyTaggedTiles(gameState.current);
-			if(gameState.current.phase.tilesTagged)
-				phase.setTilesTagged(gameState.current.phase.tilesTagged);
 			this.parentState.switchGameplayPhase(phase);
 		}
 
@@ -354,9 +352,9 @@ class tile{
 						// if the tile is a bomb, set it to be detonated next
 						if(ttile.isEntity(blocks.block_bomb, entities.block)){
 							// if the tile is already set to be detonated, ignore it
-							if(gameState.current.phase.tilesTagged.includes(ttile))
+							if(gameState.current.tilesTagged.includes(ttile))
 								continue;
-							gameState.current.phase.tilesTagged.push(ttile);
+							gameState.current.tilesTagged.push(ttile);
 						}
 						// destroy the tile and add to the destruction counter
 						else ttile.destroy();
@@ -436,17 +434,11 @@ class tile{
 	static CP_bomb(self){
 		// what happens when a bomb is set in place
 		tile.setTileAt(self, self.gridPos);
-		var neighborPos = [
-			self.gridPos.plus(vec2.fromSide(side.down)),
-			self.gridPos.plus(vec2.fromSide(side.left)),
-			self.gridPos.plus(vec2.fromSide(side.right)),
-			self.gridPos.plus(vec2.fromSide(side.up))
-		];
+		var neighbors = self.getDirectNeighbors();
 		
 		var enterDestMode = false;
 		var tagblocks = [self];
-		neighborPos.forEach(function(npos){
-			let ttile = tile.at(npos);
+		neighbors.forEach(function(ttile){
 			if(ttile.isEntity(blocks.block_bomb, entities.block)){
 				enterDestMode = true;
 			}
@@ -454,7 +446,6 @@ class tile{
 		
 		if(enterDestMode){
 			var p = new phase_destroyTaggedTiles(gameState.current);
-			p.setTilesTagged(tagblocks);
 			gameState.current.switchGameplayPhase(p);
 		}
 	}
@@ -635,6 +626,7 @@ class tile{
 	tag(ballOb){
 		// gets tagged by ball rolling through it
 		this.tagged = true;
+		gameState.current.tilesTagged.push(this);
 	}
 	
 	checkPlacement(){

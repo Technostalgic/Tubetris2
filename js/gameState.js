@@ -1180,6 +1180,7 @@ class state_gameplayState extends gameState{
 	constructor(){
 		super();
 		
+		this.tilesTagged = [];
 		this.scoreBonus = {};
 		this.resetScoreBonuses();
 		
@@ -1729,7 +1730,6 @@ class phase_ballPhysics extends gameplayPhase{
 		
 		// the array that holds the ball objects
 		this.balls = [];
-		this.tilesTagged = [];
 	}
 	
 	update(dt){
@@ -1758,7 +1758,6 @@ class phase_ballPhysics extends gameplayPhase{
 	
 	nextPhase(){
 		var phase = new phase_destroyTaggedTiles(this.parentState);
-		phase.setTilesTagged(this.tilesTagged);
 		this.parentState.switchGameplayPhase(phase);
 	}
 	
@@ -1788,7 +1787,6 @@ class phase_ballPhysics extends gameplayPhase{
 	killBall(ballOb){
 		// destroys the specified ball, removes it from the array and queries all the tiles that it tagged
 		this.balls.splice(this.balls.indexOf(ballOb), 1);
-		this.tilesTagged = this.tilesTagged.concat(ballOb.tilesTagged);
 	}
 }
 // destroys the tiles that have been tagged by the ball
@@ -1801,7 +1799,6 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		this.bombsDetonated = 0;
 		
 		this.lastTileDestroyed = parentState.timeElapsed;
-		this.tilesTagged = [];
 		this.tilesChargeTagged = [];
 		this.fallHeights = [];
 	}
@@ -1814,23 +1811,19 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		while(this.parentState.timeElapsed >= nextDestroy){
 			this.lastTileDestroyed += animInterval;
 			
-			if(this.tilesTagged.length > 0)
-				this.destroyTiles(this.tilesTagged.splice(0, 1));
+			if(this.parentState.tilesTagged.length > 0)
+				this.destroyTiles(this.parentState.tilesTagged.splice(0, 1));
 			else if(this.tilesChargeTagged.length > 0)
 				this.destroyChargedTiles();
 			
 			nextDestroy = this.lastTileDestroyed + animInterval;
 		}
 		
-		if(this.tilesTagged.length <= 0 && this.tilesChargeTagged.length <= 0)
+		if(this.parentState.tilesTagged.length <= 0 && this.tilesChargeTagged.length <= 0)
 			this.nextPhase();
 	}
 	draw(){ }
 	
-	setTilesTagged(tagged){
-		// flags the tagged tiles for destruction
-		this.tilesTagged = tagged;
-	}
 	destroyTiles(tileArray){
 		// destroy the specified tiles
 		var ths = this;
