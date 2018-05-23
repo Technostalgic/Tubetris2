@@ -1797,10 +1797,12 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		super(parentState);
 		
 		this.tileCombo = 0;
+		this.chargedTileCombo = 1;
 		this.bombsDetonated = 0;
 		
 		this.lastTileDestroyed = parentState.timeElapsed;
 		this.tilesTagged = [];
+		this.tilesChargeTagged = [];
 		this.fallHeights = [];
 	}
 	
@@ -1811,11 +1813,16 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		
 		while(this.parentState.timeElapsed >= nextDestroy){
 			this.lastTileDestroyed += animInterval;
-			this.destroyTiles(this.tilesTagged.splice(0, 1));
+			
+			if(this.tilesTagged.length > 0)
+				this.destroyTiles(this.tilesTagged.splice(0, 1));
+			else if(this.tilesChargeTagged.length > 0)
+				this.destroyChargedTiles();
+			
 			nextDestroy = this.lastTileDestroyed + animInterval;
 		}
 		
-		if(this.tilesTagged.length <= 0)
+		if(this.tilesTagged.length <= 0 && this.tilesChargeTagged.length <= 0)
 			this.nextPhase();
 	}
 	draw(){ }
@@ -1850,6 +1857,37 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 			this.tileCombo += comboAdd;
 			var comboMult = Math.min(Math.floor(this.tileCombo), 15);
 			scoring.addScore(comboMult * 10, tile.toScreenPos(tileOb.gridPos), scoreTypes.pop);
+		}
+	}
+	destroyChargedTiles(tileArray){
+		// specify that the tiles are being destroyed by the tile's charged chain reaction
+		var tileArray = this.tilesChargeTagged;
+		this.tilesChargeTagged = [];
+		
+		var ths = this;
+		tileArray.forEach(function(tileOb){
+			ths.destroyChargedTile(tileOb);
+		});
+	}
+	destroyChargedTile(tileOb){
+		// destroys the tile and sets the corresponding fall height
+		this.concatFallHeight(tileOb.gridPos.x, tileOb.gridPos.y);
+		tileOb.destroy();
+		
+		var rollpts = true;
+		
+		if(tileOb.isEntity(blocks.block_bomb, entities.block)){
+			this.bombsDetonated += 1;
+			rollpts = false;
+		}
+		
+		if(rollpts){
+			var comboAdd = 0.25;
+			if(this.tileCombo >= 3)
+				comboAdd = 0.125;
+			var comboMult = Math.min(Math.floor(this.tileCombo), 5);
+			scoring.addScore(comboMult * 10, tile.toScreenPos(tileOb.gridPos), scoreTypes.pop);
+			this.chargedTileCombo += comboAdd;
 		}
 	}
 	

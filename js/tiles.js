@@ -333,6 +333,14 @@ class tile{
 		// causes a destructive explosion at the specified position
 		effect.createExplosion(tile.toScreenPos(pos));
 		audioMgr.playSound(sfx.explosion);
+		
+		// switches the game phase to destroy tiles phase if it's not already an instance of the destroy tiles phase
+		if(!(gameState.current.phase instanceof phase_destroyTaggedTiles)){
+			var phase = new phase_destroyTaggedTiles(gameState.current);
+			if(gameState.current.phase.tilesTagged)
+				phase.setTilesTagged(gameState.current.phase.tilesTagged);
+			this.parentState.switchGameplayPhase(phase);
+		}
 
 		// iterate through the 9 tiles the explosion covers centered at the specified tile pos
 		var tilesDestroyed = 0;
@@ -561,8 +569,7 @@ class tile{
 			if(ttile.getOpenSides().includes(invertedSide(odir)))
 				r.push(ttile);
 		});
-
-		console.log(r);
+		
 		return r;
 	}
 	getOpenSides(){
@@ -609,12 +616,19 @@ class tile{
 		effect.createPoof(tile.toScreenPos(tpos));
 		this.m_destroy(this);
 
-		if(this.charged){
-			var ttiles = this.getConectedNeighbors();
-			for(let i = ttiles.length - 1; i >= 0; i--){
-				if(ttiles[i].charged)
-					if(!gameState.current.phase.tilesTagged.includes(ttiles[i]))
-						gameState.current.phase.tilesTagged.push(ttiles[i]);
+		// makes the chain reaction of the charged tile spread to other connected tiles
+		if(this.charged)
+			this.doChargedChainReaction();
+	}
+	doChargedChainReaction(){
+		// makes the chain reaction of the charged tile spread to other connected tiles
+		var ttiles = this.getConectedNeighbors();
+		for(let i = ttiles.length - 1; i >= 0; i--){
+			if(!ttiles[i].isEmpty()){
+				if(!ttiles[i].tagged){
+					ttiles[i].tagged = true;
+					gameState.current.phase.tilesChargeTagged.push(ttiles[i]);
+				}
 			}
 		}
 	}
