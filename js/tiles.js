@@ -550,6 +550,21 @@ class tile{
 
 		return r;
 	}
+	getConectedNeighbors(){
+		var os = this.getOpenSides();
+		var r = [];
+
+		var ths = this;
+		os.forEach(function(odir){
+			let tpos = ths.gridPos.plus(vec2.fromSide(odir));
+			var ttile = tile.at(tpos);
+			if(ttile.getOpenSides().includes(invertedSide(odir)))
+				r.push(ttile);
+		});
+
+		console.log(r);
+		return r;
+	}
 	getOpenSides(){
 		if(this.entityID == entities.none) return [side.left, side.right, side.up, side.down];
 		return tile.getEntityOpenSides(this.entityID, this.entityType);
@@ -595,7 +610,7 @@ class tile{
 		this.m_destroy(this);
 
 		if(this.charged){
-			var ttiles = this.getDirectNeighbors();
+			var ttiles = this.getConectedNeighbors();
 			for(let i = ttiles.length - 1; i >= 0; i--){
 				if(ttiles[i].charged)
 					if(!gameState.current.phase.tilesTagged.includes(ttiles[i]))
