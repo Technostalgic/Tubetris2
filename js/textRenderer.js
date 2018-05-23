@@ -5,6 +5,13 @@
 ///	twitter @technostalgicGM
 ///
 
+// enumerates the different fields of the floating score text
+var floatingScoreFieldID = {
+	ballScore: 0,
+	bombCombo: 1,
+	chargeCombo: 2,
+	itemBonus: 3
+}
 // enumerates the different colors in a font's color spritesheet
 var textColor = {
 	light: 0,
@@ -397,6 +404,37 @@ class textAnim_rotationOffset extends textAnim{
 	}
 }
 
+class floatingTextField{
+	constructor(){
+		this.fieldID = floatingScoreFieldID.ballScore;
+		this.text = "";
+		this.style = textStyle.getDefault();
+		this.animation = null;
+		
+		this.preRender = null;
+	}
+	
+	setText(txt, style){
+		this.text = txt;
+		if(style)
+			this.style = style;
+		this.updatePreRender();
+	}
+	updatePreRender(){
+		this.preRender = preRenderedText.fromString(this.text, new vec2(), this.style);
+	}
+	
+	draw(pos, scale = 1){
+		var pr = this.preRender;
+		
+		if(this.animation) pr = this.preRender.animated(this.animation);
+		pr = pr.scaled(scale)
+		pr.setCenter(pos);
+		
+		pr.draw();
+	}
+}
+
 // allows a large amount of text with different styles to be drawn inline in the same 
 // paragraph with word wrapping and vertical/horizontal alignment rules
 class textBlock{
@@ -590,6 +628,13 @@ class preRenderedText{
 		// returns the center point of the prerendered text
 		return this.getBounds().center;
 	}
+	setCenter(pos){
+		var cent = this.findCenter();
+		this.spriteContainers.forEach(function(sc){
+			let off = sc.bounds.pos.minus(cent);
+			sc.bounds.pos = pos.plus(off);
+		});
+	}
 	
 	applyHorizontalAlignment(minLeft, maxRight = minLeft){
 		// applies the horizontal alignment according to the mainStyle rules
@@ -645,7 +690,8 @@ class preRenderedText{
 			this.spriteContainers[0].bounds.left, 
 			this.spriteContainers[0].bounds.top, 
 			this.spriteContainers[this.spriteContainers.length - 1].bounds.right, 
-			this.spriteContainers[this.spriteContainers.length - 1].bounds.bottom,);
+			this.spriteContainers[this.spriteContainers.length - 1].bounds.bottom
+			);
 	}
 	
 	animated(anim){

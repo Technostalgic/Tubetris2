@@ -337,7 +337,7 @@ class tile{
 		// switches the game phase to destroy tiles phase if it's not already an instance of the destroy tiles phase
 		if(!(gameState.current.phase instanceof phase_destroyTaggedTiles)){
 			var phase = new phase_destroyTaggedTiles(gameState.current);
-			this.parentState.switchGameplayPhase(phase);
+			gameState.current.switchGameplayPhase(phase);
 		}
 
 		// iterate through the 9 tiles the explosion covers centered at the specified tile pos
@@ -550,6 +550,7 @@ class tile{
 		return r;
 	}
 	getConectedNeighbors(){
+		// returns all the nearby tiles that this tile is connected to
 		var os = this.getOpenSides();
 		var r = [];
 

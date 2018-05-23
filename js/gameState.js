@@ -1184,6 +1184,9 @@ class state_gameplayState extends gameState{
 		this.scoreBonus = {};
 		this.resetScoreBonuses();
 		
+		this.floatingScoreFields = [];
+		this.floatingScoreFieldKillStart = null;
+		
 		this.currentScore = 0;
 		this.currentBallScore = 0;
 		this.currentLevel = new level(1);
@@ -1302,22 +1305,67 @@ class state_gameplayState extends gameState{
 		this.floatingScoreText = splashText.build("NO PTS", tpos, Infinity, textStyle.getDefault());
 		this.floatingScoreText.animLength = 500;
 	}
+	setFloatingScoreField(text, style, fieldID){
+		// sets the text and style of a specified floating score field that is drawn floating in the center of the tile grid
+		
+		for(var field of this.floatingScoreFields){
+			if(field.fieldID == fieldID){
+				field.setText(text, style);
+				return;
+			}
+		}
+		
+		var r = new floatingTextField();
+		r.fieldID = fieldID;
+		r.setText(text, style);
+		this.floatingScoreFields.push(r);
+	}
+	getFloatingScoreField(fieldID){
+		// gets the specified floating score field that is drawn floating in the center of the tile grid
+		
+		for(var field of this.floatingScoreFields){
+			if(field.fieldID == fieldID)
+				return field;
+		}
+		
+		return null;
+	}
+	
 	killFloatingScoreText(){
 		// starts the floating score text's ending animation
-		if(!this.floatingScoreText) return;
-		this.floatingScoreText.startEndAnim();
+		// if(!this.floatingScoreText) return;
+		// this.floatingScoreText.startEndAnim();
+		if(this.floatingScoreFieldKillStart) return;
+		this.floatingScoreFieldKillStart = this.timeElapsed;
 	}
 	drawFloatingScoreText(){
-		// renders the floating score text and nullifies if it's animation is over
-		if(!this.floatingScoreText) return;
-		this.floatingScoreText.draw();
+		// renders the floating score text and nullifies it if it's animation is over
+		//if(!this.floatingScoreText) return;
+		//this.floatingScoreText.draw();
+		//
+		//if(this.floatingScoreText.getAnimProgress() == null)
+		//	this.floatingScoreText = null;
 		
-		if(this.floatingScoreText.getAnimProgress() == null)
-			this.floatingScoreText = null;
+		var scl = 1;
+		
+		if(this.floatingScoreFieldKillStart){
+			var el = this.timeElapsed - this.floatingScoreFieldKillStart;
+			var prog = el / 1500;
+			scl = 1 - prog;
+			if(scl <= 0){
+				this.floatingScoreFields = [];
+				this.floatingScoreFieldKillStart = null;
+			}
+		}
+		
+		var tpos = tile.toScreenPos(new vec2(4.5, 9));
+		this.floatingScoreFields.forEach(function(field){
+			field.draw(tpos, scl);
+		});
 	}
 	updateFloatingScoreText(){
 		// increment the floating score text
-		if(!this.floatingScoreText) this.constructFloatingScoreText();
+		//if(!this.floatingScoreText) this.constructFloatingScoreText();
 		
 		var txt = this.currentBallScore + " PTS";
 		var style = textStyle.getDefault();
@@ -1325,10 +1373,14 @@ class state_gameplayState extends gameState{
 		//change the style based on the score
 		if(this.currentBallScore >= 500)
 			style.color = textColor.cyan;
+		if(this.currentBallScore >= 1000)
+			style.color = textColor.green;
 		
 		// apply the style and new text
-		this.floatingScoreText.style = style;
-		this.floatingScoreText.setText(txt);
+		//this.floatingScoreText.style = style;
+		//this.floatingScoreText.setText(txt);
+		
+		this.setFloatingScoreField(txt, style, floatingScoreFieldID.ballScore);
 	}
 	updateScoreVisuals(pts = 10){
 		// makes the score animation pop and the floating score text increment
