@@ -352,8 +352,9 @@ class tile{
 						// if the tile is a bomb, set it to be detonated next
 						if(ttile.isEntity(blocks.block_bomb, entities.block)){
 							// if the tile is already set to be detonated, ignore it
-							if(gameState.current.tilesTagged.includes(ttile))
+							if(ttile.tagged)
 								continue;
+							ttile.tagged = true;
 							gameState.current.tilesTagged.push(ttile);
 						}
 						// destroy the tile and add to the destruction counter
@@ -435,16 +436,23 @@ class tile{
 		// what happens when a bomb is set in place
 		tile.setTileAt(self, self.gridPos);
 		var neighbors = self.getDirectNeighbors();
+
+		if(self.tagged) return;
 		
 		var enterDestMode = false;
 		var tagblocks = [self];
 		neighbors.forEach(function(ttile){
 			if(ttile.isEntity(blocks.block_bomb, entities.block)){
+				if(!ttile.isTaged)
+					tagblocks.push(ttile);
 				enterDestMode = true;
+				self.tagged = true;
+				ttile.tagged = true;
 			}
 		});
 		
 		if(enterDestMode){
+			gameState.current.tilesTagged = gameState.current.tilesTagged.concat(tagblocks);
 			var p = new phase_destroyTaggedTiles(gameState.current);
 			gameState.current.switchGameplayPhase(p);
 		}
