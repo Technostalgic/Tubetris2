@@ -162,7 +162,7 @@ class item{
 	drawIcon(pos){
 		// draws the icon for the item
 		var spritesheet = gfx.item_icons;
-		var spr = new spriteBox(new vec2(), new vec2(gfx.item_icons.height));
+		var spr = new spriteBox(new vec2(), new vec2(25));
 		spr.pos.x = this.icon * spr.size.x;
 		
 		// if the icon doesn't exist, use an ascii character as a placeholder
