@@ -2087,6 +2087,7 @@ class phase_fellTiles extends gameplayPhase{
 	nextPhase(){
 		// check the tile placement and then progress to the next tileform if the gameplayPhase hasn't changed
 		tile.checkTilePlacement();
+		tile.checkForFullRows();
 		if(this.parentState.phase == this)
 			this.parentState.getNextTileform();
 		
