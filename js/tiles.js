@@ -467,15 +467,15 @@ class tile{
 		
 		this.tag(ballOb);
 		// add score based on the ball and tube color (if the tile is a tube)
-		if(this.entityType == entities.tube){
+		if(self.entityType == entities.tube){
 			var score = 0;
-			if(ball.ballType == balls.grey){
+			if(ballOb.ballType == balls.grey){
 				if(self.tileVariant == tubeColors.grey)
-					score = 10; // if they are both grey, score 10 pts
+					score = 100; // if they are both grey, score 10 pts
 			}
-			else if(ball.ballType == self.tileVariant || self.tileVariant == tubeColors.gold){
+			else if(ballOb.ballType == self.tileVariant || self.tileVariant == tubeColors.gold){
 				score = 50; // if they aren't grey, but match colors, score 50 pts
-				if(ball.ballType == balls.gold)
+				if(ballOb.ballType == balls.gold)
 					score = 150; // if they are both gold, score 150 pts
 			}
 			
