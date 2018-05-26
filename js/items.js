@@ -133,7 +133,7 @@ class item{
 	static ACT_extraPoints(self, ballOb){
 		// the activation method for the extra points item
 		scoring.addScore(
-			500 + 150 * gameState.current.currentLevel.difficulty, 
+			300 + 50 * gameState.current.currentLevel.difficulty, 
 			tile.toScreenPos(self.parentTile.gridPos),
 			scoreTypes.bonus);
 	}
