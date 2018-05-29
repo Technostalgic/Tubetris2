@@ -167,6 +167,7 @@ class level{
 		return new level(this.difficulty + 1);
 	}
 	completeLevel(parentState){
+		audioMgr.playSound(sfx.levelUp);
 		var next = this.getNextLevel();
 		parentState.currentLevel = next;
 	}

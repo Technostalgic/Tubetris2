@@ -341,6 +341,7 @@ function loadSFX(){
 	// load sounds
 	loadSound("moveCursor", "moveCursor.wav");
 	loadSound("select", "select.wav");
+	loadSound("notify", "notify.wav");
 	loadSound("burst", "burst.wav");
 	loadSound("explosion", "explosion.wav");
 	loadSound("bump", "bump.wav");
@@ -348,6 +349,8 @@ function loadSFX(){
 	loadSound("ballRoll", "ballRoll.wav");
 	loadSound("ballDirect", "ballDirect.wav");
 	loadSound("ballPause", "ballPause.wav");
+	loadSound("levelUp", "levelUp.wav");
+	loadSound("gameOver", "gameOver.wav");
 	
 	log(Object.keys(sfx).length.toString() + " sounds indexed", logType.notify);
 }

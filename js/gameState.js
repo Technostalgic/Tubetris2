@@ -1446,6 +1446,8 @@ class state_gameplayState extends gameState{
 		
 		this.switchGameplayPhase(new phase_gameOver());
 		audioMgr.stopMusic();
+
+		audioMgr.playSound(sfx.gameOver);
 	}
 	
 	update(dt){
