@@ -1,0 +1,12 @@
+gfx:
+Tubes: Surt (https://opengameart.org/users/surt) https://opengameart.org/content/plums
+Font: J-Robot (https://opengameart.org/users/j-robot) https://opengameart.org/content/pixel-block-font
+Coin: Puddin (https://opengameart.org/users/puddin) https://opengameart.org/content/rotating-coin
+
+sfx:
+Metal/tube sounds: Ogrebane (https://opengameart.org/users/ogrebane) https://opengameart.org/content/wood-and-metal-sound-effects-volume-2
+Retro sound effects: SubspaceAudio (https://opengameart.org/users/subspaceaudio)  https://opengameart.org/content/512-sound-effects-8-bit-style
+
+Music:
+"Modern" track: gega (https://opengameart.org/users/gega) https://opengameart.org/content/teck-sound
+"Menu" track: Ethan Nickerson
