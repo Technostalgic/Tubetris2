@@ -330,6 +330,7 @@ function loadGFX(){
 	loadGraphic("item_backdrop", "item_backdrop.png");
 	loadGraphic("item_icons", "item_icons.png");
 	loadGraphic("arrows", "arrows.png");
+	loadGraphic("coin", "coin.png");
 	
 	log(Object.keys(gfx).length.toString() + " images indexed", logType.notify);
 }

@@ -156,8 +156,19 @@ class item{
 	
 	draw(pos){
 		// draws the item at the specified position
-		drawCenteredImage(renderContext, gfx.item_backdrop, pos);
-		this.drawIcon(pos);
+		var frame = Math.floor(gameState.current.timeElapsed / 60) % 8;
+
+		var spBox = new spriteBox(
+			new vec2(frame * 16, 0),
+			new vec2(16)
+		);
+		var spcont = new spriteContainer(
+			gfx.coin,
+			spBox
+		);
+
+		spcont.bounds.setCenter(pos);
+		spcont.draw();
 	}
 	drawIcon(pos){
 		// draws the icon for the item
