@@ -1301,12 +1301,6 @@ class state_gameplayState extends gameState{
 		return true;
 	}
 	
-	constructFloatingScoreText(){
-		// creates and initializes a new floating score text instance
-		var tpos = tile.toScreenPos(new vec2(4.5, 9));
-		this.floatingScoreText = splashText.build("NO PTS", tpos, Infinity, textStyle.getDefault());
-		this.floatingScoreText.animLength = 500;
-	}
 	setFloatingScoreField(text, style, fieldID, exitAnim){
 		// sets the text and style of a specified floating score field that is drawn floating in the center of the tile grid
 		
@@ -1348,8 +1342,12 @@ class state_gameplayState extends gameState{
 	}
 	endCombos(){
 		// removes all the active combos and kills the floating score text
+		for(let c of this.activeCombos)
+			c.cashIn();
 		this.activeCombos = [];
 		this.killFloatingScoreText();
+		this.updateFloatingScoreText();
+		this.currentBallScore = 0;
 	}
 	
 	killFloatingScoreText(){
@@ -1388,6 +1386,8 @@ class state_gameplayState extends gameState{
 	updateFloatingScoreText(){
 		// increment the floating score text
 		//if(!this.floatingScoreText) this.constructFloatingScoreText();
+		
+		if(this.currentBallScore <= 0) return;
 		
 		var txt = this.currentBallScore + " PTS";
 		var style = textStyle.getDefault();
@@ -1436,8 +1436,6 @@ class state_gameplayState extends gameState{
 			log("gameplayPhase switching from '" + this.phase.constructor.name + "' to '" + newphase.constructor.name + "'");
 			this.phase.end();
 		}
-		if(newphase instanceof phase_placeTileform)
-			this.currentBallScore = 0;
 		
 		newphase.parentState = this;
 		this.phase = newphase;
@@ -1625,8 +1623,7 @@ class gameplayPhase{
 // the gameplay phase that lets the player control the tileform that is falling from the sky
 class phase_placeTileform extends gameplayPhase{
 	constructor(parentState){ 
-		super(parentState); 
-		this.parentState.currentBallScore = 0;
+		super(parentState);
 		
 		this.currentTileform = null; // the falling tileform that the player can control
 		this.tfDropInterval = 1000;
