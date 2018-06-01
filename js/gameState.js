@@ -1358,17 +1358,11 @@ class state_gameplayState extends gameState{
 		this.floatingScoreFieldKillStart = this.timeElapsed;
 	}
 	drawFloatingScoreText(){
-		// renders the floating score text and nullifies it if it's animation is over
-		//if(!this.floatingScoreText) return;
-		//this.floatingScoreText.draw();
-		//
-		//if(this.floatingScoreText.getAnimProgress() == null)
-		//	this.floatingScoreText = null;
-		
+		// renders the floating score text
 		var scl = 1;
 		var anm = false;
 		
-		// applies the 'go away' animation for the floating score fields
+		// applies the ending animation to the floating score fields
 		if(this.floatingScoreFieldKillStart){
 			anm = true; // tell the floating score field to start using it's emphasis animation
 			var el = this.timeElapsed - this.floatingScoreFieldKillStart; // calculates the elapsed milleseconds since "killFloatingScoreText" was called
@@ -1444,9 +1438,6 @@ class state_gameplayState extends gameState{
 		}
 		if(newphase instanceof phase_placeTileform)
 			this.currentBallScore = 0;
-		if(newphase instanceof phase_destroyTaggedTiles)
-			if(this.phase.bombsDetonated)
-				newphase.bombsDetonated = this.phase.bombsDetonated;
 		
 		newphase.parentState = this;
 		this.phase = newphase;
@@ -1878,7 +1869,6 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		
 		this.tileCombo = 0;
 		this.chargedTileCombo = 1;
-		this.bombsDetonated = 0;
 		
 		this.lastTileDestroyed = parentState.timeElapsed;
 		this.tilesChargeTagged = [];
@@ -1982,7 +1972,6 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		// enters the next gameplay phase
 		var phase = new phase_fellTiles(this.parentState);
 		phase.setFallHeights(this.fallHeights);
-		phase.bombsDetonated = this.bombsDetonated;
 		this.parentState.switchGameplayPhase(phase);
 	}
 }
@@ -1994,7 +1983,6 @@ class phase_fellTiles extends gameplayPhase{
 		this.fallHeights = [];
 		this.fallingTiles = null;
 		this.fallOffset = 0;
-		this.bombsDetonated = 0;
 		
 		this.lastOffReset = this.parentState.timeElapsed;
 	}
@@ -2069,35 +2057,6 @@ class phase_fellTiles extends gameplayPhase{
 		this.fallOffset = Math.min(this.fallOffset, 1);
 	}
 	
-	doBombBonus(){
-		// gives the player extra points for detonating multiple bombs
-		log("old bomb bonus algorithm HALTED", logType.error)
-		return;
-		
-		var bombs = this.bombsDetonated;
-		this.bombsDetonated = 0;
-		
-		if(bombs < 3) return;
-		
-		// calculate amount of points earned from the combo
-		var pts = bombs;
-		if(bombs < 4)
-			pts *= 200;
-		else if(bombs < 5)
-			pts *= 250;
-		else pts *= 300;
-		
-		// construct the splash text to notify the player of the combo
-		var tpos = tile.toScreenPos(new vec2(4.5, 10));
-		var splashtext = splashText.build(bombs + "x Chain Reaction!", tpos, 2000, new textStyle(fonts.large, textColor.red), new textAnim_blink(250, 0, textColor.yellow));
-		var scoretext = splashText.build(pts + " pts", tpos.plus(new vec2(0, tile.tilesize)), 2000, scoring.getScoreStyle(pts, scoreTypes.bonus));
-		scoretext.animLength = 500;
-		splashtext.animLength = 500;
-		scoretext.add();
-		splashtext.add();
-		
-		scoring.addScore(pts);
-	}
 	setFallHeights(heights){
 		this.fallHeights = heights;
 	}
@@ -2123,9 +2082,6 @@ class phase_fellTiles extends gameplayPhase{
 		tile.checkForFullRows();
 		if(this.parentState.phase == this)
 			this.parentState.getNextTileform();
-		
-		if(this.bombsDetonated)
-			this.doBombBonus();
 	}
 }
 // the level complete animation
