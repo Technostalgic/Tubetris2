@@ -9,9 +9,13 @@
 var floatingScoreFieldID = {
 	ballScore: 0,
 	bombCombo: 1,
-	chargeCombo: 2,
-	colorCombo: 3,
-	coinBonus: 4
+	bombComboPts: 2,
+	chargeCombo: 3,
+	chargeComboPts: 4,
+	colorCombo: 5,
+	colorComboPts: 6,
+	coinBonus: 7,
+	coinBonusPts: 8
 }
 // enumerates the different colors in a font's color spritesheet
 var textColor = {
@@ -427,7 +431,7 @@ class floatingTextField{
 		this.preRender = preRenderedText.fromString(this.text, new vec2(), this.style);
 	}
 	
-	draw(pos,  animated = false, scale = 1){
+	draw(pos, animated = false, scale = 1){
 		var pr = this.preRender;
 		
 		if(animated)

@@ -1187,6 +1187,7 @@ class state_gameplayState extends gameState{
 		
 		this.floatingScoreFields = [];
 		this.floatingScoreFieldKillStart = null;
+		this.activeCombos = [];
 		
 		this.currentScore = 0;
 		this.currentBallScore = 0;
@@ -1332,10 +1333,27 @@ class state_gameplayState extends gameState{
 		return null;
 	}
 	
+	addToComboValue(comboID, value = 1){
+		// adds a combo point to the specified score combo
+		for(let combo of this.activeCombos){
+			if(combo.comboID == comboID){
+				combo.addValue(value);
+				return;
+			}
+		}
+		
+		var combo = scoreCombo.fromComboID(floatingScoreFieldID.bombCombo);
+		combo.addValue(value)
+		this.activeCombos.push(combo);
+	}
+	endCombos(){
+		// removes all the active combos and kills the floating score text
+		this.activeCombos = [];
+		this.killFloatingScoreText();
+	}
+	
 	killFloatingScoreText(){
 		// starts the floating score text's ending animation
-		// if(!this.floatingScoreText) return;
-		// this.floatingScoreText.startEndAnim();
 		if(this.floatingScoreFieldKillStart) return;
 		this.floatingScoreFieldKillStart = this.timeElapsed;
 	}
@@ -1356,9 +1374,9 @@ class state_gameplayState extends gameState{
 			var el = this.timeElapsed - this.floatingScoreFieldKillStart; // calculates the elapsed milleseconds since "killFloatingScoreText" was called
 			var prog = el / 2000; // makes it a linear scale from 0 to 1
 			
-			// if halfway done, start shrinking
-			if(prog > 0.5)
-				scl = (1 - (2 * (prog - 0.5)));
+			// if 3/4 of the way done, start shrinking
+			if(prog > 0.75)
+				scl = (1 - (4 * (prog - 0.75)));
 			
 			// if all the way done, remove floating score fields and reset animation
 			if(prog >= 1){
@@ -1538,7 +1556,7 @@ class state_gameplayState extends gameState{
 		var tftlvl = this.nextTileforms.length + this.currentLevel.tfTilProgression;
 		this.hudPreRenders.progLabelPreRender = preRenderedText.fromString("next level in " + tftlvl, progPos, new textStyle(fonts.small));
 	}
-	
+
 	drawHUDPreRenders(){
 		var ths = this;
 		Object.keys(this.hudPreRenders).forEach(function(key){
@@ -1625,7 +1643,7 @@ class phase_placeTileform extends gameplayPhase{
 		this.arrowIndicators = null;
 		this.tfLastBumpTime = this.parentState.timeElapsed;
 		this.bumpStop = true; // used to stop tileforms from immediately being dropped because the down key is held
-		this.parentState.killFloatingScoreText();
+		this.parentState.endCombos();
 	}
 	
 	update(dt){
@@ -1903,7 +1921,7 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		var rollpts = true;
 		
 		if(tileOb.isEntity(blocks.block_bomb, entities.block)){
-			this.bombsDetonated += 1;
+			this.parentState.addToComboValue(floatingScoreFieldID.bombCombo);
 			rollpts = false;
 		}
 		
@@ -1934,15 +1952,15 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		var rollpts = true;
 		
 		if(tileOb.isEntity(blocks.block_bomb, entities.block)){
-			this.bombsDetonated += 1;
+			this.parentState.addToComboValue(floatingScoreFieldID.bombCombo);
 			rollpts = false;
 		}
 		
 		if(rollpts){
 			var comboAdd = 0.25;
-			if(this.tileCombo >= 3)
+			if(this.chargedTileCombo >= 3)
 				comboAdd = 0.125;
-			var comboMult = Math.min(Math.floor(this.tileCombo), 5);
+			var comboMult = Math.min(Math.floor(this.chargedTileCombo), 5);
 			scoring.addScore(comboMult * 10, tile.toScreenPos(tileOb.gridPos), scoreTypes.pop);
 			this.chargedTileCombo += comboAdd;
 		}
@@ -2053,14 +2071,17 @@ class phase_fellTiles extends gameplayPhase{
 	
 	doBombBonus(){
 		// gives the player extra points for detonating multiple bombs
+		log("old bomb bonus algorithm HALTED", logType.error)
+		return;
+		
 		var bombs = this.bombsDetonated;
 		this.bombsDetonated = 0;
 		
-		if(bombs < 2) return;
+		if(bombs < 3) return;
 		
 		// calculate amount of points earned from the combo
 		var pts = bombs;
-		if(bombs < 3)
+		if(bombs < 4)
 			pts *= 200;
 		else if(bombs < 5)
 			pts *= 250;
@@ -2111,7 +2132,7 @@ class phase_fellTiles extends gameplayPhase{
 class phase_levelComplete extends gameplayPhase{
 	constructor(parentState){
 		super(parentState);
-		this.parentState.killFloatingScoreText();
+		this.parentState.endCombos();
 		
 		this.startTime = this.parentState.timeElapsed;
 		this.constructPreRender();

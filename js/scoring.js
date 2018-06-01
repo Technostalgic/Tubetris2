@@ -112,3 +112,64 @@ class scoring{
 		return style;
 	}
 }
+
+class scoreCombo{
+	constructor(){
+		this.comboID = 0;
+		this.comboValue = 0;
+		this.comboThreshold = 3;
+		this.comboPointValue = 0;
+	}
+	
+	static fromComboID(comboID){
+		switch(comboID){
+			case floatingScoreFieldID.bombCombo:
+				return new combo_bombs();
+		}
+		return new scoreCombo();
+	}
+	
+	addValue(val = 1){
+		this.comboValue += val;
+		if(this.comboValue < this.comboThreshold)
+			return;
+		
+		this.updatePointValue();
+		this.updateFloatingTexts();
+	}
+	updatePointValue(){
+		this.comboPointValue = this.comboValue * 100;
+	}
+	updatefloatingTexts(){}
+	
+	cashIn(){
+		scoring.addScore(this.comboPointValue);
+	}
+}
+
+class combo_bombs extends scoreCombo{
+	constructor(){
+		super();
+		this.comboID = floatingScoreFieldID.bombCombo;
+	}
+	
+	updatePointValue(){
+		var mult;
+		if(this.comboValue < 4)
+			mult = 200;
+		else if(this.comboValue < 5)
+			mult = 250;
+		else mult = 300;
+		
+		this.comboPointValue = mult * this.comboValue;
+	}
+	updateFloatingTexts(){
+		var str1 = this.comboValue.toString() + "x Chain Reaction!";
+		var str2 = this.comboPointValue.toString() + " pts";
+		
+		var anim = new textAnim_blink(250, 0, textColor.yellow);
+		var style = new textStyle(fonts.large, textColor.red);
+		gameState.current.setFloatingScoreField(str1, style, floatingScoreFieldID.bombCombo, anim);
+		gameState.current.setFloatingScoreField(str2, style, floatingScoreFieldID.bombComboPts, anim);
+	}
+}
