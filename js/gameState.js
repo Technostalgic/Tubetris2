@@ -1267,7 +1267,7 @@ class state_gameplayState extends gameState{
 	decrementUntil(){
 		// decrements all the tileform 'until' fields, each time a new piece is gotten, and if any of the
 		// fields reach below zero, the new 'until' counts are searched for
-		log(this.until);
+		// log(this.until);
 		var ths = this;
 		var doSearch = false;
 		Object.keys(this.until).forEach(function(key){
@@ -1306,19 +1306,19 @@ class state_gameplayState extends gameState{
 		this.floatingScoreText = splashText.build("NO PTS", tpos, Infinity, textStyle.getDefault());
 		this.floatingScoreText.animLength = 500;
 	}
-	setFloatingScoreField(text, style, fieldID){
+	setFloatingScoreField(text, style, fieldID, exitAnim){
 		// sets the text and style of a specified floating score field that is drawn floating in the center of the tile grid
 		
 		for(var field of this.floatingScoreFields){
 			if(field.fieldID == fieldID){
-				field.setText(text, style);
+				field.setText(text, style, exitAnim);
 				return;
 			}
 		}
 		
 		var r = new floatingTextField();
 		r.fieldID = fieldID;
-		r.setText(text, style);
+		r.setText(text, style, exitAnim);
 		this.floatingScoreFields.push(r);
 	}
 	getFloatingScoreField(fieldID){
@@ -1348,20 +1348,29 @@ class state_gameplayState extends gameState{
 		//	this.floatingScoreText = null;
 		
 		var scl = 1;
+		var anm = false;
 		
+		// applies the 'go away' animation for the floating score fields
 		if(this.floatingScoreFieldKillStart){
-			var el = this.timeElapsed - this.floatingScoreFieldKillStart;
-			var prog = el / 1500;
-			scl = 1 - prog;
-			if(scl <= 0){
+			anm = true; // tell the floating score field to start using it's emphasis animation
+			var el = this.timeElapsed - this.floatingScoreFieldKillStart; // calculates the elapsed milleseconds since "killFloatingScoreText" was called
+			var prog = el / 2000; // makes it a linear scale from 0 to 1
+			
+			// if halfway done, start shrinking
+			if(prog > 0.5)
+				scl = (1 - (2 * (prog - 0.5)));
+			
+			// if all the way done, remove floating score fields and reset animation
+			if(prog >= 1){
 				this.floatingScoreFields = [];
 				this.floatingScoreFieldKillStart = null;
 			}
 		}
 		
-		var tpos = tile.toScreenPos(new vec2(4.5, 9));
-		this.floatingScoreFields.forEach(function(field){
-			field.draw(tpos, scl);
+		var spos = tile.toScreenPos(new vec2(4.5, 9));
+		this.floatingScoreFields.forEach(function(field, i){
+			let tpos = spos.plus(new vec2(0, i * 32));
+			field.draw(tpos, anm, scl);
 		});
 	}
 	updateFloatingScoreText(){
@@ -1381,7 +1390,7 @@ class state_gameplayState extends gameState{
 		//this.floatingScoreText.style = style;
 		//this.floatingScoreText.setText(txt);
 		
-		this.setFloatingScoreField(txt, style, floatingScoreFieldID.ballScore);
+		this.setFloatingScoreField(txt, style, floatingScoreFieldID.ballScore, new textAnim_blink(250, 0));
 	}
 	updateScoreVisuals(pts = 10){
 		// makes the score animation pop and the floating score text increment
