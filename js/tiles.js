@@ -443,7 +443,7 @@ class tile{
 		var tagblocks = [self];
 		neighbors.forEach(function(ttile){
 			if(ttile.isEntity(blocks.block_bomb, entities.block)){
-				if(!ttile.isTaged)
+				if(!ttile.tagged)
 					tagblocks.push(ttile);
 				enterDestMode = true;
 				self.tagged = true;
@@ -713,6 +713,7 @@ class tileform{
 	}
 	
 	static getPiece_random(color = null){
+		//return Math.random() >= 0.5 ? tileform.getPiece_bomb() : tileform.getPiece_brick();
 		var r = [
 			"getPiece_square0",
 			"getPiece_square1",

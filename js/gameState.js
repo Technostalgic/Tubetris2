@@ -1187,6 +1187,7 @@ class state_gameplayState extends gameState{
 		
 		this.floatingScoreFields = [];
 		this.floatingScoreFieldKillStart = null;
+		this.activeCombos = [];
 		
 		this.currentScore = 0;
 		this.currentBallScore = 0;
@@ -1267,7 +1268,7 @@ class state_gameplayState extends gameState{
 	decrementUntil(){
 		// decrements all the tileform 'until' fields, each time a new piece is gotten, and if any of the
 		// fields reach below zero, the new 'until' counts are searched for
-		log(this.until);
+		// log(this.until);
 		var ths = this;
 		var doSearch = false;
 		Object.keys(this.until).forEach(function(key){
@@ -1300,25 +1301,19 @@ class state_gameplayState extends gameState{
 		return true;
 	}
 	
-	constructFloatingScoreText(){
-		// creates and initializes a new floating score text instance
-		var tpos = tile.toScreenPos(new vec2(4.5, 9));
-		this.floatingScoreText = splashText.build("NO PTS", tpos, Infinity, textStyle.getDefault());
-		this.floatingScoreText.animLength = 500;
-	}
-	setFloatingScoreField(text, style, fieldID){
+	setFloatingScoreField(text, style, fieldID, exitAnim){
 		// sets the text and style of a specified floating score field that is drawn floating in the center of the tile grid
 		
 		for(var field of this.floatingScoreFields){
 			if(field.fieldID == fieldID){
-				field.setText(text, style);
+				field.setText(text, style, exitAnim);
 				return;
 			}
 		}
 		
 		var r = new floatingTextField();
 		r.fieldID = fieldID;
-		r.setText(text, style);
+		r.setText(text, style, exitAnim);
 		this.floatingScoreFields.push(r);
 	}
 	getFloatingScoreField(fieldID){
@@ -1332,41 +1327,67 @@ class state_gameplayState extends gameState{
 		return null;
 	}
 	
+	addToComboValue(comboID, value = 1){
+		// adds a combo point to the specified score combo
+		for(let combo of this.activeCombos){
+			if(combo.comboID == comboID){
+				combo.addValue(value);
+				return;
+			}
+		}
+		
+		var combo = scoreCombo.fromComboID(floatingScoreFieldID.bombCombo);
+		combo.addValue(value)
+		this.activeCombos.push(combo);
+	}
+	endCombos(){
+		// removes all the active combos and kills the floating score text
+		for(let c of this.activeCombos)
+			c.cashIn();
+		this.activeCombos = [];
+		this.killFloatingScoreText();
+		this.updateFloatingScoreText();
+		this.currentBallScore = 0;
+	}
+	
 	killFloatingScoreText(){
 		// starts the floating score text's ending animation
-		// if(!this.floatingScoreText) return;
-		// this.floatingScoreText.startEndAnim();
 		if(this.floatingScoreFieldKillStart) return;
 		this.floatingScoreFieldKillStart = this.timeElapsed;
 	}
 	drawFloatingScoreText(){
-		// renders the floating score text and nullifies it if it's animation is over
-		//if(!this.floatingScoreText) return;
-		//this.floatingScoreText.draw();
-		//
-		//if(this.floatingScoreText.getAnimProgress() == null)
-		//	this.floatingScoreText = null;
-		
+		// renders the floating score text
 		var scl = 1;
+		var anm = false;
 		
+		// applies the ending animation to the floating score fields
 		if(this.floatingScoreFieldKillStart){
-			var el = this.timeElapsed - this.floatingScoreFieldKillStart;
-			var prog = el / 1500;
-			scl = 1 - prog;
-			if(scl <= 0){
+			anm = true; // tell the floating score field to start using it's emphasis animation
+			var el = this.timeElapsed - this.floatingScoreFieldKillStart; // calculates the elapsed milleseconds since "killFloatingScoreText" was called
+			var prog = el / 2000; // makes it a linear scale from 0 to 1
+			
+			// if 3/4 of the way done, start shrinking
+			if(prog > 0.75)
+				scl = (1 - (4 * (prog - 0.75)));
+			
+			// if all the way done, remove floating score fields and reset animation
+			if(prog >= 1){
 				this.floatingScoreFields = [];
 				this.floatingScoreFieldKillStart = null;
 			}
 		}
 		
-		var tpos = tile.toScreenPos(new vec2(4.5, 9));
-		this.floatingScoreFields.forEach(function(field){
-			field.draw(tpos, scl);
+		var spos = tile.toScreenPos(new vec2(4.5, 9));
+		this.floatingScoreFields.forEach(function(field, i){
+			let tpos = spos.plus(new vec2(0, i * 32));
+			field.draw(tpos, anm, scl);
 		});
 	}
 	updateFloatingScoreText(){
 		// increment the floating score text
 		//if(!this.floatingScoreText) this.constructFloatingScoreText();
+		
+		if(this.currentBallScore <= 0) return;
 		
 		var txt = this.currentBallScore + " PTS";
 		var style = textStyle.getDefault();
@@ -1381,7 +1402,7 @@ class state_gameplayState extends gameState{
 		//this.floatingScoreText.style = style;
 		//this.floatingScoreText.setText(txt);
 		
-		this.setFloatingScoreField(txt, style, floatingScoreFieldID.ballScore);
+		this.setFloatingScoreField(txt, style, floatingScoreFieldID.ballScore, new textAnim_blink(250, 0));
 	}
 	updateScoreVisuals(pts = 10){
 		// makes the score animation pop and the floating score text increment
@@ -1415,11 +1436,6 @@ class state_gameplayState extends gameState{
 			log("gameplayPhase switching from '" + this.phase.constructor.name + "' to '" + newphase.constructor.name + "'");
 			this.phase.end();
 		}
-		if(newphase instanceof phase_placeTileform)
-			this.currentBallScore = 0;
-		if(newphase instanceof phase_destroyTaggedTiles)
-			if(this.phase.bombsDetonated)
-				newphase.bombsDetonated = this.phase.bombsDetonated;
 		
 		newphase.parentState = this;
 		this.phase = newphase;
@@ -1529,7 +1545,7 @@ class state_gameplayState extends gameState{
 		var tftlvl = this.nextTileforms.length + this.currentLevel.tfTilProgression;
 		this.hudPreRenders.progLabelPreRender = preRenderedText.fromString("next level in " + tftlvl, progPos, new textStyle(fonts.small));
 	}
-	
+
 	drawHUDPreRenders(){
 		var ths = this;
 		Object.keys(this.hudPreRenders).forEach(function(key){
@@ -1607,8 +1623,7 @@ class gameplayPhase{
 // the gameplay phase that lets the player control the tileform that is falling from the sky
 class phase_placeTileform extends gameplayPhase{
 	constructor(parentState){ 
-		super(parentState); 
-		this.parentState.currentBallScore = 0;
+		super(parentState);
 		
 		this.currentTileform = null; // the falling tileform that the player can control
 		this.tfDropInterval = 1000;
@@ -1616,7 +1631,7 @@ class phase_placeTileform extends gameplayPhase{
 		this.arrowIndicators = null;
 		this.tfLastBumpTime = this.parentState.timeElapsed;
 		this.bumpStop = true; // used to stop tileforms from immediately being dropped because the down key is held
-		this.parentState.killFloatingScoreText();
+		this.parentState.endCombos();
 	}
 	
 	update(dt){
@@ -1853,7 +1868,6 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		
 		this.tileCombo = 0;
 		this.chargedTileCombo = 1;
-		this.bombsDetonated = 0;
 		
 		this.lastTileDestroyed = parentState.timeElapsed;
 		this.tilesChargeTagged = [];
@@ -1896,7 +1910,7 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		var rollpts = true;
 		
 		if(tileOb.isEntity(blocks.block_bomb, entities.block)){
-			this.bombsDetonated += 1;
+			this.parentState.addToComboValue(floatingScoreFieldID.bombCombo);
 			rollpts = false;
 		}
 		
@@ -1927,15 +1941,15 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		var rollpts = true;
 		
 		if(tileOb.isEntity(blocks.block_bomb, entities.block)){
-			this.bombsDetonated += 1;
+			this.parentState.addToComboValue(floatingScoreFieldID.bombCombo);
 			rollpts = false;
 		}
 		
 		if(rollpts){
 			var comboAdd = 0.25;
-			if(this.tileCombo >= 3)
+			if(this.chargedTileCombo >= 3)
 				comboAdd = 0.125;
-			var comboMult = Math.min(Math.floor(this.tileCombo), 5);
+			var comboMult = Math.min(Math.floor(this.chargedTileCombo), 5);
 			scoring.addScore(comboMult * 10, tile.toScreenPos(tileOb.gridPos), scoreTypes.pop);
 			this.chargedTileCombo += comboAdd;
 		}
@@ -1957,7 +1971,6 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		// enters the next gameplay phase
 		var phase = new phase_fellTiles(this.parentState);
 		phase.setFallHeights(this.fallHeights);
-		phase.bombsDetonated = this.bombsDetonated;
 		this.parentState.switchGameplayPhase(phase);
 	}
 }
@@ -1969,7 +1982,6 @@ class phase_fellTiles extends gameplayPhase{
 		this.fallHeights = [];
 		this.fallingTiles = null;
 		this.fallOffset = 0;
-		this.bombsDetonated = 0;
 		
 		this.lastOffReset = this.parentState.timeElapsed;
 	}
@@ -2044,32 +2056,6 @@ class phase_fellTiles extends gameplayPhase{
 		this.fallOffset = Math.min(this.fallOffset, 1);
 	}
 	
-	doBombBonus(){
-		// gives the player extra points for detonating multiple bombs
-		var bombs = this.bombsDetonated;
-		this.bombsDetonated = 0;
-		
-		if(bombs < 2) return;
-		
-		// calculate amount of points earned from the combo
-		var pts = bombs;
-		if(bombs < 3)
-			pts *= 200;
-		else if(bombs < 5)
-			pts *= 250;
-		else pts *= 300;
-		
-		// construct the splash text to notify the player of the combo
-		var tpos = tile.toScreenPos(new vec2(4.5, 10));
-		var splashtext = splashText.build(bombs + "x Chain Reaction!", tpos, 2000, new textStyle(fonts.large, textColor.red), new textAnim_blink(250, 0, textColor.yellow));
-		var scoretext = splashText.build(pts + " pts", tpos.plus(new vec2(0, tile.tilesize)), 2000, scoring.getScoreStyle(pts, scoreTypes.bonus));
-		scoretext.animLength = 500;
-		splashtext.animLength = 500;
-		scoretext.add();
-		splashtext.add();
-		
-		scoring.addScore(pts);
-	}
 	setFallHeights(heights){
 		this.fallHeights = heights;
 	}
@@ -2095,16 +2081,13 @@ class phase_fellTiles extends gameplayPhase{
 		tile.checkForFullRows();
 		if(this.parentState.phase == this)
 			this.parentState.getNextTileform();
-		
-		if(this.bombsDetonated)
-			this.doBombBonus();
 	}
 }
 // the level complete animation
 class phase_levelComplete extends gameplayPhase{
 	constructor(parentState){
 		super(parentState);
-		this.parentState.killFloatingScoreText();
+		this.parentState.endCombos();
 		
 		this.startTime = this.parentState.timeElapsed;
 		this.constructPreRender();
