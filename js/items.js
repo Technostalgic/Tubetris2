@@ -50,6 +50,7 @@ class item{
 	activate(ballOb){
 		// activates the item, ballOb should be the ball object that touched it to activate it
 		this.destroy();
+		audioMgr.playSound(sfx.getCoin);
 		scoring.addScore(
 			300 + 50 * gameState.current.currentLevel.difficulty, 
 			tile.toScreenPos(this.parentTile.gridPos),

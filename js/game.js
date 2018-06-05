@@ -343,10 +343,13 @@ function loadSFX(){
 	loadSound("moveCursor", "moveCursor.wav");
 	loadSound("select", "select.wav");
 	loadSound("notify", "notify.wav");
+	loadSound("getCoin", "getCoin.wav");
 	loadSound("burst", "burst.wav");
 	loadSound("explosion", "explosion.wav");
 	loadSound("bump", "bump.wav");
+	loadSound("swapTileform", "swapTileform.wav");
 	loadSound("placeTileform", "placeTileform.wav");
+	loadSound("invalidMove", "invalidMove.wav");
 	loadSound("ballRoll", "ballRoll.wav");
 	loadSound("ballDirect", "ballDirect.wav");
 	loadSound("ballPause", "ballPause.wav");
