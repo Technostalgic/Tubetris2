@@ -1684,7 +1684,7 @@ class phase_placeTileform extends gameplayPhase{
 		var ptf = this.parentState.nextTileforms[0];
 		ptf.setPos(this.currentTileform.gridPos.clone());
 		if(ptf.isOverlappingTile()){
-			ptf.setPos(0, 0);
+			ptf.setPos(new vec2());
 			audioMgr.playSound(sfx.invalidMove);
 			return;
 		}
