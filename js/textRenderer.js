@@ -393,6 +393,7 @@ class textAnim_rotationOffset extends textAnim{
 	constructor(animLength = 500, rotVariance = 1, charOff = 0.1){
 		super();
 		
+		this.animOffset = animLength / 4;
 		this.animType = textAnimType.trigonometricCycle;
 		this.animLength = animLength;
 		this.animCharOffset = charOff;

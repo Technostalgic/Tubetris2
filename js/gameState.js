@@ -76,6 +76,21 @@ class gameState{
 class menuButton{
 	constructor(){ }
 	
+	static buildCreditsLink(author, desc, hyperlink, pos, style, anim){
+		// simple way to build a credits link
+		var mb = new menuButton().construct(author, pos, desc + " - click to visit their website", 
+			function(){
+				log("Imagine you were redirected to " + hyperlink, logType.notify);
+			}
+		);
+		
+		style.scale = 1;
+		mb.setStyles(style);
+		mb.animation = anim;
+		
+		return mb;
+	}
+	
 	calcSize(){
 		// calculates and sets the selected and unselected boundaries based on the text and font styles
 		this.normalBounds = this.preRenders.normal.getBounds();
@@ -166,10 +181,14 @@ class menuButton{
 		var fSel = selected != this.selectedLast;
 		
 		if(selected){
-			// reset's the button's animation if there is a change in it's state
+			// reset's the button's animation if there's a change in it's state
 			if(fSel) this.selectAnim.resetAnim();
-			// applys the animation for the button's selected state
-			this.preRenders.selected.animated(this.selectAnim).draw();
+			var fpr = this.preRenders.selected;
+			
+			// applies the emphasis animations if any
+			fpr = fpr.animated(this.selectAnim);
+			if(this.animation) fpr = fpr.animated(this.animation);
+			fpr.draw();
 			
 			// draws arrows to the left and right of the button
 			var off = 10;
@@ -182,7 +201,7 @@ class menuButton{
 			this.preRenders.description.draw();
 		}
 		else {
-			// reset's the button's animation if there is a change in it's state
+			// reset's the button's animation if there's a change in it's state
 			if(fSel) this.unselectAnim.resetAnim();
 			// applys the animation for the button's unselected state
 			this.preRenders.normal.animated(this.unselectAnim).draw();
@@ -667,12 +686,13 @@ class state_mainMenu extends state_menuState{
 		var action_startGame = function(){ startNewGame(); };
 		var action_switchToScoreboard = function(){ gameState.switchState(new state_scoreboard()); };
 		var action_switchToOptions = function(){ gameState.switchState(new state_optionsMenu()); };
+		var action_switchToCredits = function(){ gameState.switchState(new state_credits()); }
 		
 		this.buttons.push(new menuButton().construct("Start Game", screenBounds.center.plus(new vec2(0, off * dif)), "start a new game", action_startGame)); off++;
 		this.buttons.push(new menuButton().construct("Scoreboard", screenBounds.center.plus(new vec2(0, off * dif)), "view the highest scoring players", action_switchToScoreboard)); off++;
 		this.buttons.push(new menuButton().construct("Options", screenBounds.center.plus(new vec2(0, off * dif)), "configure gameplay and av options", action_switchToOptions)); off++;
 		this.buttons.push(new menuButton().construct("Extras", screenBounds.center.plus(new vec2(0, off * dif)), "other things n stuff")); off++;
-		this.buttons.push(new menuButton().construct("Credits", screenBounds.center.plus(new vec2(0, off * dif)), "see who contributed to making the game!")); off++;
+		this.buttons.push(new menuButton().construct("Credits", screenBounds.center.plus(new vec2(0, off * dif)), "see who contributed to making the game!", action_switchToCredits)); off++;
 	}
 	
 	drawTitle(){
@@ -788,6 +808,144 @@ class state_scoreboard extends state_menuState{
 		var style = new textStyle(fonts.large, textColor.green, 2);
 		textRenderer.drawText("SCOREBOARD", new vec2(screenBounds.center.x, screenBounds.top + 100), style, this.titleAnim);
 		
+	}
+}
+// the credits screen
+class state_credits extends state_menuState{
+	constructor(){ 
+		super(); 
+		this.setTitle("Credits");
+	}
+	
+	addButtons(){
+		var ths = this;
+		var off = 0;
+		var dif = 40;
+		var tpos = new vec2(screenBounds.center.x, screenBounds.top + 165);
+		
+		// technostalgic
+		this.buttons.push(
+			menuButton.buildCreditsLink(
+				"Technostalgic",
+				"Technostalgic programmed the game and everything you love about it! I also made some of the graphics",
+				"http://technostalgic.tech/pages/Home/index.html",
+				tpos.plus(new vec2(0, off * dif)),
+				textStyle.getDefault().setColor(textColor.yellow),
+				new textAnim_compound([
+					new textAnim_rainbow(),
+					new textAnim_yOffset(1000, 10),
+					new textAnim_rotationOffset(1000, 0.25)
+				])
+			)
+		); off++;
+		off += 0.5;
+		
+		var scaleAnim = new textAnim_scale(500, 0.85, 1.15);
+		scaleAnim.animType = textAnimType.trigonometricCycle;
+		scaleAnim.looping = true;
+		
+		this.buttons.push(
+			menuButton.buildCreditsLink(
+				"Surt",
+				"Surt made the sweet pixel art graphics for the pipes!",
+				"https://opengameart.org/users/surt",
+				tpos.plus(new vec2(0, off * dif)),
+				textStyle.getDefault().setColor(textColor.cyan),
+				new textAnim_compound([
+					new textAnim_blink(500, 0.1, textColor.yellow),
+					scaleAnim
+				])
+			)
+		); off++;
+		this.buttons.push(
+			menuButton.buildCreditsLink(
+				"J-Robot",
+				"J-Robot created all the retro fonts that hit you right in the nostalgia",
+				"https://opengameart.org/users/surt",
+				tpos.plus(new vec2(0, off * dif)),
+				textStyle.getDefault().setColor(textColor.cyan),
+				new textAnim_compound([
+					new textAnim_blink(500, 0.1, textColor.yellow),
+					scaleAnim
+				])
+			)
+		); off++;
+		this.buttons.push(
+			menuButton.buildCreditsLink(
+				"Puddin",
+				"Puddin animated the coin graphic",
+				"https://opengameart.org/users/surt",
+				tpos.plus(new vec2(0, off * dif)),
+				textStyle.getDefault().setColor(textColor.cyan),
+				new textAnim_compound([
+					new textAnim_blink(500, 0.1, textColor.yellow),
+					scaleAnim
+				])
+			)
+		); off++;
+		off += 0.5;
+		
+		this.buttons.push(
+			menuButton.buildCreditsLink(
+				"gega",
+				"gega composed the modern sound track that goes so well with the gameplay",
+				"https://opengameart.org/users/gega",
+				tpos.plus(new vec2(0, off * dif)),
+				textStyle.getDefault().setColor(textColor.cyan),
+				new textAnim_compound([
+					new textAnim_blink(500, 0.1, textColor.yellow),
+					scaleAnim
+				])
+			)
+		); off++;
+		this.buttons.push(
+			menuButton.buildCreditsLink(
+				"Necrosome",
+				"Ethan Nickerson slammed his face against his keyboard until the menu music somehow came out of that",
+				"http://zombo.com",
+				tpos.plus(new vec2(0, off * dif)),
+				textStyle.getDefault().setColor(textColor.cyan),
+				new textAnim_compound([
+					new textAnim_blink(500, 0.1, textColor.yellow),
+					scaleAnim
+				])
+			)
+		); off++;
+		off += 0.5;
+		
+		this.buttons.push(
+			menuButton.buildCreditsLink(
+				"Ogrebane",
+				"Ogrebane made all those metallic clanking sound effects that you hear in the game",
+				"https://opengameart.org/users/ogrebane",
+				tpos.plus(new vec2(0, off * dif)),
+				textStyle.getDefault().setColor(textColor.cyan),
+				new textAnim_compound([
+					new textAnim_blink(500, 0.1, textColor.yellow),
+					scaleAnim
+				])
+			)
+		); off++;
+		this.buttons.push(
+			menuButton.buildCreditsLink(
+				"SubspaceAudio",
+				"SubspaceAudio designed all the bleep bloops and other retro sounding old school 16 bit sound effects",
+				"https://opengameart.org/users/subspaceaudio",
+				tpos.plus(new vec2(0, off * dif)),
+				textStyle.getDefault().setColor(textColor.cyan),
+				new textAnim_compound([
+					new textAnim_blink(500, 0.1, textColor.yellow),
+					scaleAnim
+				])
+			)
+		); off++;
+		
+		// back button
+		var action_switchToPreviousMenu = function(){
+			if(ths.previousState) ths.switchToPreviousState();
+			else gameState.switchState(new state_mainMenu());
+		};
+		this.buttons.push(new menuButton().construct("Back", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "return to the previous menu", action_switchToPreviousMenu));
 	}
 }
 
