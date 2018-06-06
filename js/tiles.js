@@ -409,9 +409,32 @@ class tile{
 		// return the list of remaining rows
 		return r;
 	}
+	static getNewFullRows(){
+		// gets all the full rows that haven't been charged yet
+		var fr = tile.getFullRows();
+		
+		// go through each full row to check if it has already been counted as full
+		for(let i = fr.length - 1; i >= 0; i--){
+			// checks each tile in the row to make sure that at least one tile isn't charged already, which would indicate that
+			// the row hasn't yet been counted as filled
+			let isNew = false;
+			for(let x = 0; x < tile.gridBounds.size.x; x++){
+				let ttile = tile.at(x, fr[i]);
+				if(!ttile.charged){
+					isNew = true;
+					break;
+				}
+			}
+			// remove the row from the return array if it's not newly charged
+			if(!isNew)
+				fr.splice(i, 1);
+		};
+		
+		return fr;
+	}
 	static checkForFullRows(){
 		// checks to see if any of the rows of tiles have been filled out
-		var fr = tile.getFullRows();
+		var fr = tile.getNewFullRows();
 		
 		fr.forEach(function(row){
 			for(let x = 0; x < tile.gridBounds.size.x; x++){
@@ -422,8 +445,37 @@ class tile{
 			}
 		});
 		
-		// if any tiles were changed, check the tile placement
-		if(fr.length > 0) tile.checkTilePlacement();
+		if(fr.length > 0) {
+			// if any tiles were changed, check the tile placement
+			tile.checkTilePlacement();
+			
+			// determine the amount of coins to place
+			var coinCount = 2 + Math.pow(2, fr.length);
+			
+			// place the coins
+			var ttiles = tile.getAllTilesOfType(entities.tube);
+			for(let i = coinCount; i > 0; i--){
+				let ti;
+				let ttile;
+				
+				// picks a random tile that doesn't already have an item inside it
+				do{
+					// break out of the loop if there are no valid tiles left to place a coin
+					if(ttiles.length <= 0){
+						ttile = null;
+						break;
+					}
+					
+					// pick a random tile from ttiles and remove it from the list
+					ti = Math.floor(Math.random() * ttiles.length);
+					ttile = ttiles[ti];
+					ttiles.splice(ti, 1);
+				} while(ttile.item != null);
+				
+				if(ttile)
+					ttile.setItem(item.getItem_random());
+			}
+		}
 	}
 	
 	static CP_ball(self){

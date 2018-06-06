@@ -1404,7 +1404,7 @@ class state_gameplayState extends gameState{
 		
 		this.setFloatingScoreField(txt, style, floatingScoreFieldID.ballScore, new textAnim_blink(250, 0));
 	}
-	updateScoreVisuals(pts = 10){
+	updateScoreVisuals(){
 		// makes the score animation pop and the floating score text increment
 		this.scoreEmphasisAnim.resetAnim();
 		this.updateFloatingScoreText();
@@ -1522,7 +1522,7 @@ class state_gameplayState extends gameState{
 		this.hudPreRenders.scorePreRender = preRenderedText.fromString(scoreText, scorePos, new textStyle(fonts.large, textColor.green));
 	}
 	updateTileformDecrementPreRenders(){
-		// draw tileforms til next ball:
+		// draw tileform count til next ball:
 		var nball = this.until.ball;
 		if(nball == null) nball = "--";
 		var nballPos = tile.toScreenPos(new vec2(12, 7));
