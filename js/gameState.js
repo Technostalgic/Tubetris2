@@ -1762,6 +1762,9 @@ class state_gameplayState extends gameState{
 		
 		drawEffects();
 		this.drawFloatingScoreText();
+		
+		if(this.phase instanceof phase_tooltip)
+			this.phase.drawOverlay();
 	}
 }
 
@@ -1798,14 +1801,22 @@ class phase_tooltip extends gameplayPhase{
 		return r;
 	}
 	
+	controlTap(control){
+		if(control == controlAction.select)
+			this.nextPhase();
+	}
+	
 	nextPhase(){
 		this.parentState.switchGameplayPhase(this.previousPhase);
 	}
 	
 	draw(){
 		this.previousPhase.draw();
+	}
+	drawOverlay(){
 		this.tip.draw();
 	}
+	
 }
 // the gameplay phase that lets the player control the tileform that is falling from the sky
 class phase_placeTileform extends gameplayPhase{

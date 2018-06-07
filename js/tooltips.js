@@ -10,7 +10,7 @@ class tooltip{
 		this.text_pc = ""; // the text to display if user is on a pc
 		this.text_mobile = null; // the text to display if user is on a mobile device
 		
-		this.textBounds = screenBounds.clone();
+		this.textBounds = screenBounds.inflated(0.9);
 		this.textBlock = null;
 		this.preRender = null;
 		this.background = null;
@@ -70,13 +70,41 @@ class tooltip{
 	
 	generateBackground(){
 		// generates the translucent background with the transparent hole in the focusArea
+		this.background = document.createElement("canvas");
+		this.background.width = screenBounds.width;
+		this.background.height = screenBounds.height;
+		var bgctx = this.background.getContext("2d");
 		
+		bgctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+		bgctx.fillRect(0, 0, this.background.width, this.background.height);
+		
+		// make the transparent hole for the focus area if applicable
+		if(!this.focusArea) return;
+		log(this.focusArea);
+		bgctx.globalCompositeOperation = "source-out";
+		bgctx.fillStyle = "rgba(1, 1, 1, 1)";
+		bgctx.fillRect(0, 0, this.background.width, this.background.height);
+		bgctx.globalCompositeOperation = "source-over";
 	}
 	generatePreRender(){
-		
+		// generates the text preRender and stores it in this.preRender
+		this.textBlock = new textBlock(
+			this.text_pc,
+			textStyle.getDefault().setColor(textColor.green).setAlignment(0.5, 0),
+			this.textBounds, 
+			[
+				textStyle.getDefault().setColor(textColor.yellow),
+				textStyle.getDefault().setColor(textColor.light),
+				textStyle.getDefault().setColor(textColor.red),
+				textStyle.getDefault().setColor(textColor.dark)
+			],
+			32
+		);
+		this.preRender = preRenderedText.fromBlock(this.textBlock);
 	}
 	
 	conditionIsMet(){
+		// a safe way to check if the condition has been met, if an error is thrown, it is caught and returns false
 		try{
 			return this.condition();
 		} catch(e){
@@ -85,6 +113,7 @@ class tooltip{
 		return false;
 	}
 	activate(parentState){
+		// activates the tooltip
 		this.focusArea = this.getFocusArea();
 		this.generateBackground();
 		if(!this.preRender) this.generatePreRender();
@@ -105,7 +134,7 @@ class tooltip{
 	}
 	
 	drawBackground(){
-		
+		drawImage(renderContext, this.background, new vec2());
 	}
 	draw(){
 		this.drawBackground();
