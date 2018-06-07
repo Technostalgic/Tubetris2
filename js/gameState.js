@@ -1357,6 +1357,7 @@ class state_gameplayState extends gameState{
 		this.nextTileforms = [];
 		this.generateNextTileforms();
 		this.switchGameplayPhase(new phase_placeTileform(this));
+		this.tooltipProgress = tooltipProgression.getDefault();
 		
 		this.initHudPreRenders();
 		this.updateHUDPreRenders();
@@ -1629,6 +1630,8 @@ class state_gameplayState extends gameState{
 		// main logic step
 		super.update(dt);
 		
+		this.tooltipProgress.checkTooltips(this);
+		
 		updateEffects(dt);
 		this.phase.update(dt);
 		this.checkScoreBonuses();
@@ -1777,6 +1780,32 @@ class gameplayPhase{
 	
 	// for override, called when a control is tapped
 	controlTap(control = controlAction.none){}
+}
+// the phase for when a tooltip is being displayed
+class phase_tooltip extends gameplayPhase{
+	constructor(parentState){
+		super(parentState);
+		
+		this.previousPhase = gameState.current.phase;
+		this.tip = null;
+	}
+	
+	static fromTooltip(tip){
+		var r = new phase_tooltip();
+		
+		r.tip = tip;
+		
+		return r;
+	}
+	
+	nextPhase(){
+		this.parentState.switchGameplayPhase(this.previousPhase);
+	}
+	
+	draw(){
+		this.previousPhase.draw();
+		this.tip.draw();
+	}
 }
 // the gameplay phase that lets the player control the tileform that is falling from the sky
 class phase_placeTileform extends gameplayPhase{
