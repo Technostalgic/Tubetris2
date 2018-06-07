@@ -52,6 +52,7 @@ var tubeColors = {
 	black: 5
 }
 
+// object that occupies an area in the tile grid
 class tile{
 	constructor(){
 		this.gridPos = new vec2(-1);
