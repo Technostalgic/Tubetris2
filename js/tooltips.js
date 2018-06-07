@@ -15,6 +15,10 @@ class tooltip{
 		this.preRender = null;
 		this.background = null;
 		
+		var promptStr = "Press ENTER to continue";
+		//TODO: if mobile, change promptStr
+		this.promptPreRender = preRenderedText.fromString(promptStr, new vec2(screenBounds.center.x, screenBounds.bottom - 30), textStyle.getDefault());
+		
 		// on the tooltip's activation, getFocusArea will be called, and if a collisionBox is returned,
 		// it will be stored in this.focusArea and highlighted to direct the users attention to the area
 		this.getFocusArea = function(){ return null; }
@@ -136,9 +140,15 @@ class tooltip{
 	drawBackground(){
 		drawImage(renderContext, this.background, new vec2());
 	}
+	drawPrompt(){
+		this.promptPreRender.animated(
+			new textAnim_blink(1000, 0)
+		).draw();
+	}
 	draw(){
 		this.drawBackground();
 		this.preRender.draw();
+		this.drawPrompt();
 	}
 }
 
