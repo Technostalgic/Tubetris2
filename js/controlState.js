@@ -59,6 +59,7 @@ class controlState{
 		controlState.keys[e.keyCode] = true;
 		
 		var a = controlState.getControlsForKey(e.keyCode);
+		log(a);
 		a.forEach(function(ctrl){
 			gameState.current.controlTap(ctrl);
 		});
@@ -108,6 +109,7 @@ class controlState{
 			case 38: return "up arw";
 			case 17: return "ctrl";
 			case 16: return "shift";
+			case 27: return "escape"
 			case 32: return "space";
 			case 219: return "l brckt";
 			case 221: return "r brckt";

@@ -557,8 +557,8 @@ function getDefaultControls(){
 		rotateCW: 38,
 		rotateCCW: 0,
 		swap: 90,
-		select: 32,
-		pause: 13
+		select: 13,
+		pause: 27
 	};
 }
 function setDefaultScores(){

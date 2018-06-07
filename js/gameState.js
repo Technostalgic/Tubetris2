@@ -1601,6 +1601,8 @@ class state_gameplayState extends gameState{
 	}
 	controlTap(control = controlAction.none){
 		// called when a control is tapped
+		console.log(control);
+		
 		if(control == controlAction.pause){
 			this.pauseGame();
 			return;
