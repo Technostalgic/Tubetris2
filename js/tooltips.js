@@ -36,9 +36,9 @@ class tooltip{
 	
 	static get tip_removeTooltips(){
 		var r = new tooltip();
-		r.text_pc = "Hello there! These (tooltips) will help guide you through how to play the game - " +
+		r.text_pc = "Hello there! 1.5| These (tooltips) will help guide you through how to play the game 2|" +
 			"if you already know how to play you can go into the (options menu) by pressing [escape] and turn them off";
-		r.text_mobile = "Hello there! These (tooltips) will help guide you through how to play the game - " +
+		r.text_mobile = "Hello there! 1.5| These (tooltips) will help guide you through how to play the game 2|" +
 			"if you already know how to play you can go into the (options menu) and turn them off";
 		
 		r.childTips = [
@@ -49,8 +49,8 @@ class tooltip{
 	}
 	static get tip_tileformMovement(){
 		var r = new tooltip();
-		r.text_pc = "This is a (tileform) - use the [left and right arrow keys] to move it around";
-		r.text_mobile = "This is a (tileform) - [swipe left or right] to move it around";
+		r.text_pc = "This is a (tileform) 1.5| use the [left and right arrow keys] to move it around";
+		r.text_mobile = "This is a (tileform) 1.5| [swipe left or right] to move it around";
 		
 		// gets a rectangle surrounding the current tileform
 		r.getFocusArea = function(){

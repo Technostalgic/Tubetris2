@@ -541,6 +541,19 @@ class preRenderedText{
 				var word = words[i1];
 				var charsprites = span.style.font.getStringSprites(word, span.style.color);
 				
+				// if the word ends with '|', truncate it and start a new line (with the characters before '|' representing the line 
+				// height multiplier)
+				if(word.includes('|')){
+					var mult = parseFloat(word) || 1;
+					cPos = new vec2(txtBlock.bounds.left, cPos.y + txtBlock.lineHeight * mult);
+					
+					// starts a new line and adds the old one to the line query
+					r.lines.push(curLine);
+					curLine = [];
+					
+					continue;
+				}
+				
 				// if the word goes past the textblock bounds, the cursor is put on a new line
 				var wwidth = span.style.font.getStringWidth(word.trim(), span.style);
 				if(cPos.x + wwidth > txtBlock.bounds.right){
