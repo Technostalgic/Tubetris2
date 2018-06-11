@@ -54,11 +54,10 @@ class tooltip{
 		
 		// gets a rectangle surrounding the current tileform
 		r.getFocusArea = function(){
-			let ttf = gameState.current.phase.currentTileform;
-			let tpos = tile.toScreenPos(ttf.getMinGridPos(), false);
-			let tsize = ttf.getMaxGridPos().multiply(tile.tilesize);
-			
-			return new collisionBox(tpos, tsize);
+			var r = gameState.current.phase.currentTileform.getVisualBounds();
+			r.pos = r.pos.minus(tile.offset);
+
+			return r;
 		}
 		
 		r.activePhase = phase_placeTileform;

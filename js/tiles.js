@@ -979,6 +979,30 @@ class tileform{
 	getGridSize(){
 		return this.getMaxGridPos().minus(this.getMinGridPos());
 	}
+	getVisualBounds(){
+		var minX,
+			minY;
+		var maxX,
+			maxY;
+		
+		this.tiles.forEach(function(ttile){
+			if(minX == undefined) minX = ttile.gridPos.x;
+			else minX = Math.min(minX, ttile.gridPos.x);
+			if(minY == undefined) minY = ttile.gridPos.y;
+			else minY = Math.min(minY, ttile.gridPos.y);
+
+			if(maxX == undefined) maxX = ttile.gridPos.x;
+			else maxX = Math.max(maxX, ttile.gridPos.x);
+			if(maxY == undefined) maxY = ttile.gridPos.y;
+			else maxY = Math.max(maxY, ttile.gridPos.y);
+		});
+
+		var min = tile.toScreenPos(new vec2(minX, minY), false).plus(tile.toScreenPos(this.gridPos, false));
+		var max = tile.toScreenPos(new vec2(maxX, maxY), false).plus(tile.toScreenPos(this.gridPos, false)).plus(new vec2(tile.tilesize));
+
+		console.log(min + ", " + max);
+		return new collisionBox(min, max.minus(min));
+	}
 	
 	hasEntity(entityID, entityType = entities.tube){
 		// checks to see if the tileform contains any of the specified entity
