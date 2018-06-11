@@ -24,7 +24,7 @@ class tooltip{
 		this.getFocusArea = function(){ return null; }
 		this.focusArea = null;
 		
-		 // the tooltip will only activate if the current gameplayPhase is an instance of this.activePhase
+		// the tooltip will only activate if the current gameplayPhase is an instance of this.activePhase
 		this.activePhase = gameplayPhase;
 		
 		 // the tooltip will only activate when the condition returns true
@@ -36,9 +36,9 @@ class tooltip{
 	
 	static get tip_removeTooltips(){
 		var r = new tooltip();
-		r.text_pc = "Hello there! 1.5| These (tooltips) will help guide you through how to play the game 2|" +
+		r.text_pc = "[Hello there!] 1.5| These (tooltips) will help guide you through how to play the game 2| " +
 			"if you already know how to play you can go into the (options menu) by pressing [escape] and turn them off";
-		r.text_mobile = "Hello there! 1.5| These (tooltips) will help guide you through how to play the game 2|" +
+		r.text_mobile = "[Hello there!] 1.5| These (tooltips) will help guide you through how to play the game 2| " +
 			"if you already know how to play you can go into the (options menu) and turn them off";
 		
 		r.childTips = [
@@ -83,11 +83,12 @@ class tooltip{
 		bgctx.fillRect(0, 0, this.background.width, this.background.height);
 		
 		// make the transparent hole for the focus area if applicable
+		this.focusArea = this.getFocusArea();
 		if(!this.focusArea) return;
 		log(this.focusArea);
-		bgctx.globalCompositeOperation = "source-out";
-		bgctx.fillStyle = "rgba(1, 1, 1, 1)";
-		bgctx.fillRect(0, 0, this.background.width, this.background.height);
+		bgctx.globalCompositeOperation = "destination-out";
+		bgctx.fillStyle = "rgba(255, 255, 255, 1)";
+		bgctx.fillRect(this.focusArea.left, this.focusArea.top, this.focusArea.width, this.focusArea.height);
 		bgctx.globalCompositeOperation = "source-over";
 	}
 	generatePreRender(){
@@ -118,7 +119,6 @@ class tooltip{
 	}
 	activate(parentState){
 		// activates the tooltip
-		this.focusArea = this.getFocusArea();
 		this.generateBackground();
 		if(!this.preRender) this.generatePreRender();
 		
