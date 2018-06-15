@@ -13,6 +13,8 @@ class tooltip{
 		this.textBounds = screenBounds.inflated(0.9);
 		this.textBlock = null;
 		this.preRender = null;
+		this.titlePreRender = null;
+		this.titleAnim = null;
 		this.background = null;
 		
 		var promptStr = "Press ENTER to continue";
@@ -36,15 +38,16 @@ class tooltip{
 	
 	static get tip_removeTooltips(){
 		var r = new tooltip();
-		r.text_pc = "[Hello there!] 1.5| These (tooltips) will help guide you through how to play the game 2| " +
+		r.text_pc = "These (tooltips) will help guide you through how to play the game 2| " +
 			"if you already know how to play you can go into the (options menu) by pressing [escape] and turn them off";
-		r.text_mobile = "[Hello there!] 1.5| These (tooltips) will help guide you through how to play the game 2| " +
+		r.text_mobile = "These (tooltips) will help guide you through how to play the game 2| " +
 			"if you already know how to play you can go into the (options menu) and turn them off";
 		
 		r.childTips = [
 			tooltip.tip_tileformMovement
 		];
 		
+		r.setTitle("Welcome to Tubetris!", new textAnim_yOffset(750, 10, 0.15), new textStyle(fonts.large, textColor.light, 2).setAlignment(0.5, 0));
 		return r;
 	}
 	static get tip_tileformMovement(){
@@ -68,7 +71,21 @@ class tooltip{
 		r.childTips = [
 		];
 		
+		r.setTitle("Tileform Movement");
 		return r;
+	}
+	
+	setTitle(txt, anim = new textAnim_scaleTransform(750, 1, 1.1, 0).setAnimType(textAnimType.trigonometricCycle), style = new textStyle(fonts.large, textColor.light, 1).setAlignment(0.5, 0)){
+		// sets the animated title of the tooltip to be drawn at the top of the screen
+		var tblock = new textBlock(txt, style, screenBounds.inflated(0.9), [], style.scale * style.font.charSize.y);
+		console.log(tblock.lineHeight);
+		this.titlePreRender = preRenderedText.fromBlock(tblock);
+		this.titleAnim = anim;
+		
+		// pushes the text bounds to be below the title
+		var offY = this.titlePreRender.getBounds().height + 25;
+		this.textBounds.pos.y += offY;
+		this.textBounds.size.y -= offY;
 	}
 	
 	generateBackground(){
@@ -116,7 +133,7 @@ class tooltip{
 			new vec2(this.textBounds.width, testBounds.height)
 		);
 		
-		// if the text overlaps the focus area
+		// if the text overlaps the focus area, move it below so that the focus area is unobstructed
 		if(this.focusArea.overlapsBox(testBounds)){
 			var offY = this.focusArea.bottom - testBounds.top + 25;
 			this.preRender.setCenter(this.preRender.findCenter().plus(new vec2(0, offY)));
@@ -163,6 +180,11 @@ class tooltip{
 	}
 	drawText(){
 		this.preRender.draw();
+		
+		// draw the title
+		var tpr = this.titlePreRender;
+		if(this.titleAnim) tpr = tpr.animated(this.titleAnim);
+		tpr.draw();
 		
 		this.drawPrompt();
 	}

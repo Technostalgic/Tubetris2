@@ -243,6 +243,12 @@ class textAnim{
 		return aProg;
 	}
 	
+	setAnimType(type, looping = true){
+		this.animType = type;
+		this.looping = looping;
+		return this;
+	}
+	
 	// for override
 	applyAnim(prerender){ }
 	
