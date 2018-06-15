@@ -1791,12 +1791,13 @@ class phase_tooltip extends gameplayPhase{
 	constructor(parentState){
 		super(parentState);
 		
+		this.startTime = parentState.timeElapsed;
 		this.previousPhase = gameState.current.phase;
 		this.tip = null;
 	}
 	
 	static fromTooltip(tip){
-		var r = new phase_tooltip();
+		var r = new phase_tooltip(gameState.current);
 		
 		r.tip = tip;
 		
@@ -1809,6 +1810,7 @@ class phase_tooltip extends gameplayPhase{
 	}
 	
 	nextPhase(){
+		this.parentState.timeElapsed = this.startTime;
 		this.parentState.switchGameplayPhase(this.previousPhase);
 	}
 	

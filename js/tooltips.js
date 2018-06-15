@@ -138,6 +138,12 @@ class tooltip{
 	
 	drawBackground(){
 		drawImage(renderContext, this.background, new vec2());
+		
+		if(this.focusArea){
+			var col = gameState.current.timeElapsed % 500 >= 250 ? "rgba(255,255,255, 1)" : "rgba(255,255,255, 0.5)";
+			console.log(col);
+			this.focusArea.drawOutline(renderContext, col, 2);
+		}
 	}
 	drawPrompt(){
 		this.promptPreRender.animated(
