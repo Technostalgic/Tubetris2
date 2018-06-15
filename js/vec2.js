@@ -274,7 +274,17 @@ class collisionBox{
 			point.x >= this.left &&
 			point.x <= this.right && 
 			point.y >= this.top && 
-			point.y <= this.bottom );
+			point.y <= this.bottom 
+		);
+	}
+	overlapsBox(colbox){
+		// returns true if this collision box overlaps the specified collision box (inclusive)
+		return (
+			this.right >= colbox.left &&
+			this.left <= colbox.right &&
+			this.bottom >= colbox.top &&
+			this.top <= colbox.bottom 
+		);
 	}
 	
 	clone(){

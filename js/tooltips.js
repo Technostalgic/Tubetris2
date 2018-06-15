@@ -105,6 +105,22 @@ class tooltip{
 			32
 		);
 		this.preRender = preRenderedText.fromBlock(this.textBlock);
+		
+		// return if there is no focus area
+		if(!this.focusArea) return;
+		
+		// otherwise, make sure the text doesn't block the focus area
+		var testBounds = this.preRender.getBounds();
+		testBounds = new collisionBox(
+			new vec2(this.textBounds.left, testBounds.top), 
+			new vec2(this.textBounds.width, testBounds.height)
+		);
+		
+		// if the text overlaps the focus area
+		if(this.focusArea.overlapsBox(testBounds)){
+			var offY = this.focusArea.bottom - testBounds.top + 25;
+			this.preRender.setCenter(this.preRender.findCenter().plus(new vec2(0, offY)));
+		}
 	}
 	
 	conditionIsMet(){
@@ -145,15 +161,22 @@ class tooltip{
 			this.focusArea.drawOutline(renderContext, col, 2);
 		}
 	}
+	drawText(){
+		this.preRender.draw();
+		
+		this.drawPrompt();
+	}
 	drawPrompt(){
+		// draw the "press enter to continue" prompt
 		this.promptPreRender.animated(
 			new textAnim_blink(1000, 0)
 		).draw();
 	}
 	draw(){
 		this.drawBackground();
-		this.preRender.draw();
-		this.drawPrompt();
+		
+		// draws the text over the background
+		this.drawText();
 	}
 }
 

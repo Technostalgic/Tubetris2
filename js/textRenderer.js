@@ -706,13 +706,12 @@ class preRenderedText{
 		return this;
 	}
 	getBounds(){
-		// returns a rectangle that encompasses all the text characters' containers
-		// that are to be rendered
+		// returns a rectangle that supposedly encompasses all the text characters
 		if(this.spriteContainers.length <= 0) return null;
 		return collisionBox.fromSides(
-			this.spriteContainers[0].bounds.left, 
-			this.spriteContainers[0].bounds.top, 
-			this.spriteContainers[this.spriteContainers.length - 1].bounds.right, 
+			this.spriteContainers[0].bounds.left,
+			this.spriteContainers[0].bounds.top,
+			this.spriteContainers[this.spriteContainers.length - 1].bounds.right,
 			this.spriteContainers[this.spriteContainers.length - 1].bounds.bottom
 			);
 	}
