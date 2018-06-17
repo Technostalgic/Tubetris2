@@ -101,7 +101,6 @@ class tooltip{
 		// make the transparent hole for the focus area if applicable
 		this.focusArea = this.getFocusArea();
 		if(!this.focusArea) return;
-		log(this.focusArea);
 		bgctx.globalCompositeOperation = "destination-out";
 		bgctx.fillStyle = "rgba(255, 255, 255, 1)";
 		bgctx.fillRect(this.focusArea.left, this.focusArea.top, this.focusArea.width, this.focusArea.height);
@@ -126,7 +125,19 @@ class tooltip{
 		// return if there is no focus area
 		if(!this.focusArea) return;
 		
-		// otherwise, make sure the text doesn't block the focus area
+		// otherwise, make sure the title text doesn't block the focus area
+		var titleBounds = this.titlePreRender.getBounds;
+		titleBounds = new collisionBox(
+			new vec2(this.textBounds.left, titleBounds.top), 
+			new vec2(this.textBounds.width, titleBounds.height)
+		);
+		// if title overlaps the focus area, move it below so that the focus area is unobstructed
+		if(this.focusArea.overlapsBox(titleBounds)){
+			var offY = this.focusArea.bottom - titleBounds.top + 25;
+			this.titlePreRender.setCenter(this.titlePreRender.findCenter().plus(new vec2(0, offY)));
+			this.preRender.setCenter(this.preRender.findCenter().plus(new vec2(0, offY)));
+		}
+
 		var testBounds = this.preRender.getBounds();
 		testBounds = new collisionBox(
 			new vec2(this.textBounds.left, testBounds.top), 
@@ -172,6 +183,7 @@ class tooltip{
 	drawBackground(){
 		drawImage(renderContext, this.background, new vec2());
 		
+		// if there is a focus area draw a flashing box around it
 		if(this.focusArea){
 			var col = gameState.current.timeElapsed % 500 >= 250 ? "rgba(255,255,255, 1)" : "rgba(255,255,255, 0.5)";
 			console.log(col);
