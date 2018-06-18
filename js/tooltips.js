@@ -52,7 +52,9 @@ class tooltip{
 	}
 	static get tip_tileformMovement(){
 		var r = new tooltip();
-		r.text_pc = "This is a (tileform) 1.5| use the [left and right arrow keys] to move it around";
+		r.text_pc = "This is a (tileform) 1.5| use [" + controlState.getControlKeyName(controlAction.left) + 
+		"] and [" + controlState.getControlKeyName(controlAction.right) + 
+		"] to move it around";
 		r.text_mobile = "This is a (tileform) 1.5| [swipe left or right] to move it around";
 		
 		// gets a rectangle surrounding the current tileform

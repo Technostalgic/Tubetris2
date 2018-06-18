@@ -90,6 +90,12 @@ class controlState{
 		return false;
 	}
 	
+	static getControlKeyName(controlaction){
+		// returns the name of a key that is bound tot the specified control action
+		return controlState.keyCodeToName( 
+			controlState.controls[(Object.keys(controlState.controls)[controlaction])] 
+		);
+	}
 	static keyCodeToName(code){
 		//parses a keyCode and converts it into understandable text, used to display player controls
 		if(code >= 65 && code <= 90)
