@@ -45,7 +45,9 @@ class tooltip{
 			"if you already know how to play you can go into the (options menu) and turn them off";
 		
 		r.childTips = [
-			tooltip.tip_tileformMovement
+			tooltip.tip_tileformMovement,
+			tooltip.tip_tileformDropping,
+			tooltip.tip_balls
 		];
 		
 		return r;
@@ -72,8 +74,7 @@ class tooltip{
 		};
 		
 		r.childTips = [
-			tooltip.tip_tileformRotation,
-			tooltip.tip_tileformDropping
+			tooltip.tip_tileformRotation
 		];
 		
 		return r;
@@ -127,6 +128,29 @@ class tooltip{
 		];
 		
 		return r;
+	}	
+	static get tip_balls(){
+		var r = new tooltip();
+		r.setTitle("Balls!");
+		r.text_pc = "This (special tileform) is a (ball) 1.5| (balls) are used to clear pipes by rolling through them 1.5| place the (ball) on or near an (open tube) and see what happens";
+		
+		// gets a rectangle surrounding the current tileform
+		r.getFocusArea = function(){
+			var r = gameState.current.phase.currentTileform.getVisualBounds();
+			r.pos = r.pos.minus(tile.offset);
+
+			return r;
+		}
+		
+		r.activePhase = phase_placeTileform;
+		r.condition = function(){
+			return gameState.current.phase.currentTileform.hasEntityType(entities.ball);
+		};
+		
+		r.childTips = [
+		];
+		
+		return r;
 	}
 	
 	setTitle(txt, anim = new textAnim_scaleTransform(750, 1, 1.1, 0).setAnimType(textAnimType.trigonometricCycle), style = new textStyle(fonts.large, textColor.light, 1).setAlignment(0.5, 0)){
@@ -162,8 +186,10 @@ class tooltip{
 	}
 	generatePreRender(){
 		// generates the text preRender and stores it in this.preRender
+		var txt = this.text_pc;
+		
 		this.textBlock = new textBlock(
-			this.text_pc,
+			txt,
 			textStyle.getDefault().setColor(textColor.green).setAlignment(0.5, 0),
 			this.textBounds, 
 			[
@@ -182,7 +208,7 @@ class tooltip{
 		// otherwise, make sure the title text doesn't block the focus area
 		var titleBounds = this.titlePreRender.getBounds();
 		titleBounds = new collisionBox(
-			new vec2(this.textBounds.left, titleBounds.top), 
+			new vec2(this.textBounds.left, titleBounds.top),
 			new vec2(this.textBounds.width, titleBounds.height)
 		);
 		// if title overlaps the focus area, move it below so that the focus area is unobstructed
@@ -290,7 +316,6 @@ class tooltipProgression{
 	}
 	
 	checkTooltips(parentState){
-		
 		// return if there is already a tooltip being displayed
 		if(gameState.current.phase instanceof phase_tooltip)
 			return;
