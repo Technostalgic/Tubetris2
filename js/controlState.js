@@ -30,6 +30,8 @@ class controlState{
 		controlState.mousePos = new vec2();
 		controlState.controls = {};
 		controlState.controlChangeListener = null;
+		
+		controlState.touchList = [];
 	}
 	
 	static listenForMouseMove(e){
@@ -68,6 +70,29 @@ class controlState{
 		// the event listener that is triggered when a keyboard key is released
 		if(!e.keyCode) return;
 		controlState.keys[e.keyCode] = false;
+	}
+	
+	static listenForTouchStart(e){
+		// TODO: FIX THIS BS
+		for(let touch of e.touches){
+			if(!controlState.touchList.includes(touch)){
+				controlState.touchList.push(touch);
+				gameState.current.touchStart(touch);
+			}
+		}
+	}
+	static listenForTouchMove(e){
+		
+	}
+	static listenForTouchEnd(e){
+		// TODO: FIX THIS BS
+		for(let i = controlState.touchList.length - 1; i >= 0; i--){
+			if(!e.touches.includes(controlState.touchList[i]))
+				controlState.touchList.splice(i, 1);
+		}
+	}
+	static listenForTouchCancel(e){
+		
 	}
 	
 	static isKeyDown(keyCode){

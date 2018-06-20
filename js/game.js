@@ -581,6 +581,12 @@ function addInputEventListeners(){
 	scalingTarget.addEventListener('mousemove', controlState.listenForMouseMove);
 	window.addEventListener('keydown', controlState.listenForKeyDown);
 	window.addEventListener('keyup', controlState.listenForKeyUp);
+	
+	// touch events:
+	scalingTarget.addEventListener('touchstart', controlState.listenForTouchStart);
+	scalingTarget.addEventListener('touchmove', controlState.listenForTouchMove);
+	scalingTarget.addEventListener('touchend', controlState.listenForTouchEnd);
+	scalingTarget.addEventListener('touchcancel', controlState.listenForTouchCancel);
 }
 function preventKeyScrolling(){
 	// prevents arrow key / space scrolling on the web page

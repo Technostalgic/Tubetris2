@@ -70,6 +70,12 @@ class gameState{
 	mouseTap(pos){}
 	// called when the mouse is moved
 	mouseMove(pos){}
+	
+	// touchscreen events:
+	touchStart(e){}
+	touchMove(e){}
+	touchEnd(e){}
+	touchCancel(e){}
 }
 
 // a pressable button in the GUI that the player can interact with
