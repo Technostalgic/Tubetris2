@@ -46,8 +46,7 @@ class tooltip{
 		
 		r.childTips = [
 			tooltip.tip_tileformMovement,
-			tooltip.tip_tileformDropping,
-			tooltip.tip_balls
+			tooltip.tip_completeRow
 		];
 		
 		return r;
@@ -74,7 +73,10 @@ class tooltip{
 		};
 		
 		r.childTips = [
-			tooltip.tip_tileformRotation
+			tooltip.tip_tileformRotation,
+			tooltip.tip_tileformDropping,
+			tooltip.tip_bombs,
+			tooltip.tip_balls
 		];
 		
 		return r;
@@ -82,7 +84,7 @@ class tooltip{
 	static get tip_tileformRotation(){
 		var r = new tooltip();
 		r.setTitle("Tileform Rotation");
-		r.text_pc = "You can also rotate it with [" + controlState.getControlKeyName(controlAction.rotateCW) + "] to move it around";
+		r.text_pc = "You can also rotate the tileform clockise with [" + controlState.getControlKeyName(controlAction.rotateCW) + "]";
 		r.text_mobile = "You can also rotate it by [swiping upward]";
 		
 		// gets a rectangle surrounding the current tileform
@@ -129,6 +131,31 @@ class tooltip{
 		
 		return r;
 	}	
+	static get tip_bombs(){
+		var r = new tooltip();
+		r.setTitle("Bombs");
+		r.text_pc = "This (special tileform) is a (bomb) 1.5| " + 
+			"(bombs) will detonate when placed next to each other or when a ball rolls into them 1.5| " + 
+			"when the (bomb) detonates | all of the tiles surrounding it will be destroyed";
+		
+		// gets a rectangle surrounding the current tileform
+		r.getFocusArea = function(){
+			var r = gameState.current.phase.currentTileform.getVisualBounds();
+			r.pos = r.pos.minus(tile.offset);
+
+			return r;
+		}
+		
+		r.activePhase = phase_placeTileform;
+		r.condition = function(){
+			return gameState.current.phase.currentTileform.hasEntity(blocks.block_bomb, entities.block);
+		};
+		
+		r.childTips = [
+		];
+		
+		return r;
+	}
 	static get tip_balls(){
 		var r = new tooltip();
 		r.setTitle("Balls!");
@@ -145,6 +172,36 @@ class tooltip{
 		r.activePhase = phase_placeTileform;
 		r.condition = function(){
 			return gameState.current.phase.currentTileform.hasEntityType(entities.ball);
+		};
+		
+		r.childTips = [
+		];
+		
+		return r;
+	}
+	static get tip_completeRow(){		
+		var r = new tooltip();
+		r.setTitle("Row Complete");
+		r.text_pc = "If you fill all the tiles (in a row) then those tiles will become (charged) and coins will spawn";
+		
+		// highlights the bottom row
+		r.getFocusArea = function(){
+			var r = new collisionBox(
+				tile.toScreenPos(new vec2(0, tile.gridBounds.height - 1), false), 
+				new vec2(tile.gridBounds.width, 1).multiply(tile.tilesize) );
+			
+			return r;
+		}
+		
+		// sets a conditional that returns true when any tile in the bottom row is filled
+		r.activePhase = phase_placeTileform;
+		r.condition = function(){
+			for(let x = 0; x < tile.gridBounds.width; x++){
+				let tgpos = new vec2(x, tile.gridBounds.height - 1);
+				if(!tile.at(tgpos).isEmpty())
+					return true;
+			}
+			return false;
 		};
 		
 		r.childTips = [
