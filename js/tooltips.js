@@ -38,6 +38,7 @@ class tooltip{
 	
 	static get tip_removeTooltips(){
 		var r = new tooltip();
+		r.setTitle("Welcome to Tubetris!", new textAnim_yOffset(750, 10, 0.15), new textStyle(fonts.large, textColor.light, 2).setAlignment(0.5, 0));
 		r.text_pc = "These (tooltips) will help guide you through how to play the game 2| " +
 			"if you already know how to play you can go into the (options menu) by pressing [escape] and turn them off";
 		r.text_mobile = "These (tooltips) will help guide you through how to play the game 2| " +
@@ -47,11 +48,11 @@ class tooltip{
 			tooltip.tip_tileformMovement
 		];
 		
-		r.setTitle("Welcome to Tubetris!", new textAnim_yOffset(750, 10, 0.15), new textStyle(fonts.large, textColor.light, 2).setAlignment(0.5, 0));
 		return r;
 	}
 	static get tip_tileformMovement(){
 		var r = new tooltip();
+		r.setTitle("Tileform Movement");
 		r.text_pc = "This is a (tileform) 1.5| use [" + controlState.getControlKeyName(controlAction.left) + 
 		"] and [" + controlState.getControlKeyName(controlAction.right) + 
 		"] to move it around";
@@ -71,9 +72,60 @@ class tooltip{
 		};
 		
 		r.childTips = [
+			tooltip.tip_tileformRotation,
+			tooltip.tip_tileformDropping
 		];
 		
-		r.setTitle("Tileform Movement");
+		return r;
+	}
+	static get tip_tileformRotation(){
+		var r = new tooltip();
+		r.setTitle("Tileform Rotation");
+		r.text_pc = "You can also rotate it with [" + controlState.getControlKeyName(controlAction.rotateCW) + "] to move it around";
+		r.text_mobile = "You can also rotate it by [swiping upward]";
+		
+		// gets a rectangle surrounding the current tileform
+		r.getFocusArea = function(){
+			var r = gameState.current.phase.currentTileform.getVisualBounds();
+			r.pos = r.pos.minus(tile.offset);
+
+			return r;
+		}
+		
+		r.activePhase = phase_placeTileform;
+		r.condition = function(){
+			return gameState.current.phase.currentTileform.tiles.length > 1;
+		};
+		
+		r.childTips = [
+		];
+		
+		return r;
+	}
+	static get tip_tileformDropping(){
+		var r = new tooltip();
+		r.setTitle("Tileform Dropping");
+		r.text_pc = "If you are impatient and want the tileform to drop faster you can use [" + 
+			controlState.getControlKeyName(controlAction.nudgeDown) + "] to bump it downward or [" +
+			controlState.getControlKeyName(controlAction.quickDrop) + "] to quick-drop it";
+		r.text_mobile = "If you are impatient and want the tileform to drop faster try [swiping downward]";
+		
+		// gets a rectangle surrounding the current tileform
+		r.getFocusArea = function(){
+			var r = gameState.current.phase.currentTileform.getVisualBounds();
+			r.pos = r.pos.minus(tile.offset);
+
+			return r;
+		}
+		
+		r.activePhase = phase_placeTileform;
+		r.condition = function(){
+			return gameState.current.phase.currentTileform.gridPos.y > 5;
+		};
+		
+		r.childTips = [
+		];
+		
 		return r;
 	}
 	
@@ -128,7 +180,7 @@ class tooltip{
 		if(!this.focusArea) return;
 		
 		// otherwise, make sure the title text doesn't block the focus area
-		var titleBounds = this.titlePreRender.getBounds;
+		var titleBounds = this.titlePreRender.getBounds();
 		titleBounds = new collisionBox(
 			new vec2(this.textBounds.left, titleBounds.top), 
 			new vec2(this.textBounds.width, titleBounds.height)
@@ -238,10 +290,18 @@ class tooltipProgression{
 	}
 	
 	checkTooltips(parentState){
+		
+		// return if there is already a tooltip being displayed
+		if(gameState.current.phase instanceof phase_tooltip)
+			return;
+		
 		for(var ttip of this.tooltips){
-			if(gameState.current.phase instanceof ttip.activePhase)
-				if(ttip.conditionIsMet())
+			if(gameState.current.phase instanceof ttip.activePhase){
+				if(ttip.conditionIsMet()){
 					ttip.activate(parentState);
+					return;
+				}
+			}
 		}
 	}
 }
