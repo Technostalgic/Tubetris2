@@ -31,6 +31,8 @@ class controlState{
 		controlState.controls = {};
 		controlState.controlChangeListener = null;
 		
+		controlState.touchStartPos = null;
+		controlState.touchStartTime = null;
 		controlState.currentTouchID = null;
 		controlState.touchList = [];
 	}
@@ -74,12 +76,18 @@ class controlState{
 	}
 	
 	static listenForTouchStart(e){
-		// TODO: FIX THIS BS
 		for(let touch of e.touches){
 			if(!controlState.touchList.includes(touch)){
 				controlState.touchList.push(touch);
 				controlState.currentTouchID = touch.identifier;
+				controlState.touchStartTime = timeElapsed;
+				
+				controlState.touchStartPos = clientToOffsetPos(new vec2(touch.clientX, touch.clientY));
+				controlState.touchStartPos.x /= scalingTarget.width / nativeResolution.x;
+				controlState.touchStartPos.y /= scalingTarget.height / nativeResolution.y;
+				
 				gameState.current.touchStart(touch);
+				console.log(touch);
 			}
 		}
 	}
@@ -91,15 +99,16 @@ class controlState{
 	}
 	static listenForTouchEnd(e){
 		// TODO: FIX THIS BS
+		console.log(e);
 		for(let i = controlState.touchList.length - 1; i >= 0; i--){
-			if(!e.touches.includes(controlState.touchList[i])){
-				controlState.touchList.splice(i, 1);
+			if(!touchListIncludes(e.touches, controlState.touchList[i])){
 				if(controlState.touchList[i].identifier == controlState.currentTouchID){
 					gameState.current.touchEnd(controlState.touchList[i]);
 					controlState.currentTouchID = null;
-					if(controlState.touchList.length > 0)
-						controlState.currentTouchID = controlState.touchList[controlState.touchList.length - 1].identifier;
+					controlState.touchStartPos = null;
+					control.touchStartTime = null;
 				}
+				controlState.touchList.splice(i, 1);
 			}
 		}
 	}

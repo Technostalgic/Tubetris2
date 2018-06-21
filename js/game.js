@@ -917,6 +917,20 @@ function drawForegroundOverlay(){
 	drawImage(renderContext, gfx.foreground_overlay, new vec2());
 }
 
+function touchListIncludes(touchlist, item){
+	// for some stupid fucking reason, touch events contain lists of the touches on the screen at that time,
+	// but those lists are some pointless bullshit object called "TouchLists" instead of just being a normal
+	// fucking array so you can't use any of the array member methods on them
+	for(var t of touchlist)
+		if(t == item)
+			return true;
+	return false;
+}
+function clientToOffsetPos(clientpos){
+	// converts a client position to an offset position with respect to the scaling canvas
+	var bounds = scalingTarget.getBoundingClientRect();
+	return clientPos.minus(new vec2(bounds.left, bounds.top));
+}
 /// ================================|--------------------|================================
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ { -Script Execution- } ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// ================================|--------------------|================================
