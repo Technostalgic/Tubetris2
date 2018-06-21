@@ -31,6 +31,7 @@ class controlState{
 		controlState.controls = {};
 		controlState.controlChangeListener = null;
 		
+		controlState.currentTouchID = null;
 		controlState.touchList = [];
 	}
 	
@@ -77,18 +78,29 @@ class controlState{
 		for(let touch of e.touches){
 			if(!controlState.touchList.includes(touch)){
 				controlState.touchList.push(touch);
+				controlState.currentTouchID = touch.identifier;
 				gameState.current.touchStart(touch);
 			}
 		}
 	}
 	static listenForTouchMove(e){
-		
+		for(let i = controlState.touchList.length - 1; i >= 0; i--){
+			if(controlState.touchList[i].identifier == controlState.currentTouchID)
+				gameState.current.touchMove(controlState.touchList[i]);
+		}
 	}
 	static listenForTouchEnd(e){
 		// TODO: FIX THIS BS
 		for(let i = controlState.touchList.length - 1; i >= 0; i--){
-			if(!e.touches.includes(controlState.touchList[i]))
+			if(!e.touches.includes(controlState.touchList[i])){
 				controlState.touchList.splice(i, 1);
+				if(controlState.touchList[i].identifier == controlState.currentTouchID){
+					gameState.current.touchEnd(controlState.touchList[i]);
+					controlState.currentTouchID = null;
+					if(controlState.touchList.length > 0)
+						controlState.currentTouchID = controlState.touchList[controlState.touchList.length - 1].identifier;
+				}
+			}
 		}
 	}
 	static listenForTouchCancel(e){
