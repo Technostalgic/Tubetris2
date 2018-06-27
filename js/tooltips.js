@@ -175,13 +175,38 @@ class tooltip{
 		};
 		
 		r.childTips = [
+			tooltip.tip_ballPause
 		];
 		
 		return r;
 	}
-	static get tip_completeRow(){		
+	static get tip_ballPause(){
 		var r = new tooltip();
-		r.setTitle("Row Complete");
+		r.setTitle("Ball Intersection");
+		r.text_pc = "When the ball comes to an (intersection) it will stop and let you decide which way to go 1.5| the (arrow indicators) let you know all the directions that the ball can be directed in 1.5| " +
+			"use [" + controlState.getControlKeyName(controlAction.left) + "] or [" + controlState.getControlKeyName(controlAction.right) + "] or [" + controlState.getControlKeyName(controlAction.up) + "] or [" + controlState.getControlKeyName(controlAction.down) + "] to choose a direction";
+		
+		// gets a rectangle surrounding the current ball
+		r.getFocusArea = function(){
+			var r = tile.toScreenPos(gameState.current.phase.balls[0].gridPos, false);
+			r = new collisionBox(r.clone(), new vec2(tile.tilesize));
+
+			return r;
+		}
+		
+		r.activePhase = phase_ballPhysics;
+		r.condition = function(){
+			return gameState.current.phase.balls[0].state == ballStates.paused;
+		};
+		
+		r.childTips = [
+		];
+		
+		return r;
+	}
+	static get tip_completeRow(){
+		var r = new tooltip();
+		r.setTitle("Row Completion");
 		r.text_pc = "If you fill all the tiles (in a row) then those tiles will become (charged) and coins will spawn";
 		
 		// highlights the bottom row
