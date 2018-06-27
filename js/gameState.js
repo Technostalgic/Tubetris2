@@ -1901,6 +1901,15 @@ class phase_placeTileform extends gameplayPhase{
 		this.currentTileform.setPos(new vec2());
 		this.currentTileform = this.parentState.nextTileforms.splice(0, 1, this.currentTileform)[0];
 		audioMgr.playSound(sfx.swapTileform);
+
+		// disable arrow indicators if they were on and the swapped tileform is not a ball
+		if(this.arrowIndicators){
+			if(!this.currentTileform.hasEntityType(entities.ball))
+				this.arrowIndicators = null;
+		}
+		// and vice-versa
+		else if(this.currentTileform.hasEntityType(entities.ball))
+			this.calculateArrowIndicators();
 	}
 	placeTileform(){
 		// places the current tileform and does all the necessary checks
