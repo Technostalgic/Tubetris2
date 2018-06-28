@@ -32,6 +32,7 @@ class ball{
 		
 		this.toPause = false;
 		this.tilesTagged = [];
+		this.gridsTrotted = [];
 	}
 	
 	update(dt){
@@ -63,6 +64,18 @@ class ball{
 			this.gridPos = this.nextPos.clone();
 		
 		audioMgr.playSound(sfx.ballRoll);
+		
+		// counts how many times the tile has been occupied by the ball
+		if(!this.gridsTrotted[this.gridPos.x])
+			this.gridsTrotted[this.gridPos.x] = [];
+		if(!this.gridsTrotted[this.gridPos.x][this.gridPos.y])
+			this.gridsTrotted[this.gridPos.x][this.gridPos.y] = 0;
+		this.gridsTrotted[this.gridPos.x][this.gridPos.y]++;
+
+		// if the tile has been occupied 5 or more times, destroy the ball (prevents ball from getting stuck in an infinite loop)
+		console.log(this.gridsTrotted[this.gridPos.x][this.gridPos.y]);
+		if(this.gridsTrotted[this.gridPos.x][this.gridPos.y] >= 5)
+			this.destroy();
 	}
 	move(){
 		// moves the ball to it's nextPos
