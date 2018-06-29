@@ -525,6 +525,14 @@ function saveScores(){
 	log("saved!", logType.success);
 }
 
+function checkSmallScreenScaling(){
+	// checks to see if the user is playing the game on a device with a small screen
+	// and adjusts to accomodate
+	if(window.outerWidth < nativeResolution.x || window.outerHeight < nativeResolution.y)
+		config.canvasScaleMode = 1;
+	applyConfig();
+}
+
 function setDefaultConfig(){
 	// sets the default game configuration settings
 	config = {
@@ -542,6 +550,7 @@ function setDefaultConfig(){
 		pathIndicators: true,
 		showFPS: false
 	};
+	checkSmallScreenScaling();
 }
 function setDefaultControls(){
 	// sets the default game controlState.controls
@@ -786,7 +795,7 @@ function getCanvas(){
 }
 function fitToScreen(){
 	// expands the canvas so that it fills the screen while keeping the native aspect ratio
-	var w = window.innerWidth;
+	var w = window.innerWidth < window.outerWidth ? window.innerWidth : window.outerWidth;
 	var h = window.innerHeight;
 	var ratio = nativeResolution.x / nativeResolution.y;
 	
@@ -930,7 +939,7 @@ function touchListIncludes(touchlist, item){
 function clientToOffsetPos(clientpos){
 	// converts a client position to an offset position with respect to the scaling canvas
 	var bounds = scalingTarget.getBoundingClientRect();
-	return clientPos.minus(new vec2(bounds.left, bounds.top));
+	return clientpos.minus(new vec2(bounds.left, bounds.top));
 }
 /// ================================|--------------------|================================
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ { -Script Execution- } ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

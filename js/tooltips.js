@@ -29,7 +29,7 @@ class tooltip{
 		// the tooltip will only activate if the current gameplayPhase is an instance of this.activePhase
 		this.activePhase = gameplayPhase;
 		
-		 // the tooltip will only activate when the condition returns true
+		// the tooltip will only activate when the condition returns true
 		this.condition = function(){ return true; };
 		
 		// these tooltips will be unlocked when this tooltip is activated

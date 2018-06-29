@@ -91,6 +91,8 @@ class controlState{
 		}
 	}
 	static listenForTouchMove(e){
+		e.preventDefault(); // disable touch scrolling
+		
 		for(let i = controlState.touchList.length - 1; i >= 0; i--){
 			if(controlState.touchList[i].identifier == controlState.currentTouchID)
 				gameState.current.touchMove(controlState.touchList[i]);
@@ -105,7 +107,7 @@ class controlState{
 					gameState.current.touchEnd(controlState.touchList[i]);
 					controlState.currentTouchID = null;
 					controlState.touchStartPos = null;
-					control.touchStartTime = null;
+					controlState.touchStartTime = null;
 				}
 				controlState.touchList.splice(i, 1);
 			}
