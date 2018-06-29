@@ -33,6 +33,7 @@ class controlState{
 		
 		controlState.touchStartPos = null;
 		controlState.touchStartTime = null;
+		controlState.touchPos = null;
 		controlState.currentTouchID = null;
 		controlState.touchList = [];
 	}
@@ -78,29 +79,59 @@ class controlState{
 		for(let touch of e.touches){
 			if(!controlState.touchList.includes(touch)){
 				controlState.touchList.push(touch);
-				controlState.currentTouchID = touch.identifier;
-				controlState.touchStartTime = timeElapsed;
 				
-				controlState.touchStartPos = clientToOffsetPos(new vec2(touch.clientX, touch.clientY));
-				controlState.touchStartPos.x /= scalingTarget.width / nativeResolution.x;
-				controlState.touchStartPos.y /= scalingTarget.height / nativeResolution.y;
+				// if there is no active touch, make this the currently active touch
+				if(!controlState.currentTouchID){
+					controlState.currentTouchID = touch.identifier;
+					controlState.touchStartTime = timeElapsed;
 				
-				gameState.current.touchStart(touch);
-				console.log(touch);
+					// calculate the touch's in-game position
+					controlState.touchStartPos = clientToOffsetPos(new vec2(touch.clientX, touch.clientY));
+					controlState.touchStartPos.x /= scalingTarget.width / nativeResolution.x;
+					controlState.touchStartPos.y /= scalingTarget.height / nativeResolution.y;
+					controlState.touchPos = controlState.touchStartPos.clone();
+					
+					gameState.current.touchStart(controlState.touchStartPos, touch);
+				}
 			}
 		}
 	}
 	static listenForTouchMove(e){
 		e.preventDefault(); // disable touch scrolling
 		
-		for(let i = controlState.touchList.length - 1; i >= 0; i--){
-			if(controlState.touchList[i].identifier == controlState.currentTouchID)
-				gameState.current.touchMove(controlState.touchList[i]);
+		for(let i = e.touches.length - 1; i >= 0; i--){
+			if(e.touches[i].identifier == controlState.currentTouchID){
+				// calculate the touch's in-game position
+				var tpos = clientToOffsetPos(new vec2(e.touches[i].clientX, e.touches[i].clientY));
+				tpos.x /= scalingTarget.width / nativeResolution.x;
+				tpos.y /= scalingTarget.height / nativeResolution.y;
+				
+				controlState.touchPos = tpos.clone();
+				gameState.current.touchMove(tpos, e.touches[i]);
+				break;
+			}
 		}
 	}
 	static listenForTouchEnd(e){
-		// TODO: FIX THIS BS
-		console.log(e);
+		e.preventDefault(); // disable touch clicking and right-clicking
+		
+		// remove the touch object that ended from the controlState.touchList
+		for(let i = controlState.touchList.length - 1; i >= 0; i--){
+			if(!touchListIncludes(e.touches, controlState.touchList[i])){
+				
+				// if it's the currently active touch, reset the flags and call the gamestate touchEnd fuction
+				if(controlState.touchList[i].identifier == controlState.currentTouchID){
+					gameState.current.touchEnd(controlState.touchPos.clone(), controlState.touchList[i]);
+					
+					controlState.currentTouchID = null;
+					controlState.touchStartPos = null;
+					controlState.touchStartTime = null;
+				}
+				controlState.touchList.splice(i, 1);
+			}
+		}
+	}
+	static listenForTouchCancel(e){
 		for(let i = controlState.touchList.length - 1; i >= 0; i--){
 			if(!touchListIncludes(e.touches, controlState.touchList[i])){
 				if(controlState.touchList[i].identifier == controlState.currentTouchID){
@@ -113,8 +144,11 @@ class controlState{
 			}
 		}
 	}
-	static listenForTouchCancel(e){
-		
+	
+	static getTouchDuration(){
+		if(!controlState.touchStartTime)
+			return null;
+		return timeElapsed - controlState.touchStartTime;
 	}
 	
 	static isKeyDown(keyCode){

@@ -71,11 +71,21 @@ class gameState{
 	// called when the mouse is moved
 	mouseMove(pos){}
 	
-	// touchscreen events:
-	touchStart(t){}
-	touchMove(t){}
-	touchEnd(t){}
-	touchCancel(t){}
+	// touch actions that are called when the listener for the corresponding event is triggered:
+	touchStart(pos, touch){
+		this.mouseMove(pos);
+	}
+	touchMove(pos, touch){
+		this.mouseMove(pos);
+	}
+	touchEnd(pos, touch){
+		if(controlState.getTouchDuration() < 500)
+			if(pos.distance(controlState.touchStartPos) <= 10)
+				this.mouseTap(pos);
+	}
+	touchCancel(pos, touch){
+		this.touchEnd(pos, touch);
+	}
 }
 
 // a pressable button in the GUI that the player can interact with
