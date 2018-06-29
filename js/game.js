@@ -537,6 +537,7 @@ function setDefaultConfig(){
 		scaleSmoothing: false,
 		canvasScaleMode: 0,
 		saving: true,
+		tooltipsEnabled: true,
 		arrowIndicators: true,
 		pathIndicators: true,
 		showFPS: false

@@ -314,6 +314,9 @@ class tooltip{
 	
 	conditionIsMet(){
 		// a safe way to check if the condition has been met, if an error is thrown, it is caught and returns false
+		if(!config.tooltipsEnabled)
+			return;
+		
 		try{
 			return this.condition();
 		} catch(e){

@@ -1114,9 +1114,13 @@ class state_gameOptions extends state_optionsSubMenu{
 		var ths = this;
 		
 		// game ops:
-		// Reset Config
-		// Reset Scores 
+		// Tooltips
+		// Arrow Indicators
+		// Path Indicators
 		
+		this.buttons.push(new settingButton().construct("Tooltips", tpos.plus(new vec2(0, off * dif)), "arrows appear while you are placing a ball to suggest possible tube entrances for the ball"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("tooltipsEnabled"), settingButton.generateSetValueFunc("tooltipsEnabled")
+			).generateSettingPreRenders() ); off ++;
 		this.buttons.push(new settingButton().construct("Arrow Indicators", tpos.plus(new vec2(0, off * dif)), "arrows appear while you are placing a ball to suggest possible tube entrances for the ball"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("arrowIndicators"), settingButton.generateSetValueFunc("arrowIndicators")
 			).generateSettingPreRenders() ); off ++;
@@ -1124,6 +1128,9 @@ class state_gameOptions extends state_optionsSubMenu{
 			).setGettersAndSetters(settingButton.generateGetValueFunc("pathIndicators"), settingButton.generateSetValueFunc("pathIndicators")
 			).generateSettingPreRenders() );
 		off += 1.5;
+		
+		// Reset Config
+		// Reset Scores 
 		
 		var action_resetConfig = function(){
 			gameState.switchState(new state_confirmationDialogue(function(){
