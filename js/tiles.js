@@ -1000,7 +1000,6 @@ class tileform{
 		var min = tile.toScreenPos(new vec2(minX, minY), false).plus(tile.toScreenPos(this.gridPos, false));
 		var max = tile.toScreenPos(new vec2(maxX, maxY), false).plus(tile.toScreenPos(this.gridPos, false)).plus(new vec2(tile.tilesize));
 
-		console.log(min + ", " + max);
 		return new collisionBox(min, max.minus(min));
 	}
 	

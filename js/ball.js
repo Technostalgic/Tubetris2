@@ -73,7 +73,6 @@ class ball{
 		this.gridsTrotted[this.gridPos.x][this.gridPos.y]++;
 
 		// if the tile has been occupied 5 or more times, destroy the ball (prevents ball from getting stuck in an infinite loop)
-		console.log(this.gridsTrotted[this.gridPos.x][this.gridPos.y]);
 		if(this.gridsTrotted[this.gridPos.x][this.gridPos.y] >= 5)
 			this.destroy();
 	}

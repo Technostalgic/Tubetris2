@@ -1433,7 +1433,6 @@ class state_gameplayState extends gameState{
 	decrementUntil(){
 		// decrements all the tileform 'until' fields, each time a new piece is gotten, and if any of the
 		// fields reach below zero, the new 'until' counts are searched for
-		// log(this.until);
 		var ths = this;
 		var doSearch = false;
 		Object.keys(this.until).forEach(function(key){
@@ -1607,8 +1606,6 @@ class state_gameplayState extends gameState{
 	}
 	controlTap(control = controlAction.none){
 		// called when a control is tapped
-		console.log(control);
-		
 		if(control == controlAction.pause){
 			this.pauseGame();
 			return;

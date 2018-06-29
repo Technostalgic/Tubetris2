@@ -238,7 +238,6 @@ class tooltip{
 	setTitle(txt, anim = new textAnim_scaleTransform(750, 1, 1.1, 0).setAnimType(textAnimType.trigonometricCycle), style = new textStyle(fonts.large, textColor.light, 1).setAlignment(0.5, 0)){
 		// sets the animated title of the tooltip to be drawn at the top of the screen
 		var tblock = new textBlock(txt, style, screenBounds.inflated(0.9), [], style.scale * style.font.charSize.y);
-		console.log(tblock.lineHeight);
 		this.titlePreRender = preRenderedText.fromBlock(tblock);
 		this.titleAnim = anim;
 		
@@ -347,8 +346,9 @@ class tooltip{
 		
 		// if there is a focus area draw a flashing box around it
 		if(this.focusArea){
-			var col = gameState.current.timeElapsed % 500 >= 250 ? "rgba(255,255,255, 1)" : "rgba(255,255,255, 0.5)";
-			console.log(col);
+			var col = gameState.current.timeElapsed % 500 >= 250 ? 
+				"rgba(255,255,255, 1)" : 
+				"rgba(255,255,255, 0.5)";
 			this.focusArea.drawOutline(renderContext, col, 2);
 		}
 	}

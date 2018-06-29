@@ -64,7 +64,6 @@ class controlState{
 		controlState.keys[e.keyCode] = true;
 		
 		var a = controlState.getControlsForKey(e.keyCode);
-		log(a);
 		a.forEach(function(ctrl){
 			gameState.current.controlTap(ctrl);
 		});

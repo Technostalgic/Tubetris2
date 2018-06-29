@@ -61,7 +61,7 @@ class audioMgr{
 		if(!audioMgr.musicPlayCallback)
 			return;
 		var track = audioMgr.musicPlayCallback;
-		log(track.src);
+		log("starting music: " + track.src);
 		this.playMusic(track);
 
 		// if the track successfully plays, cancel the previous unsuccessful music playback calls
