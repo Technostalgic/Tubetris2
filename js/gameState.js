@@ -1871,6 +1871,9 @@ class phase_placeTileform extends gameplayPhase{
 			case controlAction.swap:
 				this.swapTileform();
 				break;
+			case controlAction.quickDrop:
+				this.quickDropTF();
+				break;
 		}
 	}
 	
@@ -1931,6 +1934,11 @@ class phase_placeTileform extends gameplayPhase{
 			}
 		}
 		return false;
+	}
+	quickDropTF(){
+		while(this.currentTileform.canMove(side.down))
+			this.currentTileform.move(side.down);
+		this.placeTileform();
 	}
 	bumpDownTF(){
 		// bumps the current tileform object downward
