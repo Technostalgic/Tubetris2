@@ -306,10 +306,20 @@ class tooltip{
 		);
 		
 		// if the text overlaps the focus area, move it below so that the focus area is unobstructed
+		var pcent = this.preRender.findCenter();
 		if(this.focusArea.overlapsBox(testBounds)){
 			var offY = this.focusArea.bottom - testBounds.top + 25;
 			this.preRender.setCenter(this.preRender.findCenter().plus(new vec2(0, offY)));
 		}
+		
+		// if the text goes too low, move it back to the original position
+		testBounds = this.preRender.getBounds();
+		testBounds = new collisionBox(
+			new vec2(this.textBounds.left, testBounds.top), 
+			new vec2(this.textBounds.width, testBounds.height)
+		);
+		if(testBounds.bottom >= screenBounds.bottom - 60)
+			this.preRender.setCenter(pcent);
 	}
 	
 	conditionIsMet(){
