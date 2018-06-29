@@ -79,12 +79,16 @@ class gameState{
 		this.mouseMove(pos);
 	}
 	touchEnd(pos, touch){
-		if(controlState.getTouchDuration() < 500)
+		if(controlState.getTouchDuration() < 350)
 			if(pos.distance(controlState.touchStartPos) <= 10)
-				this.mouseTap(pos);
+				this.touchTap(pos);
 	}
 	touchCancel(pos, touch){
-		this.touchEnd(pos, touch);
+	}
+	
+	// a custom touch action
+	touchTap(pos){
+		this.mouseTap(pos);
 	}
 }
 
