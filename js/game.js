@@ -575,6 +575,7 @@ function setDefaultScores(){
 	scores = getDefaultScores();
 }
 function getDefaultScores(){
+	// TODO: un-debugify the scores
 	return [
 		{name: "Technosta", score: 250000},
 		{name: "echnostal", score: 100000},

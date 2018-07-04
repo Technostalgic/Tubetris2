@@ -738,9 +738,7 @@ class state_scoreboard extends state_menuState{
 		
 		// text animations for first place
 		this.anim_value1 = new textAnim_rainbow();
-		var anim_p1 = new textAnim_scale(500, 0.75, 1.25, 0.1);
-		anim_p1.looping = true;
-		anim_p1.animType = textAnimType.trigonometricCycle;
+		var anim_p1 = new textAnim_scale(500, 0.75, 1.25, 0.1).setAnimType(textAnimType.trigonometricCycle);
 		this.anim_place1 = new textAnim_compound([
 			this.anim_value1,
 			anim_p1
@@ -1308,7 +1306,6 @@ class state_gameOverState extends state_menuState{
 	}
 	setLostGame(gameplaystate){
 		this.lostGame = gameplaystate;
-		this.checkRank();
 	}
 	checkRank(){
 		var place = null;
@@ -1319,11 +1316,14 @@ class state_gameOverState extends state_menuState{
 			place = i;
 		}
 		
-		var msg = !place ? "player did not rank in the scoreboard" : "player ranked #" + (place + 1);
+		var msg = !place ? "player did not rank in the scoreboard" : "player ranked #" + (place + 1).toString();
 		log(msg, logType.notify);
 		
-		if(place)
-			/*store score in scoreboard*/;
+		if(place){
+			var stt = new state_nameEntry();
+			stt.setRank(place);
+			gameState.switchState(stt);
+		}
 		
 		return place;
 	}
@@ -1337,6 +1337,7 @@ class state_gameOverState extends state_menuState{
 	}
 	switchTo(fromstate){
 		audioMgr.pauseMusic();
+		this.checkRank();
 	}
 	
 	draw(){
@@ -1359,6 +1360,127 @@ class state_gameOverState extends state_menuState{
 		
 		// renders the foreground border
 		drawForegroundBorder();
+	}
+}
+// name entry screen for scoreboard rankers
+class state_nameEntry extends state_menuState{
+	constructor(){
+		super();
+		this.name = "";
+		this.maxLength = 12;
+		this.rankText = null;
+		this.rankAnim = null;
+		this.prompt = null;
+		this.setTitle("Well Done!", new textStyle(fonts.large, textColor.light, 2), new textAnim_scaleTransform(1000, 1, 1.15, 0.1).setAnimType(textAnimType.trigonometricCycle));
+	}
+	
+	addButtons(){
+		var ths = this;
+		var action_continue = function(){
+			ths.finishEntry();
+		};
+		this.buttons.push(new menuButton().construct("Continue", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "proceed to scoreboard", action_continue));
+	}
+	
+	setRank(rank){
+		// informs the gamestate to stylize for the specified rank
+		var rSTR = (rank + 1).toString();
+		var anms = [];
+		
+		// the rank text style
+		var style = [
+			textStyle.getDefault().setColor(textColor.yellow),
+			textStyle.getDefault().setColor(textColor.green),
+			textStyle.getDefault().setColor(textColor.cyan),
+			textStyle.getDefault().setColor(textColor.blue),
+			textStyle.getDefault().setColor(textColor.pink)
+		];
+		style = style[rank];
+		
+		// set the animations and rank suffixes
+		switch(rank + 1){
+			case 1: rSTR += "(st)"; 
+				anms = [
+					new textAnim_scale(500, 0.75, 1.25, 0.1).setAnimType(textAnimType.trigonometricCycle),
+					new textAnim_rainbow()
+				];
+				break;
+			case 2: rSTR += "(nd)"; 
+				anms = [
+					new textAnim_blink(500, 0.5, textColor.yellow),
+					new textAnim_yOffset(500, 3, 0.5)
+				];
+				break;
+			case 3: rSTR += "(rd)"; 
+				break;
+			default: rSTR += "(th)"; 
+				break;
+		}
+		if(anms.length > 0)
+			this.rankAnim = new textAnim_compound(anms);
+		else
+		
+		var rankBlck = new textBlock(
+			"You ranked " + rSTR + " place!", 
+			style, 
+			new collisionBox(new vec2(0, screenBounds.center.y - 120), new vec2(screenBounds.width, 32)),
+			[new textStyle(fonts.small, style.color).setAlignment(0.5, 0)]
+		);
+		var promptTxt = "Enter your name below:";
+		
+		this.rankText = preRenderedText.fromBlock(rankBlck);
+		this.prompt = preRenderedText.fromString(promptTxt, screenBounds.center.minus(new vec2(0, 46)), new textStyle(fonts.small));
+	}
+	
+	typeName(keyCode){
+		// enters a character to this.name
+		var chr = controlState.keyCodeToName(keyCode);
+		if(chr.length > 1)
+			chr = "";
+		
+		this.name = this.name + chr;
+		
+		if(this.name.length > this.maxLength)
+			this.name = this.name.substr(0, this.maxLength);
+	}
+	finishEntry(){
+		// TODO: submit score and name to scoreboard
+		
+		var stt = new state_scoreboard();
+		gameState.switchState(stt);
+	}
+	
+	controlTap(action){
+		if(action = controlAction.select)
+			this.finishEntry();
+	}
+	
+	drawName(){
+		// draws the name that is currently being typed by the player
+		var nSTR = this.name;
+		if(this.name.length < this.maxLength) 
+			nSTR = nSTR + (
+				timeElapsed % 500 >= 250 ?
+				":" : " "
+				);
+		else nSTR = nSTR + " ";
+		
+		var namePR = preRenderedText.fromString(nSTR, new vec2(screenBounds.center));
+		
+		namePR.draw();
+	}
+	draw(){
+		if(!this.initialized) this.initialize();
+		super.draw();
+		
+		// if there is a rank animation, animate the rank text
+		var rTXT = this.rankText;
+		if(this.rankAnim)
+			rTXT = this.rankText.animated(this.rankAnim);
+		
+		rTXT.draw();
+		this.prompt.draw();
+		this.drawName();
 	}
 }
 // when the player is playing the game
