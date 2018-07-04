@@ -1316,10 +1316,10 @@ class state_gameOverState extends state_menuState{
 			place = i;
 		}
 		
-		var msg = !place ? "player did not rank in the scoreboard" : "player ranked #" + (place + 1).toString();
+		var msg = place == null ? "player did not rank in the scoreboard" : "player ranked #" + (place + 1).toString();
 		log(msg, logType.notify);
 		
-		if(place){
+		if(place != null){
 			var stt = new state_nameEntry();
 			stt.setRank(place);
 			gameState.switchState(stt);
@@ -1401,14 +1401,14 @@ class state_nameEntry extends state_menuState{
 		switch(rank + 1){
 			case 1: rSTR += "(st)"; 
 				anms = [
-					new textAnim_scale(500, 0.75, 1.25, 0.1).setAnimType(textAnimType.trigonometricCycle),
+					//new textAnim_scale(500, 0.75, 1.25, 0.1).setAnimType(textAnimType.trigonometricCycle),
 					new textAnim_rainbow()
 				];
 				break;
 			case 2: rSTR += "(nd)"; 
 				anms = [
-					new textAnim_blink(500, 0.5, textColor.yellow),
-					new textAnim_yOffset(500, 3, 0.5)
+					//new textAnim_yOffset(500, 3, 0.5),
+					new textAnim_blink(500, 0.5, textColor.yellow)
 				];
 				break;
 			case 3: rSTR += "(rd)"; 
@@ -1418,9 +1418,8 @@ class state_nameEntry extends state_menuState{
 		}
 		if(anms.length > 0)
 			this.rankAnim = new textAnim_compound(anms);
-		else
 		
-		var rankBlck = new textBlock(
+		var rankBlock = new textBlock(
 			"You ranked " + rSTR + " place!", 
 			style, 
 			new collisionBox(new vec2(0, screenBounds.center.y - 120), new vec2(screenBounds.width, 32)),
@@ -1428,7 +1427,7 @@ class state_nameEntry extends state_menuState{
 		);
 		var promptTxt = "Enter your name below:";
 		
-		this.rankText = preRenderedText.fromBlock(rankBlck);
+		this.rankText = preRenderedText.fromBlock(rankBlock);
 		this.prompt = preRenderedText.fromString(promptTxt, screenBounds.center.minus(new vec2(0, 46)), new textStyle(fonts.small));
 	}
 	
