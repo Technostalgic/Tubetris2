@@ -1652,6 +1652,11 @@ class state_gameplayState extends gameState{
 		audioMgr.playSound(sfx.gameOver);
 	}
 	
+	switchFrom(tostate){
+		scoring.rememberScore();
+		super.switchFrom(tostate);
+	}
+	
 	update(dt){
 		// main logic step
 		super.update(dt);

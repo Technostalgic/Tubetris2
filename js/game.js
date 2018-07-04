@@ -576,11 +576,11 @@ function setDefaultScores(){
 }
 function getDefaultScores(){
 	return [
-		{name: "Top Dog", score: 250000},
-		{name: "Harry", score: 100000},
-		{name: "Middle Dog", score: 50000},
-		{name: "Greg", score: 10000},
-		{name: "Bottom Dog", score: 1000}
+		{name: "Technosta", score: 250000},
+		{name: "echnostal", score: 100000},
+		{name: "chnostalg", score: 50000},
+		{name: "hnostalgi", score: 10000},
+		{name: "nostalgic", score: 0}
 	];
 }
 
