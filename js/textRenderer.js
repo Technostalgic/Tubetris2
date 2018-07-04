@@ -534,7 +534,7 @@ class preRenderedText{
 		r.lines = [];
 		var curLine = [];
 		
-		// used to keep track of the current character's position (aka cursor)
+		// used to keep track of the current character's position (aka the cursor)
 		var cPos = txtBlock.bounds.topLeft; 
 		
 		// iterate through each span in the textBlock
@@ -574,7 +574,7 @@ class preRenderedText{
 				for(let i2 = 0; i2 < charsprites.length; i2++){
 					// offsets the cursor's y-position to account for vertical alignment styling
 					var maxYOff = txtBlock.lineHeight - (span.style.font.charSize.y * span.style.scale);
-					var yOff = maxYOff * r.mainStyle.vAlign;
+					var yOff = maxYOff * span.style.vAlign;
 					
 					// create a spriteContainer to render and add it to the query
 					var sprCont = new spriteContainer(
