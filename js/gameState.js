@@ -1431,13 +1431,33 @@ class state_nameEntry extends state_menuState{
 		this.prompt = preRenderedText.fromString(promptTxt, screenBounds.center.minus(new vec2(0, 46)), new textStyle(fonts.small));
 	}
 	
+	switchTo(fromstate){
+		window.addEventListener("keydown", state_nameEntry.keypress);
+		super.switchTo(fromstate);
+	}
+	switchFrom(tostate){
+		window.removeEventListener("keydown", state_nameEntry.keypress);
+		super.switchFrom(tostate);
+	}
+	
+	static keypress(e){
+		gameState.current.typeName(e.keyCode);
+	}
 	typeName(keyCode){
 		// enters a character to this.name
 		var chr = controlState.keyCodeToName(keyCode);
 		if(chr.length > 1)
 			chr = "";
 		
-		this.name = this.name + chr;
+		// if backspace is pressed
+		if(keyCode == 8)
+			this.name = this.name.substr(0, this.name.length - 1);
+		else{ 
+			if(keyCode == 32)
+				chr = " ";
+			this.name = this.name + chr;
+		}
+		
 		
 		if(this.name.length > this.maxLength)
 			this.name = this.name.substr(0, this.maxLength);
@@ -1460,11 +1480,18 @@ class state_nameEntry extends state_menuState{
 		if(this.name.length < this.maxLength) 
 			nSTR = nSTR + (
 				timeElapsed % 500 >= 250 ?
-				":" : " "
+				":" : ""
 				);
-		else nSTR = nSTR + " ";
+		else nSTR = nSTR + "";
 		
-		var namePR = preRenderedText.fromString(nSTR, new vec2(screenBounds.center));
+		if(nSTR.length < 1) return;
+		
+		var namePR = preRenderedText.fromString(nSTR, screenBounds.center);
+		namePR.mainStyle.hAlign = 0;
+		namePR.applyHorizontalAlignment(screenBounds.center.x - 100, screenBounds.right);
+		
+		if(this.rankAnim)
+			namePR = namePR.animated(this.rankAnim);
 		
 		namePR.draw();
 	}
