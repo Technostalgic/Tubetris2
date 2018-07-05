@@ -35,21 +35,21 @@ class scoring{
 	}
 	static getRankStyle(rank){
 		switch(rank){
-			case 1: return style.getDefault().setColor(textColor.yellow);
-			case 2: return style.getDefault().setColor(textColor.green);
-			case 3: return style.getDefault().setColor(textColor.cyan);
-			case 4: return style.getDefault().setColor(textColor.blue);
-			case 5: return style.getDefault().setColor(textColor.pink);
+			case 1: return textStyle.getDefault().setColor(textColor.yellow);
+			case 2: return textStyle.getDefault().setColor(textColor.green);
+			case 3: return textStyle.getDefault().setColor(textColor.cyan);
+			case 4: return textStyle.getDefault().setColor(textColor.blue);
+			case 5: return textStyle.getDefault().setColor(textColor.pink);
 		}
 		return null;
 	}
 	static getRankColorAnim(rank){
 		switch(rank){
 			case 1: return new textAnim_rainbow();
-			case 2: return new textAnim_blink(500, 0.5, textColor.yellow, 0.9);
-			case 3: return new textAnim_blink(500, 0.5, textColor.blue, 0.1);
-			case 4: return new textAnim_blink(500, 0.5, textColor.pink, 0.9);
-			case 5: return new textAnim_blink(500, 0.5, textColor.red, 0.1);
+			case 2: return new textAnim_blink(500, 0.85, textColor.yellow);
+			case 3: return new textAnim_blink(600, 0.15, textColor.blue);
+			case 4: return new textAnim_blink(700, 0.85, textColor.pink);
+			case 5: return new textAnim_blink(800, 0.15, textColor.red);
 		}
 		return null;
 	}

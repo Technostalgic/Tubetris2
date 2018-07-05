@@ -737,7 +737,7 @@ class state_scoreboard extends state_menuState{
 		this.setTitle("SCOREBOARD");
 		
 		// text animations for first place
-		this.anim_value1 = new textAnim_rainbow();
+		this.anim_value1 = scoring.getRankColorAnim(1);
 		var anim_p1 = new textAnim_scale(500, 0.75, 1.25, 0.1).setAnimType(textAnimType.trigonometricCycle);
 		this.anim_place1 = new textAnim_compound([
 			this.anim_value1,
@@ -745,7 +745,7 @@ class state_scoreboard extends state_menuState{
 		]);
 		
 		// text animations for second place
-		this.anim_value2 = new textAnim_blink(500, 0.5, textColor.yellow);
+		this.anim_value2 = scoring.getRankColorAnim(2);
 		var anim_p2 = new textAnim_yOffset(500, 3, 0.5);
 		this.anim_place2 = new textAnim_compound([
 			this.anim_value2,
@@ -810,6 +810,7 @@ class state_scoreboard extends state_menuState{
 			switch(i){
 				case 0: n = n.animated(ths.anim_place1); break;
 				case 1: n = n.animated(ths.anim_place2); break;
+				default: n = n.animated(scoring.getRankColorAnim(i + 1)); break;
 			}
 			n.draw();
 		});
@@ -818,6 +819,7 @@ class state_scoreboard extends state_menuState{
 			switch(i){
 				case 0: s = s.animated(ths.anim_value1); break;
 				case 1: s = s.animated(ths.anim_value2); break;
+				default: s = s.animated(scoring.getRankColorAnim(i + 1)); break;
 			}
 			s.draw();
 		});
@@ -1356,20 +1358,31 @@ class state_gameOverRanked extends state_gameOver{
 	}
 	
 	setRank(rank){
+		// generate the preRenders and styles that require information about the player's rank
 		this.rankPR = preRenderedText.fromBlock(
 			new textBlock(
-				"you ranked " + (rank + 1).toString + '(' + scoring.getRankSuffix(rank + 1) + ") place 1| on the scoreboard!",
+				"You ranked " + (rank + 1).toString() + "(" + scoring.getRankSuffix(rank + 1) + ") place 1| on the scoreboard!",
 				textStyle.getDefault(),
-				new collisionBox(new vec2(50, screenBounds.center.y - 100), new vec2(screenBounds.width - 50, 100)),
-				[new textStyle(fonts.small)]
+				new collisionBox(new vec2(50, screenBounds.center.y - 150), new vec2(screenBounds.width - 100, 100)),
+				[new textStyle(fonts.small).setAlignment(0.5, 0)]
 			)
 		);
+		
+		this.scorePR = preRenderedText.fromString(
+			scoring.getCurrentScore().toString() + " Pts",
+			screenBounds.center,
+			scoring.getRankStyle(rank + 1)
+		);
+		
+		this.scoreAnim = scoring.getRankColorAnim(rank + 1);
 	}
 	
 	addButtons(){}
 	
 	drawInternals(){
+		this.rankPR.draw();
 		
+		this.scorePR.animated(this.scoreAnim).draw();
 	}
 }
 // name entry screen for scoreboard rankers
@@ -2585,7 +2598,10 @@ class phase_gameOver extends gameplayPhase{
 		var didRank = this.parentState.checkRank() != null;
 		
 		var stt = null;
-		if(didRank) stt = new state_gameOverRanked();
+		if(didRank) {
+			stt = new state_gameOverRanked();
+			stt.setRank(this.parentState.checkRank());
+		}
 		else stt = new state_gameOver();
 		
 		stt.setLostGame(this.parentState);
