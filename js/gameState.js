@@ -1359,9 +1359,10 @@ class state_gameOverRanked extends state_gameOver{
 		this.promptPR = preRenderedText.fromString("Press Enter to Continue", new vec2(screenBounds.center.x, screenBounds.bottom - 100));
 	}
 	
-	setRank(rank){
+	setRank(rank, score){
 		// generate the preRenders and styles that require information about the player's rank
 		this.rank = rank;
+		this.score = score;
 		
 		var rCol = scoring.getRankStyle(rank + 1).color;
 		
@@ -1391,7 +1392,7 @@ class state_gameOverRanked extends state_gameOver{
 	controlTap(action){
 		if(action == controlAction.select){
 			var stt = new state_nameEntry();
-			stt.setRank(this.rank);
+			stt.setRank(this.rank, this.score);
 			gameState.switchState(stt);
 		}
 	}
@@ -1411,6 +1412,8 @@ class state_nameEntry extends state_menuState{
 		super();
 		this.name = "";
 		this.maxLength = 12;
+		this.rank = 0;
+		this.score = 0;
 		this.rankText = null;
 		this.rankAnim = null;
 		this.prompt = null;
@@ -1425,10 +1428,13 @@ class state_nameEntry extends state_menuState{
 		this.buttons.push(new menuButton().construct("Continue", new vec2(screenBounds.center.x, screenBounds.bottom - 100), "proceed to scoreboard", action_continue));
 	}
 	
-	setRank(rank){
+	setRank(rank, score){
 		// informs the gamestate to stylize for the specified rank
 		var rSTR = (rank + 1).toString() + '(' + scoring.getRankSuffix(rank + 1) + ')';
 		var anms = [];
+		
+		this.rank = rank;
+		this.score = score;
 		
 		// the rank text style
 		var style = [
@@ -1502,7 +1508,7 @@ class state_nameEntry extends state_menuState{
 			this.name = this.name.substr(0, this.maxLength);
 	}
 	finishEntry(){
-		// TODO: submit score and name to scoreboard
+		insertScore(this.rank, this.name, this.score)
 		
 		var stt = new state_scoreboard();
 		gameState.switchState(stt);
@@ -2620,7 +2626,7 @@ class phase_gameOver extends gameplayPhase{
 		var stt = null;
 		if(didRank) {
 			stt = new state_gameOverRanked();
-			stt.setRank(this.parentState.checkRank());
+			stt.setRank(this.parentState.checkRank(), scoring.getCurrentScore());
 		}
 		else stt = new state_gameOver();
 		

@@ -585,6 +585,14 @@ function getDefaultScores(){
 	];
 }
 
+function insertScore(rank, scName, points){
+	// inserts a score at the specified place
+	scores.splice(rank, 0, {name:scName, score:points});
+	
+	if(scores.length > 5)
+		scores.splice(5);
+}
+
 function addInputEventListeners(){
 	//window.addEventListener('keydown', function(e){ log("key '" + e.key + "'(" + e.keyCode + ") pressed", logType.notify); });
 	scalingTarget.addEventListener('mousedown', controlState.listenForMouseDown);
