@@ -1350,39 +1350,59 @@ class state_gameOver extends state_menuState{
 class state_gameOverRanked extends state_gameOver{
 	constructor(){
 		super();
-		this.setTitle("RANK ACHIEVED!");
+		this.setTitle("RANK ACHIEVED!", null, new textAnim_yOffset);
 		
+		this.rank = 0;
 		this.rankPR = null;
 		this.scorePR = null;
 		this.scoreAnim = null;
+		this.promptPR = preRenderedText.fromString("Press Enter to Continue", new vec2(screenBounds.center.x, screenBounds.bottom - 100));
 	}
 	
 	setRank(rank){
 		// generate the preRenders and styles that require information about the player's rank
+		this.rank = rank;
+		
+		var rCol = scoring.getRankStyle(rank + 1).color;
+		
+		// the text that tells you what rank you got
 		this.rankPR = preRenderedText.fromBlock(
 			new textBlock(
-				"You ranked " + (rank + 1).toString() + "(" + scoring.getRankSuffix(rank + 1) + ") place 1| on the scoreboard!",
+				"You ranked (" + (rank + 1).toString() + ")[" + scoring.getRankSuffix(rank + 1) + "] place 1| on the scoreboard!",
 				textStyle.getDefault(),
 				new collisionBox(new vec2(50, screenBounds.center.y - 150), new vec2(screenBounds.width - 100, 100)),
-				[new textStyle(fonts.small).setAlignment(0.5, 0)]
+				[textStyle.getDefault().setColor(rCol), new textStyle(fonts.small).setColor(rCol).setAlignment(0.5, 0)]
 			)
 		);
 		
+		// the text that shows you your score
 		this.scorePR = preRenderedText.fromString(
 			scoring.getCurrentScore().toString() + " Pts",
 			screenBounds.center,
-			scoring.getRankStyle(rank + 1)
+			scoring.getRankStyle(rank + 1).setScale(2)
 		);
 		
-		this.scoreAnim = scoring.getRankColorAnim(rank + 1);
+		this.scoreAnim = new textAnim_compound([
+			scoring.getRankColorAnim(rank + 1),
+			new textAnim_yOffset(500, 10, 0.2)
+			]);
 	}
 	
+	controlTap(action){
+		if(action == controlAction.select){
+			var stt = new state_nameEntry();
+			stt.setRank(this.rank);
+			gameState.switchState(stt);
+		}
+	}
 	addButtons(){}
 	
 	drawInternals(){
 		this.rankPR.draw();
-		
 		this.scorePR.animated(this.scoreAnim).draw();
+		
+		if(timeElapsed % 1000 >= 500)
+			this.promptPR.draw();
 	}
 }
 // name entry screen for scoreboard rankers
@@ -1489,7 +1509,7 @@ class state_nameEntry extends state_menuState{
 	}
 	
 	controlTap(action){
-		if(action = controlAction.select)
+		if(action == controlAction.select)
 			this.finishEntry();
 	}
 	

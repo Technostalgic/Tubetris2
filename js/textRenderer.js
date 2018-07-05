@@ -180,6 +180,10 @@ class textStyle{
 		return r;
 	}
 
+	setScale(scl){
+		this.scale = scl;
+		return this;
+	}
 	setAlignment(horizontal = 0.5, vertical = 1){
 		this.hAlign = horizontal;
 		this.vAlign = vertical;
