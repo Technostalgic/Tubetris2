@@ -1274,13 +1274,13 @@ class state_pauseMenu extends state_menuState{
 	}
 }
 // the screen that displays when the player loses
-class state_gameOverState extends state_menuState{
+class state_gameOver extends state_menuState{
 	constructor(){
 		super();
 		this.lostGame = null;
 		this.setTitle("GAME OVER");
 	}
-	
+
 	addButtons(){
 		// adds buttons to the interface
 		this.buttons = [];
@@ -1307,27 +1307,7 @@ class state_gameOverState extends state_menuState{
 	setLostGame(gameplaystate){
 		this.lostGame = gameplaystate;
 	}
-	checkRank(){
-		var place = null;
-		
-		for(let i = scores.length - 1; i >= 0; i--){
-			if(scores[i].score > this.lostGame.currentScore)
-				break;
-			place = i;
-		}
-		
-		var msg = place == null ? "player did not rank in the scoreboard" : "player ranked #" + (place + 1).toString();
-		log(msg, logType.notify);
-		
-		if(place != null){
-			var stt = new state_nameEntry();
-			stt.setRank(place);
-			gameState.switchState(stt);
-		}
-		
-		return place;
-	}
-
+	
 	switchFrom(tostate){
 		audioMgr.resumeMusic();
 		if(!audioMgr.currentMusic){
@@ -1337,16 +1317,19 @@ class state_gameOverState extends state_menuState{
 	}
 	switchTo(fromstate){
 		audioMgr.pauseMusic();
-		this.checkRank();
 	}
 	
-	draw(){
-		if(!this.initialized) this.initialize();
-		
+	drawBG(){
 		this.lostGame.draw();
 		var rect = new collisionBox(new vec2(), new vec2(renderTarget.width, renderTarget.height));
 		rect.drawFill(renderContext, "rgba(0, 0, 0, 0.5)");
+	}
+	draw(){
+		if(!this.initialized) this.initialize();
 
+		//draws the faded tiles in the background 
+		this.drawBG();
+		
 		// draws all the user-defined graphics that aren't buttons
 		this.drawInternals();
 		this.drawTitle();
@@ -1360,6 +1343,33 @@ class state_gameOverState extends state_menuState{
 		
 		// renders the foreground border
 		drawForegroundBorder();
+	}
+}
+class state_gameOverRanked extends state_gameOver{
+	constructor(){
+		super();
+		this.setTitle("RANK ACHIEVED!");
+		
+		this.rankPR = null;
+		this.scorePR = null;
+		this.scoreAnim = null;
+	}
+	
+	setRank(rank){
+		this.rankPR = preRenderedText.fromBlock(
+			new textBlock(
+				"you ranked " + (rank + 1).toString + '(' + scoring.getRankSuffix(rank + 1) + ") place 1| on the scoreboard!",
+				textStyle.getDefault(),
+				new collisionBox(new vec2(50, screenBounds.center.y - 100), new vec2(screenBounds.width - 50, 100)),
+				[new textStyle(fonts.small)]
+			)
+		);
+	}
+	
+	addButtons(){}
+	
+	drawInternals(){
+		
 	}
 }
 // name entry screen for scoreboard rankers
@@ -1384,7 +1394,7 @@ class state_nameEntry extends state_menuState{
 	
 	setRank(rank){
 		// informs the gamestate to stylize for the specified rank
-		var rSTR = (rank + 1).toString();
+		var rSTR = (rank + 1).toString() + '(' + scoring.getRankSuffix(rank + 1) + ')';
 		var anms = [];
 		
 		// the rank text style
@@ -1397,23 +1407,19 @@ class state_nameEntry extends state_menuState{
 		];
 		style = style[rank];
 		
-		// set the animations and rank suffixes
+		// set the animations
 		switch(rank + 1){
-			case 1: rSTR += "(st)"; 
+			case 1:
 				anms = [
 					//new textAnim_scale(500, 0.75, 1.25, 0.1).setAnimType(textAnimType.trigonometricCycle),
 					new textAnim_rainbow()
 				];
 				break;
-			case 2: rSTR += "(nd)"; 
+			case 2:
 				anms = [
 					//new textAnim_yOffset(500, 3, 0.5),
 					new textAnim_blink(500, 0.5, textColor.yellow)
 				];
-				break;
-			case 3: rSTR += "(rd)"; 
-				break;
-			default: rSTR += "(th)"; 
 				break;
 		}
 		if(anms.length > 0)
@@ -1681,6 +1687,20 @@ class state_gameplayState extends gameState{
 		this.killFloatingScoreText();
 		this.updateFloatingScoreText();
 		this.currentBallScore = 0;
+	}
+	checkRank(){
+		var place = null;
+		
+		for(let i = scores.length - 1; i >= 0; i--){
+			if(scores[i].score > this.currentScore)
+				break;
+			place = i;
+		}
+		
+		var msg = place == null ? "player is not ranking in the scoreboard" : "player is ranked #" + (place + 1).toString();
+		log(msg, logType.notify);
+		
+		return place;
 	}
 	
 	killFloatingScoreText(){
@@ -2562,9 +2582,14 @@ class phase_gameOver extends gameplayPhase{
 		this.isFinished = true;
 		scoring.rememberScore();
 		
-		var loseState = new state_gameOverState();
-		loseState.setLostGame(this.parentState);
-		gameState.switchState(loseState);
+		var didRank = this.parentState.checkRank() != null;
+		
+		var stt = null;
+		if(didRank) stt = new state_gameOverRanked();
+		else stt = new state_gameOver();
+		
+		stt.setLostGame(this.parentState);
+		gameState.switchState(stt);
 	}
 	
 	draw(){

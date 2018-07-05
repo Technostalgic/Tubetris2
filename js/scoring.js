@@ -24,6 +24,36 @@ class scoring{
 		scoring.memorizedBallScore = null;
 	}
 	
+	static getRankSuffix(rank){
+		// returns the correct rank suffix string (ie 'st' in '1st' or 'nd' in '2nd')
+		switch(rank){
+			case 1: return "st";
+			case 2: return "nd";
+			case 3: return "rd";
+		}
+		return "th";
+	}
+	static getRankStyle(rank){
+		switch(rank){
+			case 1: return style.getDefault().setColor(textColor.yellow);
+			case 2: return style.getDefault().setColor(textColor.green);
+			case 3: return style.getDefault().setColor(textColor.cyan);
+			case 4: return style.getDefault().setColor(textColor.blue);
+			case 5: return style.getDefault().setColor(textColor.pink);
+		}
+		return null;
+	}
+	static getRankColorAnim(rank){
+		switch(rank){
+			case 1: return new textAnim_rainbow();
+			case 2: return new textAnim_blink(500, 0.5, textColor.yellow, 0.9);
+			case 3: return new textAnim_blink(500, 0.5, textColor.blue, 0.1);
+			case 4: return new textAnim_blink(500, 0.5, textColor.pink, 0.9);
+			case 5: return new textAnim_blink(500, 0.5, textColor.red, 0.1);
+		}
+		return null;
+	}
+	
 	static rememberScore(){
 		// stores the score from the gameplay state so it can be accessed after the gamestate has ended (used 
 		// while displaying most recent score in the scoreboard screen)
