@@ -47,9 +47,9 @@ class scoring{
 		switch(rank){
 			case 1: return new textAnim_rainbow();
 			case 2: return new textAnim_blink(500, 0.85, textColor.yellow);
-			case 3: return new textAnim_blink(600, 0.15, textColor.blue);
-			case 4: return new textAnim_blink(700, 0.85, textColor.pink);
-			case 5: return new textAnim_blink(800, 0.15, textColor.red);
+			case 3: return new textAnim_blink(650, 0.15, textColor.light);
+			case 4: return new textAnim_blink(800, 0.85, textColor.light);
+			case 5: return new textAnim_blink(950, 0.15, textColor.light);
 		}
 		return null;
 	}

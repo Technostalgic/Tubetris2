@@ -575,13 +575,12 @@ function setDefaultScores(){
 	scores = getDefaultScores();
 }
 function getDefaultScores(){
-	// TODO: un-debugify the scores
 	return [
-		{name: "Technosta", score: 0}, //250000},
-		{name: "echnostal", score: 0}, //100000},
-		{name: "chnostalg", score: 0}, //50000},
-		{name: "hnostalgi", score: 0}, //10000},
-		{name: "nostalgic", score: 0}
+		{name: "Techno", score: 250000},
+		{name: "Techno", score: 100000},
+		{name: "Techno", score: 50000},
+		{name: "Techno", score: 10000},
+		{name: "Techno", score: 5000}
 	];
 }
 
