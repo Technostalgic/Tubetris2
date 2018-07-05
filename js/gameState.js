@@ -1511,6 +1511,17 @@ class state_nameEntry extends state_menuState{
 		insertScore(this.rank, this.name, this.score)
 		
 		var stt = new state_scoreboard();
+		stt.addButtons = function(){
+			stt.buttons.push(
+				new menuButton().construct(
+					"Main Menu",
+					new vec2(screenBounds.center.x, screenBounds.bottom - 100), 
+					"return to the main menu", 
+					function(){
+						gameState.switchState(new state_mainMenu());
+					}
+				));
+		};
 		gameState.switchState(stt);
 	}
 	
