@@ -377,9 +377,8 @@ class tooltip{
 	}
 	drawPrompt(){
 		// draw the "press enter to continue" prompt
-		this.promptPreRender.animated(
-			new textAnim_blink(1000, 0)
-		).draw();
+		if(timeElapsed % 1000 >= 500)
+			this.promptPreRender.draw();
 	}
 	draw(){
 		this.drawBackground();
