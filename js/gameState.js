@@ -1509,7 +1509,8 @@ class state_nameEntry extends state_menuState{
 	}
 	finishEntry(){
 		insertScore(this.rank, this.name, this.score)
-		
+		saveScores();
+
 		var stt = new state_scoreboard();
 		stt.addButtons = function(){
 			stt.buttons.push(
