@@ -143,6 +143,7 @@ class scoring{
 	}
 }
 
+// a data structure for maintaining combo information while the player is executing the combo
 class scoreCombo{
 	constructor(){
 		this.comboID = 0;
@@ -155,11 +156,14 @@ class scoreCombo{
 		switch(comboID){
 			case floatingScoreFieldID.bombCombo:
 				return new combo_bombs();
+			case floatingScoreFieldID.coinCombo:
+				return new combo_coins();
 		}
 		return new scoreCombo();
 	}
 	
 	addValue(val = 1){
+		// adds to what number of extent the combo has been executed
 		this.comboValue += val;
 		if(this.comboValue < this.comboThreshold)
 			return;
@@ -168,15 +172,18 @@ class scoreCombo{
 		this.updateFloatingTexts();
 	}
 	updatePointValue(){
+		// updates how much points the whole combo is worth to the player
 		this.comboPointValue = this.comboValue * 100;
 	}
 	updatefloatingTexts(){}
 	
 	cashIn(){
+		// gives the player the amount of points that the combo is worth
 		scoring.addScore(this.comboPointValue);
 	}
 }
 
+// the combo structure for detonating multiple bombs with one ball
 class combo_bombs extends scoreCombo{
 	constructor(){
 		super();
@@ -201,5 +208,27 @@ class combo_bombs extends scoreCombo{
 		var style = new textStyle(fonts.large, textColor.red);
 		gameState.current.setFloatingScoreField(str1, style, floatingScoreFieldID.bombCombo, anim);
 		gameState.current.setFloatingScoreField(str2, style, floatingScoreFieldID.bombComboPts, anim);
+	}
+}
+
+// the combo structure for collecting multiple coins with one ball
+class combo_coins extends scoreCombo{
+	constructor(){
+		super();
+		this.comboID = floatingScoreFieldID.coinCombo;
+	}
+
+	updatePointValue(){
+		if(this.comboValue >= 10)
+			return 3500;
+
+		return 0;
+	}
+	updateFloatingTexts(){
+		var str1 = this.comboValue.toString() + "x Coins Collected";
+
+		var anim = new textAnim_blink(250, 0, textColor.light);
+		var style = new textStyle(fonts.large, textColor.yellow);
+		gameState.current.setFloatingScoreField(str1, style, floatingScoreFieldID.coinCombo, anim);
 	}
 }
