@@ -192,6 +192,10 @@ class tooltip{
 			"if the (ball color) matches the (tube color) when it rolls through you are rewarded with more points 1.5|" + 
 			"you can (change the ball color) with the rotation key [" + controlState.getControlKeyName(controlAction.rotateCW) + "]";
 
+		r.childTips = [
+			tooltip.tip_greyTubes
+		];
+
 		return r;
 	}
 	static get tip_ballPause(){
@@ -248,7 +252,28 @@ class tooltip{
 		
 		return r;
 	}
-	
+	static get tip_greyTubes(){
+		var r = new tooltip();
+		r.setTitle("Grey Tubes");
+		r.text_pc = "This (tileform) contains (grey) tubes which are a special case 1.5| " + 
+			"(grey) tubes can only be destroyed by a (grey ball) so make sure to (cycle the ball color to grey) before dropping it through these tubes!";
+
+		// gets a rectangle surrounding the current tileform
+		r.getFocusArea = function(){
+			var r = gameState.current.phase.currentTileform.getVisualBounds();
+			r.pos = r.pos.minus(tile.offset);
+
+			return r;
+		}
+
+		r.activePhase = phase_placeTileform;
+		r.condition = function(){
+			return gameState.current.phase.currentTileform.tiles[0].tileVariant == tubeColors.grey;
+		}
+
+		return r;
+	}
+
 	setTitle(txt, anim = new textAnim_scaleTransform(750, 1, 1.1, 0).setAnimType(textAnimType.trigonometricCycle), style = new textStyle(fonts.large, textColor.light, 1).setAlignment(0.5, 0)){
 		// sets the animated title of the tooltip to be drawn at the top of the screen
 		var tblock = new textBlock(txt, style, screenBounds.inflated(0.9), [], style.scale * style.font.charSize.y);
