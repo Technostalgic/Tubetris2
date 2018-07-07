@@ -39,7 +39,7 @@ class level{
 		
 		// on levels 5 and above there will be 3 or more colors
 		if(dif >= 5)
-			thm = [tubeColors.orange, tubeColors.blue, tubeColors.green];
+			thm = [tubeColors.red, tubeColors.blue, tubeColors.green];
 
 		// on level 15 there will be all 4 colors in the theme
 		if(dif >= 15)

@@ -17,7 +17,7 @@ class tooltip{
 		this.titleAnim = null;
 		this.background = null;
 		
-		var promptStr = "Press ENTER to continue";
+		var promptStr = responsiveText("Press ENTER to Continue", "Swipe up to Continue");
 		//TODO: if mobile, change promptStr
 		this.promptPreRender = preRenderedText.fromString(promptStr, new vec2(screenBounds.center.x, screenBounds.bottom - 30), textStyle.getDefault());
 		

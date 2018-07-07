@@ -37,7 +37,7 @@ var blocks = {
 var balls = {
 	none: -1,
 	grey: 0,
-	orange: 1,
+	red: 1,
 	blue: 2,
 	green: 3,
 	gold: 4
@@ -45,7 +45,7 @@ var balls = {
 // enumerate the different tube colors
 var tubeColors = {
 	grey: 0,
-	orange: 1,
+	red: 1,
 	blue: 2,
 	green: 3,
 	gold: 4,

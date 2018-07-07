@@ -1356,7 +1356,10 @@ class state_gameOverRanked extends state_gameOver{
 		this.rankPR = null;
 		this.scorePR = null;
 		this.scoreAnim = null;
-		this.promptPR = preRenderedText.fromString("Press Enter to Continue", new vec2(screenBounds.center.x, screenBounds.bottom - 100));
+		this.promptPR = preRenderedText.fromString(
+			responsiveText("Press Enter to Continue", "Swipe up to Continue"), 
+			new vec2(screenBounds.center.x, screenBounds.bottom - 100)
+		);
 	}
 	
 	setRank(rank, score){
