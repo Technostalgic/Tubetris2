@@ -159,7 +159,9 @@ class tooltip{
 	static get tip_balls(){
 		var r = new tooltip();
 		r.setTitle("Balls!");
-		r.text_pc = "This (special tileform) is a (ball) 1.5| (balls) are used to clear pipes by rolling through them 1.5| place the (ball) on or near an (open tube) and see what happens";
+		r.text_pc = "This (special tileform) is a (ball) 1.5| " + 
+			"(balls) are used to clear pipes by rolling through them 1.5| " + 
+			"place the (ball) on or near an (open tube) and see what happens";
 		
 		// gets a rectangle surrounding the current tileform
 		r.getFocusArea = function(){
@@ -175,9 +177,21 @@ class tooltip{
 		};
 		
 		r.childTips = [
+			tooltip.tip_ballColors,
 			tooltip.tip_ballPause
 		];
 		
+		return r;
+	}
+	static get tip_ballColors(){
+		var r = new tooltip();
+		r.setTitle("Colors");
+		r.text_pc = "There are also different (colors) of tubes: 1.5| " +
+			"(Gold - Blue - Green - Red - Grey) 2|" +
+			"Notice the (ball) also has a color 1.5| " + 
+			"if the (ball color) matches the (tube color) when it rolls through you are rewarded with more points 1.5|" + 
+			"you can (change the ball color) with the rotation key [" + controlState.getControlKeyName(controlAction.rotateCW) + "]";
+
 		return r;
 	}
 	static get tip_ballPause(){
