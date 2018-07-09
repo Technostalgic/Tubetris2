@@ -77,18 +77,30 @@ class tooltip{
 	}
 	static get tip_HUD_nextPiece(){
 		var r = new tooltip();
+		r.setTitle("Upcoming Tileform");
+		r.text_pc = "a";
+
 		return r;
 	}
 	static get tip_HUD_tilBall(){
 		var r = new tooltip();
+		r.setTitle("Ball Countdown");
+		r.text_pc = "b";
+
 		return r;
 	}
 	static get tip_HUD_tilBomb(){
 		var r = new tooltip();
+		r.setTitle("Bomb Countdown");
+		r.text_pc = "c";
+
 		return r;
 	}
 	static get tip_HUD_level(){
 		var r = new tooltip();
+		r.setTitle("Current Level");
+		r.text_pc = "d";
+
 		return r;
 	}
 	static get tip_tileformMovement(){
