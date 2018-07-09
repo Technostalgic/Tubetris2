@@ -45,10 +45,50 @@ class tooltip{
 			"if you already know how to play you can go into the (options menu) and turn them off";
 		
 		r.childTips = [
+			tooltip.tip_HUD,
 			tooltip.tip_tileformMovement,
 			tooltip.tip_completeRow
 		];
 		
+		return r;
+	}
+	static get tip_HUD(){
+		var r = new tooltip();
+		r.setTitle("Heads Up Display");
+		r.text_pc = "this is your (HUD) 1.5| or (Heads Up Display) 2| " +
+			"it displays a large amount of (useful information) that you will probably need to reference on a regular basis";
+
+		r.getFocusArea = function(){
+			let cpos = new vec2(tile.toScreenPos(new vec2(10, 0), false).x, 0);
+			return new collisionBox(
+				cpos,
+				new vec2(screenBounds.right - cpos.x, screenBounds.height)
+			);
+		};
+
+		r.childTips = [
+			tooltip.tip_HUD_nextPiece,
+			tooltip.tip_HUD_tilBall,
+			tooltip.tip_HUD_tilBomb,
+			tooltip.tip_HUD_level,
+		];
+
+		return r;
+	}
+	static get tip_HUD_nextPiece(){
+		var r = new tooltip();
+		return r;
+	}
+	static get tip_HUD_tilBall(){
+		var r = new tooltip();
+		return r;
+	}
+	static get tip_HUD_tilBomb(){
+		var r = new tooltip();
+		return r;
+	}
+	static get tip_HUD_level(){
+		var r = new tooltip();
 		return r;
 	}
 	static get tip_tileformMovement(){
@@ -332,10 +372,24 @@ class tooltip{
 			new vec2(this.textBounds.width, titleBounds.height)
 		);
 		// if title overlaps the focus area, move it below so that the focus area is unobstructed
+		var tcent = this.titlePreRender.findCenter();
 		if(this.focusArea.overlapsBox(titleBounds)){
 			var offY = this.focusArea.bottom - titleBounds.top + 25;
 			this.titlePreRender.setCenter(this.titlePreRender.findCenter().plus(new vec2(0, offY)));
 			this.preRender.setCenter(this.preRender.findCenter().plus(new vec2(0, offY)));
+		}
+
+		// if the title goes too low, move it back to the original position
+		testBounds = this.titlePreRender.getBounds();
+		testBounds = new collisionBox(
+			new vec2(this.textBounds.left, testBounds.top), 
+			new vec2(this.textBounds.width, testBounds.height)
+		);
+		if(testBounds.bottom >= screenBounds.bottom - 100){
+			let dif = this.titlePreRender.findCenter().y - tcent.y;
+			let pcent = this.preRender.findCenter();
+			this.titlePreRender.setCenter(tcent);
+			this.preRender.setCenter(new vec2(pcent.x, pcent.y - dif));
 		}
 
 		var testBounds = this.preRender.getBounds();
