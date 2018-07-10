@@ -79,7 +79,8 @@ class tooltip{
 	static get tip_HUD_nextPiece(){
 		var r = new tooltip();
 		r.setTitle("Upcoming Tileform");
-		r.text_pc = "a";
+		r.text_pc = "This will be the (next tileform) that appears after the (current tileform) is placed 1.5| " +
+			"Use [" + controlState.getControlKeyName(controlAction.swap) + "] to swap your (current tileform) with the (next tileform)";
 
 		r.getFocusArea = function(){
 			return new collisionBox(
@@ -93,7 +94,8 @@ class tooltip{
 	static get tip_HUD_tilBall(){
 		var r = new tooltip();
 		r.setTitle("Ball Countdown");
-		r.text_pc = "b";
+		r.text_pc = "This number shows you how many tileforms come between the (current tileform) and your next (ball) 1.5| " +
+			"(Balls) are special tileforms that will be explained when they come up";
 
 		r.getFocusArea = function(){
 			return new collisionBox(
@@ -107,7 +109,8 @@ class tooltip{
 	static get tip_HUD_tilBomb(){
 		var r = new tooltip();
 		r.setTitle("Bomb Countdown");
-		r.text_pc = "c";
+		r.text_pc = "This number shows you how many tileforms come between the (current tileform) and your next (bomb) 1.5| " +
+			"(Bombs) are special tileforms that will be explained when they come up";
 
 		r.getFocusArea = function(){
 			return new collisionBox(
@@ -121,7 +124,10 @@ class tooltip{
 	static get tip_HUD_level(){
 		var r = new tooltip();
 		r.setTitle("Current Level");
-		r.text_pc = "d";
+		r.text_pc = "This displays the (game level) that you are currenly on 1.5| " + 
+			"The level is complete when the (number below) counts down to zero and that last tileform is placed 1.5| " +
+			"After each level you will recieve a (point reward) and prgress to the (next level) 1.5| " +
+			"As the levels progress (new tiles) and (tubes) will be introduced and the (difficulty will increase)";
 
 		r.getFocusArea = function(){
 			return new collisionBox(
@@ -135,7 +141,8 @@ class tooltip{
 	static get tip_HUD_score(){
 		var r = new tooltip();
 		r.setTitle("Scoring");
-		r.text_pc = "e";
+		r.text_pc = "This shows how many (points) you currently have and compares it to the (top score) on the (local scoreboard) 2| " +
+			"If you rank within the (top 5) highest local scores you will be asked to enter your name into the (scoreboard) when your game comes to an end";
 
 		r.getFocusArea = function(){
 			return new collisionBox(
@@ -146,6 +153,7 @@ class tooltip{
 
 		return r;
 	}
+
 	static get tip_tileformMovement(){
 		var r = new tooltip();
 		r.setTitle("Tileform Movement");
