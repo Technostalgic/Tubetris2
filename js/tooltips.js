@@ -71,6 +71,7 @@ class tooltip{
 			tooltip.tip_HUD_tilBall,
 			tooltip.tip_HUD_tilBomb,
 			tooltip.tip_HUD_level,
+			tooltip.tip_HUD_score
 		];
 
 		return r;
@@ -80,12 +81,26 @@ class tooltip{
 		r.setTitle("Upcoming Tileform");
 		r.text_pc = "a";
 
+		r.getFocusArea = function(){
+			return new collisionBox(
+				tile.nextTileformSlot.minus(new vec2(2, 1).multiply(tile.tilesize)),
+				new vec2(4, 2).multiply(tile.tilesize)
+			);
+		}
+
 		return r;
 	}
 	static get tip_HUD_tilBall(){
 		var r = new tooltip();
 		r.setTitle("Ball Countdown");
 		r.text_pc = "b";
+
+		r.getFocusArea = function(){
+			return new collisionBox(
+				tile.toScreenPos(new vec2(12, 7), false).minus(new vec2(1, 0.5).multiply(tile.tilesize)),
+				new vec2(3, 1.5).multiply(tile.tilesize)
+			);
+		};
 
 		return r;
 	}
@@ -94,12 +109,40 @@ class tooltip{
 		r.setTitle("Bomb Countdown");
 		r.text_pc = "c";
 
+		r.getFocusArea = function(){
+			return new collisionBox(
+				tile.toScreenPos(new vec2(12, 9), false).minus(new vec2(1, 0.5).multiply(tile.tilesize)),
+				new vec2(3, 1.5).multiply(tile.tilesize)
+			);
+		};
+
 		return r;
 	}
 	static get tip_HUD_level(){
 		var r = new tooltip();
 		r.setTitle("Current Level");
 		r.text_pc = "d";
+
+		r.getFocusArea = function(){
+			return new collisionBox(
+				tile.toScreenPos(new vec2(12, 16), false).minus(new vec2(2, 0).multiply(tile.tilesize)),
+				new vec2(5, 1.5).multiply(tile.tilesize)
+			);
+		};
+
+		return r;
+	}
+	static get tip_HUD_score(){
+		var r = new tooltip();
+		r.setTitle("Scoring");
+		r.text_pc = "e";
+
+		r.getFocusArea = function(){
+			return new collisionBox(
+				tile.toScreenPos(new vec2(12, 18), false).minus(new vec2(2, 0.5).multiply(tile.tilesize)),
+				new vec2(5, 2.5).multiply(tile.tilesize)
+			);
+		};
 
 		return r;
 	}
