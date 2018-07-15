@@ -328,7 +328,9 @@ class tooltip{
 	static get tip_completeRow(){
 		var r = new tooltip();
 		r.setTitle("Row Completion");
-		r.text_pc = "If you fill all the tiles (in a row) then those tiles will become (charged) and coins will spawn";
+		r.text_pc = "If you fill all the tiles (in a row) then those tiles will become (charged) " +
+			"and coins will spawn 1.5| " +
+			"the tubes will also turn (gold) in color which will allow them to be destroyed by (any color ball)";
 		
 		// highlights the bottom row
 		r.getFocusArea = function(){
@@ -351,7 +353,19 @@ class tooltip{
 		};
 		
 		r.childTips = [
+			tooltip.tip_chargedTiles
 		];
+		
+		return r;
+	}
+	static get tip_chargedTiles(){
+		var r = new tooltip();
+		r.setTitle("Charged Tiles");
+		r.text_pc = "tiles that are (charged) will have a (yellow tinted background) 1.5| " + 
+			"when destroyed they will cause a (chain reaction) that causes all the " +
+			"other tiles and tubes that are connected to it to also be destroyed 1.5|" +
+			"this can be very benefecial if you have a lot of interconnected pipe systems laid " +
+			"out and they are inside of charged rows";
 		
 		return r;
 	}
