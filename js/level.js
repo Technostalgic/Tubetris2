@@ -62,7 +62,7 @@ class level{
 		this.bombFrequency = 0.15;
 		this.brickFrequency = 0;
 		this.ballFrequency = 5;
-		this.itemFrequency = 1; //0.15;
+		this.itemFrequency = 0.15;
 		
 		// higher brick frequency as level difficulty increases
 		this.brickFrequency = Math.min((dif - 1) / 100, 0.175);
