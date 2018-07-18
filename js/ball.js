@@ -49,6 +49,16 @@ class ball{
 		}
 	}
 	
+	getTrotCount(pos = this.gridPos){
+		// returns how many times the ball has occupied this tile
+		if(!this.gridsTrotted[pos.x])
+			return 0;
+		if(!this.gridsTrotted[pos.x][pos.y])
+			return 0;
+		
+		return this.gridsTrotted[pos.x][pos.y];
+	}
+
 	getMoveAnimProgress(){
 		// returns a value between 0 and 1 indicating the percent complete that the movement animation is
 		var animLength = 100;
@@ -83,8 +93,8 @@ class ball{
 		
 		// if the movement animation is complete, decide where to go next
 		if(prog >= 1) {
-			this.finishMoveAnim();
 			this.checkTileForTagging();
+			this.finishMoveAnim();
 			return;
 		}
 		

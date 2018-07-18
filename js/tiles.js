@@ -698,10 +698,15 @@ class tile{
 		this.m_checkPlacement(this);
 	}
 	rollThrough(ballOb = null){
+		if(this.tagged) return;
+		if(ballOb.ballType != balls.gold && this.tileVariant != tubeColors.gold)
+			if(ballOb.ballType != this.tileVariant)
+				return;
 		this.m_rollThrough(this, ballOb);
 	}
 	collectItem(ballOb = null){
 		// collects the item in the tile
+		if(ballOb.isVirtual) return;
 		if(this.item) this.item.activate(this);
 	}
 	
