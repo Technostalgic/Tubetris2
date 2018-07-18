@@ -700,6 +700,10 @@ class tile{
 	rollThrough(ballOb = null){
 		this.m_rollThrough(this, ballOb);
 	}
+	collectItem(ballOb = null){
+		// collects the item in the tile
+		if(this.item) this.item.activate(this);
+	}
 	
 	m_checkPlacement(self = null){}
 	m_rollThrough(self = null, ballOb = null){}

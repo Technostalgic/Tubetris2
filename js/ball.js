@@ -99,6 +99,8 @@ class ball{
 		var ttile = tile.at(gpos);
 		
 		if(!ttile.isEmpty()){
+			ttile.collectItem(this);
+			
 			// don't tag the tile if it's a different color than the ball (unless either is gold)
 			if(ttile.isEntityType(entities.tube))
 				if(this.ballType != balls.gold && ttile.tileVariant != tubeColors.gold)
@@ -113,9 +115,6 @@ class ball{
 		// tags the specified tile
 		this.tilesTagged.push(tileOb);
 		tileOb.rollThrough(this);
-
-		// if the tile has an item, activate the item
-		if(tileOb.item) tileOb.item.activate(this);
 	}
 	
 	pause(backtracking = false){
