@@ -293,8 +293,22 @@ class tooltip{
 			"(rotate) the ball with [" + controlState.getControlKeyName(controlAction.rotateCW) + "] to cycle through different ball colors";
 		
 		r.childTips = [
-			tooltip.tip_ballPause
+			tooltip.tip_ballPause,
+			tooltip.tip_coins
 		];
+		
+		return r;
+	}
+	static get tip_coins(){
+		var r = new tooltip();
+		
+		r.setTitle("Coins");
+		r.text_pc = "you just collected a (coin)!";
+		
+		r.activePhase = phase_ballPhysics;
+		r.condition = function(){
+			return gameState.current.isTrackingCombo(floatingScoreFieldID.coinCombo);
+		};
 		
 		return r;
 	}

@@ -1721,6 +1721,13 @@ class state_gameplayState extends gameState{
 		return null;
 	}
 	
+	isTrackingCombo(comboID){
+		for(let combo of this.activeCombos){
+			if(combo.comboID == comboID){
+				return true;
+			}
+		}
+	}
 	addToComboValue(comboID, value = 1){
 		// adds a combo point to the specified score combo
 		for(let combo of this.activeCombos){
