@@ -33,20 +33,23 @@ class level{
 		// on the first level there will only be 1 color
 		var thm = [tubeColors.blue];
 		
-		// on the levels 2 - 4 there will be 2 colors
+		// on the levels 2 - 4 there will be 2 colors, but blue will be the most common
 		if(dif > 1) 
-			thm = [tubeColors.blue, tubeColors.green];
+			thm = [tubeColors.blue, tubeColors.blue, tubeColors.green];
 		
-		// on levels 5 and above there will be 3 or more colors
+		// on levels 5 and above there will be 3 or more colors, but blue will be the most common
 		if(dif >= 5)
-			thm = [tubeColors.orange, tubeColors.blue, tubeColors.green];
+			thm = [tubeColors.blue, tubeColors.blue, tubeColors.orange, tubeColors.green];
 
 		// on level 15 there will be all 4 colors in the theme
 		if(dif >= 15)
 		thm.splice(0, 0, tubeColors.grey);
+	
 		// on levels after 5 there will be only 3 colors but one of them will be replaced with grey, which yeilds the least points
-		else if(dif > 5)
-		thm[Math.floor(Math.random() * thm.length)] = tubeColors.grey;
+		else if(dif > 5){
+			thm.splice(0, 1);
+			thm[Math.floor(Math.random() * thm.length)] = tubeColors.grey;
+		}
 		
 		this.goldFrequency = 0.2 / (1 + this.difficulty / 5);
 		
