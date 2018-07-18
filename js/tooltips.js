@@ -484,6 +484,15 @@ class tooltip{
 			this.preRender.setCenter(pcent);
 	}
 	
+	getPUID(){
+		// returns the (probably) unique identification number
+		var r = 0;
+		for(let i = this.text_pc.length - 1; i >= 0; i--)
+			r += this.text_pc.charCodeAt(i);
+		
+		return r;
+	}
+	
 	conditionIsMet(){
 		// a safe way to check if the tooltip's condition has been met, if an error is thrown, it is caught and returns false
 		if(!config.tooltipsEnabled)
@@ -497,7 +506,7 @@ class tooltip{
 		return false;
 	}
 	activate(parentState){
-		// activates the tooltip
+		// activates the tooltip		
 		this.generateBackground();
 		if(!this.preRender) this.generatePreRender();
 		
@@ -514,6 +523,11 @@ class tooltip{
 		
 		// switch the gameState's gameplayPhase to a tooltip phase
 		parentState.switchGameplayPhase(phase_tooltip.fromTooltip(this));
+		
+		// skips the tooltip if it's already been seen
+		if(seenTips.includes(this.getPUID()))
+			parentState.phase.nextPhase();
+		else seenTips.push(this.getPUID());
 	}
 	
 	drawBackground(){

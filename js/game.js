@@ -38,6 +38,9 @@ var storageKeys = {
 	controls: "technostalgic_tubetris2_keybind",
 	scoreboard: "technostalgic_tubetris2_scores"
 };
+
+// stores the tooltips that have already been seen
+var seenTips = [];
 /// ================================|------------------|==================================
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }Global enumerators{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// ================================|------------------|==================================
