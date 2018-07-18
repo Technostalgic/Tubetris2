@@ -1766,6 +1766,16 @@ class state_gameplayState extends gameState{
 	}
 	drawFloatingScoreText(){
 		// renders the floating score text
+		
+		// makes the text blink if the ball is paused
+		if(this.phase instanceof phase_ballPhysics){
+			for(let ball of this.phase.balls){
+				if(ball.state == ballStates.paused)
+					if(timeElapsed % 1000 >= 500)
+						return;
+			}
+		}
+		
 		var scl = 1;
 		var anm = false;
 		
