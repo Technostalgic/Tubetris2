@@ -303,7 +303,9 @@ class tooltip{
 		var r = new tooltip();
 		
 		r.setTitle("Coins");
-		r.text_pc = "you just collected a (coin)!";
+		r.text_pc = "you just collected a (coin)! 2| " + 
+			"coins earn you (extra points) 1.5| " +
+			"you are also rewarded with certain (bonuses) when you collect enough coins with a (single ball)";
 		
 		r.activePhase = phase_ballPhysics;
 		r.condition = function(){
