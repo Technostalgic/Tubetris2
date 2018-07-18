@@ -100,7 +100,8 @@ class menuButton{
 		// simple way to build a credits link
 		var mb = new menuButton().construct(author, pos, desc + " - click to visit their website", 
 			function(){
-				log("Imagine you were redirected to " + hyperlink, logType.notify);
+				log("opening author page: " + hyperlink, logType.notify);
+				window.open(hyperlink, "_blank");
 			}
 		);
 		
@@ -711,7 +712,7 @@ class state_mainMenu extends state_menuState{
 		this.buttons.push(new menuButton().construct("Start Game", screenBounds.center.plus(new vec2(0, off * dif)), "start a new game", action_startGame)); off++;
 		this.buttons.push(new menuButton().construct("Scoreboard", screenBounds.center.plus(new vec2(0, off * dif)), "view the highest scoring players", action_switchToScoreboard)); off++;
 		this.buttons.push(new menuButton().construct("Options", screenBounds.center.plus(new vec2(0, off * dif)), "configure gameplay and av options", action_switchToOptions)); off++;
-		this.buttons.push(new menuButton().construct("Extras", screenBounds.center.plus(new vec2(0, off * dif)), "other things n stuff")); off++;
+		//this.buttons.push(new menuButton().construct("Extras", screenBounds.center.plus(new vec2(0, off * dif)), "other things n stuff")); off++;
 		this.buttons.push(new menuButton().construct("Credits", screenBounds.center.plus(new vec2(0, off * dif)), "see who contributed to making the game!", action_switchToCredits)); off++;
 	}
 	

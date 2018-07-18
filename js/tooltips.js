@@ -153,7 +153,7 @@ class tooltip{
 
 		return r;
 	}
-
+	
 	static get tip_tileformMovement(){
 		var r = new tooltip();
 		r.setTitle("Tileform Movement");
