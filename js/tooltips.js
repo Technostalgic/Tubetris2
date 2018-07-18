@@ -69,7 +69,7 @@ class tooltip{
 		
 		r.activePhase = phase_placeTileform;
 		r.condition = function(){
-			return gameState.current.phase.currentTileform.gridPos.y > 1;
+			return gameState.current.phase.currentTileform.gridPos.y >= 1;
 		};
 		
 		r.childTips = [
@@ -159,7 +159,8 @@ class tooltip{
 	static get tip_balls(){
 		var r = new tooltip();
 		r.setTitle("Balls!");
-		r.text_pc = "This (special tileform) is a (ball) 1.5| (balls) are used to clear pipes by rolling through them 1.5| place the (ball) on or near an (open tube) and see what happens";
+		r.text_pc = "This (special tileform) is a (ball) 1.5| (balls) are used to clear pipes by rolling through them 1.5| " +
+			"place the (ball) on or near an (open tube) and see what happens 1.5| ";
 		
 		// gets a rectangle surrounding the current tileform
 		r.getFocusArea = function(){
@@ -175,11 +176,25 @@ class tooltip{
 		};
 		
 		r.childTips = [
+			tooltip.tip_balls2
+		];
+		
+		return r;
+	}
+	static get tip_balls2(){
+		var r = new tooltip();
+		
+		r.setTitle("Balls: Continued");
+		r.text_pc = "the ball (must match colors) with the tube to destroy it unless either the ball or tube is (gold colored) 1.5| " +
+			"(rotate) the ball with [" + controlState.getControlKeyName(controlAction.rotateCW) + "] to cycle through different ball colors";
+		
+		r.childTips = [
 			tooltip.tip_ballPause
 		];
 		
 		return r;
 	}
+	
 	static get tip_ballPause(){
 		var r = new tooltip();
 		r.setTitle("Ball Intersection");
@@ -207,7 +222,9 @@ class tooltip{
 	static get tip_completeRow(){
 		var r = new tooltip();
 		r.setTitle("Row Completion");
-		r.text_pc = "If you fill all the tiles (in a row) then those tiles will become (charged) and coins will spawn";
+		r.text_pc = "If you fill all the tiles (in a row) then those tiles will become (charged) and coins will spawn 1.5| " + 
+			"the tubes will also turn into (gold tubes) when the row is completed 2| " + 
+			"(Row completion is ESSENTIAL for success!)";
 		
 		// highlights the bottom row
 		r.getFocusArea = function(){
@@ -323,9 +340,9 @@ class tooltip{
 	}
 	
 	conditionIsMet(){
-		// a safe way to check if the condition has been met, if an error is thrown, it is caught and returns false
+		// a safe way to check if the tooltip's condition has been met, if an error is thrown, it is caught and returns false
 		if(!config.tooltipsEnabled)
-			return;
+			return false;
 		
 		try{
 			return this.condition();
@@ -377,9 +394,9 @@ class tooltip{
 	}
 	drawPrompt(){
 		// draw the "press enter to continue" prompt
-		this.promptPreRender.animated(
-			new textAnim_blink(1000, 0)
-		).draw();
+		
+		if(timeElapsed % 666 >= 333)
+			this.promptPreRender.draw();
 	}
 	draw(){
 		this.drawBackground();
