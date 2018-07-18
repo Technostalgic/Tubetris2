@@ -224,8 +224,11 @@ class combo_coins extends scoreCombo{
 		
 		// adds an extra ball if 5 coins are collected
 		if(this.comboValue == 5){
-			if(!gameState.current.nextTileforms[0].hasEntityType(entities.ball))
-				gameState.current.nextTileforms.splice(0, 0, tileform.getPiece_ball(gameState.current.currentLevel.getRandomColor()));
+			if(gameState.current.nextTileforms.length > 0){
+				if(!gameState.current.nextTileforms[0].hasEntityType(entities.ball))
+					gameState.current.nextTileforms.splice(0, 0, tileform.getPiece_ball(gameState.current.currentLevel.getRandomColor()));
+			}
+			else gameState.current.nextTileforms.push(tileform.getPiece_ball(gameState.current.currentLevel.getRandomColor()));
 		}
 		
 		if(this.comboValue >= 10)
