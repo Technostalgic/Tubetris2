@@ -293,7 +293,6 @@ class tooltip{
 			"(rotate) the ball with [" + controlState.getControlKeyName(controlAction.rotateCW) + "] to cycle through different ball colors";
 		
 		r.childTips = [
-			tooltip.tip_ballColors,
 			tooltip.tip_ballPause
 		];
 		

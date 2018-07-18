@@ -55,6 +55,8 @@ class item{
 			300 + 50 * gameState.current.currentLevel.difficulty, 
 			tile.toScreenPos(this.parentTile.gridPos),
 			scoreTypes.bonus);
+		
+		gameState.current.addToComboValue(floatingScoreFieldID.coinCombo);
 	}
 	
 	draw(pos){

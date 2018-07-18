@@ -216,19 +216,41 @@ class combo_coins extends scoreCombo{
 	constructor(){
 		super();
 		this.comboID = floatingScoreFieldID.coinCombo;
+		this.comboThreshold = 2;
 	}
 
 	updatePointValue(){
+		var val = 0;
+		
 		if(this.comboValue >= 10)
-			return 3500;
-
-		return 0;
+			val = 2250 * Math.floor(this.comboValue / 5);
+			
+		this.comboPointValue = val;
 	}
 	updateFloatingTexts(){
-		var str1 = this.comboValue.toString() + "x Coins Collected";
-
 		var anim = new textAnim_blink(250, 0, textColor.light);
 		var style = new textStyle(fonts.large, textColor.yellow);
+		var str1 = this.comboValue.toString() + "x Coins";
+		for(let i = Math.floor(this.comboValue / 5); i > 0; i--)
+			str1 += "!";
+		
+		var str2 = null;
+		var anim2 = anim;
+		if(this.comboPointValue > 0){
+			str2 = this.comboPointValue + " pts";
+			if(this.comboValue >= 15){
+				str2 += "! Mamma Mia!";
+				anim2 = new textAnim_compound([
+					new textAnim_blink(250, 0.1, textColor.red),
+					new textAnim_blink(250, 0.2, textColor.blue),
+					new textAnim_yOffset()
+				]);
+			}
+		}
+
 		gameState.current.setFloatingScoreField(str1, style, floatingScoreFieldID.coinCombo, anim);
+		
+		if(str2 != null)
+			gameState.current.setFloatingScoreField(str2, style, floatingScoreFieldID.coinComboPts, anim2);
 	}
 }

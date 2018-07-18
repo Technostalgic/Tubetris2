@@ -1730,7 +1730,8 @@ class state_gameplayState extends gameState{
 			}
 		}
 		
-		var combo = scoreCombo.fromComboID(floatingScoreFieldID.bombCombo);
+		// if the combo doesn't exist, create a new one
+		var combo = scoreCombo.fromComboID(comboID);
 		combo.addValue(value)
 		this.activeCombos.push(combo);
 	}
