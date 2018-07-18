@@ -999,8 +999,8 @@ class state_optionsMenu extends state_menuState{
 		var action_gotoGameOps = function(){ gameState.switchState(new state_gameOptions()); };
 		this.buttons.push(new menuButton().construct("Game", tpos.plus(new vec2(0, off * dif)), "configure game settings", action_gotoGameOps)); off++;
 		
-		var action_gotoControlSettings = function(){ gameState.switchState(new state_controlSettings()); };
-		this.buttons.push(new menuButton().construct("Set Controls", tpos.plus(new vec2(0, off * dif)), "customize the controls", action_gotoControlSettings)); 
+		var action_gotoControlSettings = function(){ gameState.switchState(new state_controlOptions()); };
+		this.buttons.push(new menuButton().construct("Controls", tpos.plus(new vec2(0, off * dif)), "customize the controls", action_gotoControlSettings)); 
 		off++;
 		
 		// back button
@@ -1169,8 +1169,68 @@ class state_gameOptions extends state_optionsSubMenu{
 		this.buttons.push(new menuButton().construct("Reset Scores", tpos.plus(new vec2(0, off * dif)), "removes all high score data", action_resetScores));
 	}
 }
-// a control configuration screen
-class state_controlSettings extends state_menuState{
+class state_controlOptions extends state_optionsSubMenu{
+	constructor(){
+		super();
+		this.setTitle("CONTROLS");
+	}
+	
+	addSubMenuButtions(){
+		var off = 0;
+		var dif = 40;
+		var tpos = new vec2(screenBounds.center.x, this.buttonStartPos);
+		var ths = this;
+		
+		// Touch Mode: on/off
+		this.buttons.push(new settingButton().construct("Touch Mode", tpos.plus(new vec2(0, off * dif)), "optomized control mode for touchscreen devices"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("touchMode"), settingButton.generateSetValueFunc("touchMode")
+			).generateSettingPreRenders() );
+		
+		// Edit Keys
+		// Touch Options
+		
+		off += 1.5;
+		var action_gotoConfigureKeybindings = function(){
+			gameState.switchState(new state_configureKeybindings());
+		}
+		this.buttons.push(new menuButton().construct("Edit Keys", tpos.plus(new vec2(0, off * dif)), "change the key bindings for the keyboard controls", action_gotoConfigureKeybindings));
+		off += 1.2;
+		
+		var action_gotoTouchControls = function(){
+			gameState.switchState(new state_touchOptions());
+		}
+		this.buttons.push(new menuButton().construct("Touch Options", tpos.plus(new vec2(0, off * dif)), "configure the options for touchscreen controls", action_gotoTouchControls));
+		
+	}
+}
+class state_touchOptions extends state_optionsSubMenu{
+	constructor(){
+		super();
+		this.setTitle("TOUCH CONTROLS");
+	}
+	
+	addSubMenuButtions(){
+		var off = 0;
+		var dif = 40;
+		var tpos = new vec2(screenBounds.center.x, this.buttonStartPos);
+		var ths = this;
+		
+		// Touch Mode: on/off
+		
+		this.buttons.push(new settingButton().construct("Haptic Pulses", tpos.plus(new vec2(0, off * dif)), "optomized control mode for touchscreen devices"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("touchMode"), settingButton.generateSetValueFunc("touchMode")
+			).generateSettingPreRenders() ); off++;
+		this.buttons.push(new settingButton().construct("H Swipe Radius", tpos.plus(new vec2(0, off * dif)), "the horizontal swipe sensitivity: lower numbers are more sensitive"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("swipeRadiusH"), settingButton.generateSetValueFunc("swipeRadiusH")
+			).setValueBounds(0.2, 2, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off++;
+		this.buttons.push(new settingButton().construct("V Swipe Radius", tpos.plus(new vec2(0, off * dif)), "the vertical swipe sensitivity: lower numbers are more sensitive"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("swipeRadiusV"), settingButton.generateSetValueFunc("swipeRadiusV")
+			).setValueBounds(0.2, 2, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off++;
+	}
+}
+
+// a keybinding configuration screen
+class state_configureKeybindings extends state_menuState{
 	constructor(){
 		super();
 		this.setTitle("CONTROLS");

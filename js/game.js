@@ -539,6 +539,9 @@ function checkSmallScreenScaling(){
 function setDefaultConfig(){
 	// sets the default game configuration settings
 	config = {
+		touchMode: false,
+		swipeRadiusH: 1,
+		swipeRadiusV: 1,
 		animText: true,
 		animSpeed: 1,
 		explosionEffects: true,
