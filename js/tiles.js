@@ -588,6 +588,9 @@ class tile{
 	isEntity(entityID, entityType = entities.tube){
 		return(this.entityID == entityID && this.entityType == entityType);
 	}
+	isEntityType(entityType){
+		return this.entityType == entityType;
+	}
 	
 	getDirectNeighbors(){
 		// returns the neighbors to the left, right, top, and bottom of this tile

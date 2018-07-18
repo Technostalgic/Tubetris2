@@ -97,7 +97,14 @@ class ball{
 		// ensures the tile at the current draw position is tagged
 		var gpos = tile.toTilePos(this.drawPos);
 		var ttile = tile.at(gpos);
+		
 		if(!ttile.isEmpty()){
+			// don't tag the tile if it's a different color than the ball (unless either is gold)
+			if(ttile.isEntityType(entities.tube))
+				if(this.ballType != balls.gold && ttile.tileVariant != tubeColors.gold)
+					if(ttile.tileVariant != this.ballType)
+						return;
+				
 			if(!this.tilesTagged.includes(ttile))
 				this.tagTile(ttile);
 		}
