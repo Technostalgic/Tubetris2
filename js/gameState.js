@@ -2194,8 +2194,8 @@ class phase_placeTileform extends gameplayPhase{
 			return;
 		
 		this.currentTileform = null;
-		tile.checkForFullRows();
 		tile.checkTilePlacement();
+		tile.checkForFullRows();
 		
 		// if the gameplay phase hasn't changed, get the next tileForm
 		if(this.parentState.phase == this) 

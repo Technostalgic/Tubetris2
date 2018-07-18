@@ -312,8 +312,8 @@ class tooltip{
 				return null;
 			
 			var r = new collisionBox(
-				tile.toScreenPos(gameState.current.phase.balls[0].nextPos, false),
-				new vec2(tile.tilesize)
+				tile.toScreenPos(gameState.current.phase.balls[0].nextPos, false).plus(new vec2(tile.tilesize / 4)),
+				new vec2(tile.tilesize / 2)
 			);
 			
 			return r;
