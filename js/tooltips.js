@@ -303,13 +303,27 @@ class tooltip{
 		var r = new tooltip();
 		
 		r.setTitle("Coins");
-		r.text_pc = "you just collected a (coin)! 2| " + 
+		r.text_pc = "this is a (coin)! 2| " + 
 			"coins earn you (extra points) 1.5| " +
 			"you are also rewarded with certain (bonuses) when you collect enough coins with a (single ball)";
 		
+		r.getFocusArea = function(){
+			if(gameState.current.phase.balls.length <= 0)
+				return null;
+			
+			var r = new collisionBox(
+				tile.toScreenPos(gameState.current.phase.balls[0].nextPos, false),
+				new vec2(tile.tilesize)
+			);
+			
+			return r;
+		}
+		
 		r.activePhase = phase_ballPhysics;
 		r.condition = function(){
-			return gameState.current.isTrackingCombo(floatingScoreFieldID.coinCombo);
+			if(tile.at(gameState.current.phase.balls[0].nextPos).item != null)
+				return true;
+			return false;
 		};
 		
 		return r;
