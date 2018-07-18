@@ -1830,6 +1830,8 @@ class state_gameplayState extends gameState{
 		this.updateScorePreRender();
 	}
 	checkScoreBonuses(){
+		return;
+		
 		if(!this.scoreBonus.extraBall)
 			if(this.currentBallScore >= 1000){
 				this.scoreBonus.extraBall = true;

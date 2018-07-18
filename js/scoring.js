@@ -222,6 +222,12 @@ class combo_coins extends scoreCombo{
 	updatePointValue(){
 		var val = 0;
 		
+		// adds an extra ball if 5 coins are collected
+		if(this.comboValue == 5){
+			if(!gameState.current.nextTileforms[0].hasEntityType(entities.ball))
+				gameState.current.nextTileforms.splice(0, 0, tileform.getPiece_ball(gameState.current.currentLevel.getRandomColor()));
+		}
+		
 		if(this.comboValue >= 10)
 			val = 2250 * Math.floor(this.comboValue / 5);
 			
@@ -236,6 +242,9 @@ class combo_coins extends scoreCombo{
 		
 		var str2 = null;
 		var anim2 = anim;
+		if(this.comboValue >= 5){
+			str2 = "extra ball!";
+		}
 		if(this.comboPointValue > 0){
 			str2 = this.comboPointValue + " pts";
 			if(this.comboValue >= 15){
