@@ -17,7 +17,7 @@ class tooltip{
 		this.titleAnim = null;
 		this.background = null;
 		
-		var promptStr = "Press ENTER to continue";
+		var promptStr = responsiveText("Press ENTER to Continue", "Swipe up to Continue");
 		//TODO: if mobile, change promptStr
 		this.promptPreRender = preRenderedText.fromString(promptStr, new vec2(screenBounds.center.x, screenBounds.bottom - 30), textStyle.getDefault());
 		
@@ -45,12 +45,115 @@ class tooltip{
 			"if you already know how to play you can go into the (options menu) and turn them off";
 		
 		r.childTips = [
+			tooltip.tip_HUD,
 			tooltip.tip_tileformMovement,
 			tooltip.tip_completeRow
 		];
 		
 		return r;
 	}
+	static get tip_HUD(){
+		var r = new tooltip();
+		r.setTitle("Heads Up Display");
+		r.text_pc = "this is your (HUD) 1.5| or (Heads Up Display) 2| " +
+			"it displays a large amount of (useful information) that you will probably need to reference on a regular basis";
+
+		r.getFocusArea = function(){
+			let cpos = new vec2(tile.toScreenPos(new vec2(10, 0), false).x, 0);
+			return new collisionBox(
+				cpos,
+				new vec2(screenBounds.right - cpos.x, screenBounds.height)
+			);
+		};
+
+		r.childTips = [
+			tooltip.tip_HUD_nextPiece,
+			tooltip.tip_HUD_tilBall,
+			tooltip.tip_HUD_tilBomb,
+			tooltip.tip_HUD_level,
+			tooltip.tip_HUD_score
+		];
+
+		return r;
+	}
+	static get tip_HUD_nextPiece(){
+		var r = new tooltip();
+		r.setTitle("Upcoming Tileform");
+		r.text_pc = "This will be the (next tileform) that appears after the (current tileform) is placed 1.5| " +
+			"Use [" + controlState.getControlKeyName(controlAction.swap) + "] to swap your (current tileform) with the (next tileform)";
+
+		r.getFocusArea = function(){
+			return new collisionBox(
+				tile.nextTileformSlot.minus(new vec2(2, 1).multiply(tile.tilesize)),
+				new vec2(4, 2).multiply(tile.tilesize)
+			);
+		}
+
+		return r;
+	}
+	static get tip_HUD_tilBall(){
+		var r = new tooltip();
+		r.setTitle("Ball Countdown");
+		r.text_pc = "This number shows you how many tileforms come between the (current tileform) and your next (ball) 1.5| " +
+			"(Balls) are special tileforms that will be explained when they come up";
+
+		r.getFocusArea = function(){
+			return new collisionBox(
+				tile.toScreenPos(new vec2(12, 7), false).minus(new vec2(1, 0.5).multiply(tile.tilesize)),
+				new vec2(3, 1.5).multiply(tile.tilesize)
+			);
+		};
+
+		return r;
+	}
+	static get tip_HUD_tilBomb(){
+		var r = new tooltip();
+		r.setTitle("Bomb Countdown");
+		r.text_pc = "This number shows you how many tileforms come between the (current tileform) and your next (bomb) 1.5| " +
+			"(Bombs) are special tileforms that will be explained when they come up";
+
+		r.getFocusArea = function(){
+			return new collisionBox(
+				tile.toScreenPos(new vec2(12, 9), false).minus(new vec2(1, 0.5).multiply(tile.tilesize)),
+				new vec2(3, 1.5).multiply(tile.tilesize)
+			);
+		};
+
+		return r;
+	}
+	static get tip_HUD_level(){
+		var r = new tooltip();
+		r.setTitle("Current Level");
+		r.text_pc = "This displays the (game level) that you are currenly on 1.5| " + 
+			"The level is complete when the (number below) counts down to zero and that last tileform is placed 1.5| " +
+			"After each level you will recieve a (point reward) and prgress to the (next level) 1.5| " +
+			"As the levels progress (new tiles) and (tubes) will be introduced and the (difficulty will increase)";
+
+		r.getFocusArea = function(){
+			return new collisionBox(
+				tile.toScreenPos(new vec2(12, 16), false).minus(new vec2(2, 0).multiply(tile.tilesize)),
+				new vec2(5, 1.5).multiply(tile.tilesize)
+			);
+		};
+
+		return r;
+	}
+	static get tip_HUD_score(){
+		var r = new tooltip();
+		r.setTitle("Scoring");
+		r.text_pc = "This shows how many (points) you currently have and compares it to the (top score) on the (local scoreboard) 2| " +
+			"If you rank within the (top 5) highest local scores you will be asked to enter your name into the (scoreboard) when your game comes to an end";
+
+		r.getFocusArea = function(){
+			return new collisionBox(
+				tile.toScreenPos(new vec2(12, 18), false).minus(new vec2(2, 0.5).multiply(tile.tilesize)),
+				new vec2(5, 2.5).multiply(tile.tilesize)
+			);
+		};
+
+		return r;
+	}
+
 	static get tip_tileformMovement(){
 		var r = new tooltip();
 		r.setTitle("Tileform Movement");
@@ -159,8 +262,9 @@ class tooltip{
 	static get tip_balls(){
 		var r = new tooltip();
 		r.setTitle("Balls!");
-		r.text_pc = "This (special tileform) is a (ball) 1.5| (balls) are used to clear pipes by rolling through them 1.5| " +
-			"place the (ball) on or near an (open tube) and see what happens 1.5| ";
+		r.text_pc = "This (special tileform) is a (ball) 1.5| " + 
+			"(balls) are used to clear pipes by rolling through them 1.5| " + 
+			"place the (ball) on or near an (open tube) and see what happens";
 		
 		// gets a rectangle surrounding the current tileform
 		r.getFocusArea = function(){
@@ -189,12 +293,12 @@ class tooltip{
 			"(rotate) the ball with [" + controlState.getControlKeyName(controlAction.rotateCW) + "] to cycle through different ball colors";
 		
 		r.childTips = [
+			tooltip.tip_ballColors,
 			tooltip.tip_ballPause
 		];
 		
 		return r;
 	}
-	
 	static get tip_ballPause(){
 		var r = new tooltip();
 		r.setTitle("Ball Intersection");
@@ -247,11 +351,44 @@ class tooltip{
 		};
 		
 		r.childTips = [
+			tooltip.tip_chargedTiles
 		];
 		
 		return r;
 	}
-	
+	static get tip_chargedTiles(){
+		var r = new tooltip();
+		r.setTitle("Charged Tiles");
+		r.text_pc = "tiles that are (charged) will have a (yellow tinted background) 1.5| " + 
+			"when destroyed they will cause a (chain reaction) that causes all the " +
+			"other tiles and tubes that are connected to it to also be destroyed 1.5|" +
+			"this can be very benefecial if you have a lot of interconnected pipe systems laid " +
+			"out and they are inside of charged rows";
+		
+		return r;
+	}
+	static get tip_greyTubes(){
+		var r = new tooltip();
+		r.setTitle("Grey Tubes");
+		r.text_pc = "This (tileform) contains (grey) tubes which are a special case 1.5| " + 
+			"(grey) tubes can only be destroyed by a (grey ball) so make sure to (cycle the ball color to grey) before dropping it through these tubes!";
+
+		// gets a rectangle surrounding the current tileform
+		r.getFocusArea = function(){
+			var r = gameState.current.phase.currentTileform.getVisualBounds();
+			r.pos = r.pos.minus(tile.offset);
+
+			return r;
+		}
+
+		r.activePhase = phase_placeTileform;
+		r.condition = function(){
+			return gameState.current.phase.currentTileform.tiles[0].tileVariant == tubeColors.grey;
+		}
+
+		return r;
+	}
+
 	setTitle(txt, anim = new textAnim_scaleTransform(750, 1, 1.1, 0).setAnimType(textAnimType.trigonometricCycle), style = new textStyle(fonts.large, textColor.light, 1).setAlignment(0.5, 0)){
 		// sets the animated title of the tooltip to be drawn at the top of the screen
 		var tblock = new textBlock(txt, style, screenBounds.inflated(0.9), [], style.scale * style.font.charSize.y);
@@ -310,10 +447,24 @@ class tooltip{
 			new vec2(this.textBounds.width, titleBounds.height)
 		);
 		// if title overlaps the focus area, move it below so that the focus area is unobstructed
+		var tcent = this.titlePreRender.findCenter();
 		if(this.focusArea.overlapsBox(titleBounds)){
 			var offY = this.focusArea.bottom - titleBounds.top + 25;
 			this.titlePreRender.setCenter(this.titlePreRender.findCenter().plus(new vec2(0, offY)));
 			this.preRender.setCenter(this.preRender.findCenter().plus(new vec2(0, offY)));
+		}
+
+		// if the title goes too low, move it back to the original position
+		testBounds = this.titlePreRender.getBounds();
+		testBounds = new collisionBox(
+			new vec2(this.textBounds.left, testBounds.top), 
+			new vec2(this.textBounds.width, testBounds.height)
+		);
+		if(testBounds.bottom >= screenBounds.bottom - 100){
+			let dif = this.titlePreRender.findCenter().y - tcent.y;
+			let pcent = this.preRender.findCenter();
+			this.titlePreRender.setCenter(tcent);
+			this.preRender.setCenter(new vec2(pcent.x, pcent.y - dif));
 		}
 
 		var testBounds = this.preRender.getBounds();
@@ -394,8 +545,7 @@ class tooltip{
 	}
 	drawPrompt(){
 		// draw the "press enter to continue" prompt
-		
-		if(timeElapsed % 666 >= 333)
+		if(timeElapsed % 1000 >= 500)
 			this.promptPreRender.draw();
 	}
 	draw(){

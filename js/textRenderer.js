@@ -14,8 +14,8 @@ var floatingScoreFieldID = {
 	chargeComboPts: 4,
 	colorCombo: 5,
 	colorComboPts: 6,
-	coinBonus: 7,
-	coinBonusPts: 8
+	coinCombo: 7,
+	coinComboPts: 8
 }
 // enumerates the different colors in a font's color spritesheet
 var textColor = {

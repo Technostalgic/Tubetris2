@@ -591,6 +591,10 @@ function insertScore(rank, scName, points){
 	if(scores.length > 5)
 		scores.splice(5);
 }
+function responsiveText(pcText, mobileText = pcText){
+	// TODO: return mobileText if user is on mobile device
+	return pcText;
+}
 
 function addInputEventListeners(){
 	//window.addEventListener('keydown', function(e){ log("key '" + e.key + "'(" + e.keyCode + ") pressed", logType.notify); });
