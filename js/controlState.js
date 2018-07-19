@@ -263,6 +263,7 @@ class touchPanel{
 		this.isActive = false;
 		this.timeOpened = timeElapsed;
 		this.origin = new vec2();
+		this.drawPos = this.origin.clone();
 		this.touchPos = this.origin.clone();
 		this.activeDirections = [side.left, side.right, side.up, side.down];
 	}
@@ -280,6 +281,7 @@ class touchPanel{
 		this.isActive = true;
 		this.timeOpened = timeElapsed;
 		this.origin = pos;
+		this.drawPos = this.origin.clone();
 		this.touchPos = this.origin.clone();
 		return this;
 	}
@@ -287,6 +289,15 @@ class touchPanel{
 		// makes the panel inactive
 		this.action_kill();
 		this.isActive = false;
+	}
+	
+	stripActions(){
+		action_swipeLeft = function(){};
+		action_swipeRight = function(){};
+		action_swipeUp = function(){};
+		action_swipeDown = function(){};
+		action_kill = function(){};
+		action_move = function(pos){};
 	}
 	
 	touchMove(pos, touch){
@@ -347,15 +358,15 @@ class touchPanel{
 		var drawDist = 35;
 		
 		var col = color.fromRGBA(0, 0, 0, prog * 0.65);
-		drawCircleFill(this.origin, prog * drawDist + 15, col);
+		drawCircleFill(this.drawPos, prog * drawDist + 15, col);
 		
 		for(let dir of this.activeDirections){
 			let off = vec2.fromSide(dir).multiply(prog * drawDist);
 			switch(dir){
-				case side.left: this.drawAction_swipeLeft(this.origin.plus(off)); break;
-				case side.right: this.drawAction_swipeRight(this.origin.plus(off)); break;
-				case side.up: this.drawAction_swipeUp(this.origin.plus(off)); break;
-				case side.down: this.drawAction_swipeDown(this.origin.plus(off)); break;
+				case side.left: this.drawAction_swipeLeft(this.drawPos.plus(off)); break;
+				case side.right: this.drawAction_swipeRight(this.drawPos.plus(off)); break;
+				case side.up: this.drawAction_swipeUp(this.drawPos.plus(off)); break;
+				case side.down: this.drawAction_swipeDown(this.drawPos.plus(off)); break;
 			}
 		}
 	}
