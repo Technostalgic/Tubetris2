@@ -257,3 +257,61 @@ class controlState{
 		return r;
 	}
 }
+
+class touchPanel{
+	constructor(){
+		this.timeOpened = timeElapsed;
+		this.origin = new vec2();
+		this.activeDirections = [side.left, side.right, side.up, side.down];
+	}
+	
+	// override these:
+	action_swipeLeft(){}
+	action_swipeRight(){}
+	action_swipeUp(){}
+	action_swipeDown(){}
+	
+	spawn(pos){
+		// spawns the panel at the specified position
+		this.timeOpened = timeElapsed;
+		this.origin = pos;
+	}
+	
+	getAnimProgress(){
+		// returns the progress between 0 and 1 how complete the panel opening animation is
+		var animLength = 100;
+		
+		var r = timeElapsed - this.timeOpened;
+		r = Math.min(r / animLength, 1);
+		
+		return r;
+	}
+	
+	drawAction_swipeLeft(pos){
+		drawArrow(pos, side.left);
+	}
+	drawAction_swipeRight(pos){
+		drawArrow(pos, side.right);
+	}
+	drawAction_swipeUp(pos){
+		drawArrow(pos, side.up);
+	}
+	drawAction_swipeDown(pos){
+		drawArrow(pos, side.down);
+	}
+	
+	draw(){
+		// draws each active direction
+		var drawDist = 50;
+		
+		for(let dir of this.activeDirections){
+			let off = vec2.fromSide(dir).multiply(this.getAnimProgress() * drawDist);
+			switch(dir){
+				case side.left: drawAction_swipeLeft(this.origin.plus(off)); break;
+				case side.right: action_swipeRight(this.origin.plus(off)); break;
+				case side.up: action_swipeUp(this.origin.plus(off)); break;
+				case side.down: action_swipeDown(this.origin.plus(off)); break;
+			}
+		}
+	}
+}

@@ -1939,6 +1939,10 @@ class state_gameplayState extends gameState{
 		this.phase.controlTap(control);
 	}
 	
+	getTouchPanel(){
+		
+	}
+	
 	pauseGame(){
 		var pauseState = new state_pauseMenu();
 		pauseState.setResumeState(this);
