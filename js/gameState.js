@@ -2424,6 +2424,8 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		this.lastTileDestroyed = parentState.timeElapsed;
 		this.tilesChargeTagged = [];
 		this.fallHeights = [];
+		
+		this.brickBombs = false;
 	}
 	
 	update(dt){
@@ -2519,7 +2521,26 @@ class phase_destroyTaggedTiles extends gameplayPhase{
 		this.fallHeights[x] = !this.fallHeights[x] ? height : Math.max(this.fallHeights[x], height);
 	}
 	
+	doBrickBombs(){
+		// converts all the bricks to bombs (per combo bonus)
+		var iter = function(tileOb){
+			if(tileOb.isEntity(blocks.block_brick, entities.block)){
+				tileOb.setEntity(blocks.block_bomb, entities.block);
+				effect.createPoof(tile.toScreenPos(tileOb.gridPos));
+			}
+		};
+		tile.iterateGrid(iter);
+		tile.checkTilePlacement();
+		
+		this.brickBombs = false;
+	}
+	
 	nextPhase(){
+		if(this.brickBombs){
+			this.doBrickBombs();
+			return;
+		}
+		
 		// enters the next gameplay phase
 		var phase = new phase_fellTiles(this.parentState);
 		phase.setFallHeights(this.fallHeights);

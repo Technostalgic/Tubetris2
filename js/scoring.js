@@ -198,16 +198,26 @@ class combo_bombs extends scoreCombo{
 			mult = 250;
 		else mult = 300;
 		
+		// if 5 bombs are detonated in one go, all the bricks are converted to bombs
+		if(this.comboValue == 5)
+			gameState.current.phase.brickBombs = true;
+		
 		this.comboPointValue = mult * this.comboValue;
 	}
 	updateFloatingTexts(){
 		var str1 = this.comboValue.toString() + "x Chain Reaction!";
 		var str2 = this.comboPointValue.toString() + " pts";
+		var str3 = null;
+		
+		if(this.comboValue >= 5)
+			str3 = "Brick Bombs!";
 		
 		var anim = new textAnim_blink(250, 0, textColor.yellow);
 		var style = new textStyle(fonts.large, textColor.red);
 		gameState.current.setFloatingScoreField(str1, style, floatingScoreFieldID.bombCombo, anim);
 		gameState.current.setFloatingScoreField(str2, style, floatingScoreFieldID.bombComboPts, anim);
+		if(str3) 
+			gameState.current.setFloatingScoreField(str3, style, floatingScoreFieldID.bombComboBonus, anim);
 	}
 }
 
@@ -223,13 +233,12 @@ class combo_coins extends scoreCombo{
 		var val = 0;
 		
 		// adds an extra ball if 5 coins are collected
-		if(this.comboValue == 5){
-			if(gameState.current.nextTileforms.length > 0){
-				if(!gameState.current.nextTileforms[0].hasEntityType(entities.ball))
-					gameState.current.nextTileforms.splice(0, 0, tileform.getPiece_ball(gameState.current.currentLevel.getRandomColor()));
-			}
-			else gameState.current.nextTileforms.push(tileform.getPiece_ball(gameState.current.currentLevel.getRandomColor()));
-		}
+		if(this.comboValue == 5)
+			gameState.current.nextTileforms.splice(0, 0, tileform.getPiece_ball(gameState.current.currentLevel.getRandomColor()));
+		
+		// adds an extra gold ball if 10 coins are collected
+		else if(this.comboValue == 10)
+			gameState.current.nextTileforms.splice(0, 0, tileform.getPiece_ball(balls.gold));
 		
 		if(this.comboValue >= 10)
 			val = 2250 * Math.floor(this.comboValue / 5);
@@ -244,9 +253,13 @@ class combo_coins extends scoreCombo{
 			str1 += "!";
 		
 		var str2 = null;
+		var str3 = null;
 		var anim2 = anim;
 		if(this.comboValue >= 5){
-			str2 = "extra ball!";
+			str3 = "extra ball!";
+		}
+		if(this.comboValue >= 10){
+			str3 = "extra gold ball!!";
 		}
 		if(this.comboPointValue > 0){
 			str2 = this.comboPointValue + " pts";
@@ -262,7 +275,11 @@ class combo_coins extends scoreCombo{
 
 		gameState.current.setFloatingScoreField(str1, style, floatingScoreFieldID.coinCombo, anim);
 		
+		if(str3 != null)
+			gameState.current.setFloatingScoreField(str2, style, floatingScoreFieldID.coinComboBonus, anim);
+		
 		if(str2 != null)
 			gameState.current.setFloatingScoreField(str2, style, floatingScoreFieldID.coinComboPts, anim2);
+		
 	}
 }
