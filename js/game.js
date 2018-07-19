@@ -582,11 +582,11 @@ function setDefaultScores(){
 }
 function getDefaultScores(){
 	return [
-		{name: "Techno", score: 250000},
-		{name: "Techno", score: 100000},
-		{name: "Techno", score: 50000},
-		{name: "Techno", score: 10000},
-		{name: "Techno", score: 5000}
+		{name: "Techno 1", score: 250000},
+		{name: "Techno 2", score: 100000},
+		{name: "Techno 3", score: 50000},
+		{name: "Techno 4", score: 10000},
+		{name: "Techno 5", score: 5000}
 	];
 }
 

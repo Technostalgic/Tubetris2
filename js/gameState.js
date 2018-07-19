@@ -1604,18 +1604,19 @@ class state_nameEntry extends state_menuState{
 	drawName(){
 		// draws the name that is currently being typed by the player
 		var nSTR = this.name;
+		
+		// adds a blinking ':' if the max length is not reached
 		if(this.name.length < this.maxLength) 
 			nSTR = nSTR + (
 				timeElapsed % 500 >= 250 ?
-				":" : ""
-				);
+					":" : "  "
+			);
 		else nSTR = nSTR + "";
 		
 		if(nSTR.length < 1) return;
 		
-		var namePR = preRenderedText.fromString(nSTR, screenBounds.center);
-		namePR.mainStyle.hAlign = 0;
-		namePR.applyHorizontalAlignment(screenBounds.center.x - 100, screenBounds.right);
+		var nameStyle = textStyle.fromAlignment(0.5, 0);
+		var namePR = preRenderedText.fromString(nSTR, screenBounds.center.minus(new vec2(0, 32)), nameStyle);
 		
 		if(this.rankAnim)
 			namePR = namePR.animated(this.rankAnim);
