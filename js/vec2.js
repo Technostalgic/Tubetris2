@@ -65,6 +65,23 @@ class vec2{
 			Math.abs(this.y - vec.y) <= leniency);
 	}
 	
+	getPointingSide(){
+		if(this.x >= 0){
+			if(this.x >= Math.abs(this.y))
+				return side.right;
+			else if(this.y >= 0)
+				return side.down;
+			return side.up;
+		}
+		else{
+			if(this.x <= -1 * Math.abs(this.y))
+				return side.left;
+			else if(this.y >= 0)
+				return side.down;
+			return side.up;
+		}
+		return side.none;
+	}
 	direction(){
 		//returns the angle this vector is pointing in radians
 		return Math.atan2(this.y, this.x);

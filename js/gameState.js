@@ -1925,6 +1925,7 @@ class state_gameplayState extends gameState{
 	switchGameplayPhase(newphase){
 		// switches the active gameplayPhase from one to another
 		if(this.phase){
+			this.killTouchPanel();
 			log("gameplayPhase switching from '" + this.phase.constructor.name + "' to '" + newphase.constructor.name + "'");
 			this.phase.end();
 		}
@@ -2135,6 +2136,7 @@ class state_gameplayState extends gameState{
 		if(this.phase instanceof phase_tooltip)
 			this.phase.drawOverlay();
 		
+		// draws the touch interface if available
 		this.drawTouchPanel();
 	}
 }
@@ -2158,6 +2160,24 @@ class gameplayPhase{
 	// for override, create the appropriate touch panel for the current phase
 	getNewTouchPanelAt(pos){
 		var r = new touchPanel;
+		var ths = this;
+		
+		r.action_swipeLeft = function(){
+			gameState.current.controlTap(controlAction.left);
+			ths.parentState.killTouchPanel();
+		}
+		r.action_swipeRight = function(){
+			gameState.current.controlTap(controlAction.right);
+			ths.parentState.killTouchPanel();
+		}
+		r.action_swipeUp = function(){
+			gameState.current.controlTap(controlAction.up);
+			ths.parentState.killTouchPanel();
+		}
+		r.action_swipeDown = function(){
+			gameState.current.controlTap(controlAction.down);
+			ths.parentState.killTouchPanel();
+		}
 		
 		return r.spawn(pos);
 	}

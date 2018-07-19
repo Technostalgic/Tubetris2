@@ -271,6 +271,7 @@ class touchPanel{
 	action_swipeRight(){}
 	action_swipeUp(){}
 	action_swipeDown(){}
+	action_kill(){}
 	action_move(pos){}
 	
 	spawn(pos){
@@ -282,6 +283,7 @@ class touchPanel{
 	}
 	kill(){
 		// makes the panel inactive
+		this.action_kill();
 		this.isActive = false;
 	}
 	
@@ -289,7 +291,25 @@ class touchPanel{
 		// triggered when the player moves their finger
 		if(!this.isActive)
 			return;
+		
+		this.determineSwipeAction(pos);
+		
 		this.action_move(pos);
+	}
+	determineSwipeAction(pos){
+		var sdist = 20;
+		
+		if(this.origin.distance(pos) >= sdist){
+			var dif = pos.minus(this.origin);
+			var dir = dif.getPointingSide();
+			
+			switch(dir){
+				case side.left: this.action_swipeLeft(); break;
+				case side.right: this.action_swipeRight(); break;
+				case side.up: this.action_swipeUp(); break;
+				case side.down: this.action_swipeDown(); break;
+			}
+		}
 	}
 	
 	getAnimProgress(){
