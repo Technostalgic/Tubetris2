@@ -84,6 +84,7 @@ class gameState{
 				this.touchTap(pos);
 	}
 	touchCancel(pos, touch){
+		touchEnd(pos, touch);
 	}
 	
 	// a custom touch action
@@ -1636,6 +1637,8 @@ class state_gameplayState extends gameState{
 	constructor(){
 		super();
 		
+		this.currentTouchPanel = null;
+		
 		this.tilesTagged = [];
 		this.scoreBonus = {};
 		this.resetScoreBonuses();
@@ -1939,8 +1942,30 @@ class state_gameplayState extends gameState{
 		this.phase.controlTap(control);
 	}
 	
-	getTouchPanel(){
+	touchStart(pos, touch){
+		this.createTouchPanel(pos);
+	}
+	touchMove(pos, touch){
+		if(this.currentTouchPanel)
+			this.currentTouchPanel.touchMove(pos, touch);
+	}
+	touchEnd(pos, touch){
+		this.killTouchPanel();
+	}
+	
+	createTouchPanel(pos){
+		// creates the appropriate touch panel at the specified location
+		var tp = null;
+		if(this.phase)
+			tp = this.phase.getNewTouchPanelAt(pos);
 		
+		this.currentTouchPanel = tp;
+	}
+	killTouchPanel(){
+		// kills the touch panel if there is one
+		if(this.currentTouchPanel)
+			this.currentTouchPanel.kill();
+		this.currentTouchPanel = null;
 	}
 	
 	pauseGame(){
@@ -2046,6 +2071,11 @@ class state_gameplayState extends gameState{
 		this.hudPreRenders.progLabelPreRender = preRenderedText.fromString("next level in " + tftlvl, progPos, new textStyle(fonts.small));
 	}
 
+	drawTouchPanel(){
+		// draws the touch panel if there is one
+		if(this.currentTouchPanel)
+			this.currentTouchPanel.draw();
+	}
 	drawHUDPreRenders(){
 		var ths = this;
 		Object.keys(this.hudPreRenders).forEach(function(key){
@@ -2104,6 +2134,8 @@ class state_gameplayState extends gameState{
 		
 		if(this.phase instanceof phase_tooltip)
 			this.phase.drawOverlay();
+		
+		this.drawTouchPanel();
 	}
 }
 
@@ -2122,6 +2154,13 @@ class gameplayPhase{
 	
 	// for override, called when a control is tapped
 	controlTap(control = controlAction.none){}
+	
+	// for override, create the appropriate touch panel for the current phase
+	getNewTouchPanelAt(pos){
+		var r = new touchPanel;
+		
+		return r.spawn(pos);
+	}
 }
 // the phase for when a tooltip is being displayed
 class phase_tooltip extends gameplayPhase{
