@@ -1085,10 +1085,9 @@ class state_videoOptions extends state_optionsSubMenu{
 		// Explosions
 		// Image Smoothing
 		// Scale Smoothing
-		// Animation Speed
 		this.buttons.push(new settingButton().construct(
 			"Animated Text", tpos.plus(new vec2(0, off * dif)), 
-			"whether or not animated text is enabled - may increase performance if disabled"
+			"whether or not text animations are enabled - may increase performance if disabled"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("animText"), settingButton.generateSetValueFunc("animText")).generateSettingPreRenders() ); off++;
 		this.buttons.push(new settingButton().construct(
 			"Explosions", tpos.plus(new vec2(0, off * dif)), 
@@ -1102,11 +1101,6 @@ class state_videoOptions extends state_optionsSubMenu{
 			"Scale Smoothing", tpos.plus(new vec2(0, off * dif)), 
 			"whether or not the scaled render context will be smoothed - generally looks better if the canvas is rendering at a smaller than native resolution", true
 			).setGettersAndSetters(settingButton.generateGetValueFunc("scaleSmoothing"), settingButton.generateSetValueFunc("scaleSmoothing")).generateSettingPreRenders() ); off++;
-		this.buttons.push(new settingButton().construct(
-			"Animation Speed", tpos.plus(new vec2(0, off * dif)), 
-			"how quickly the in-game animations are played"
-			).setGettersAndSetters(settingButton.generateGetValueFunc("animSpeed"), settingButton.generateSetValueFunc("animSpeed")
-			).setValueBounds(0.5, 2.5, 0.5, buttonSwitchMode.percentInfinite).generateSettingPreRenders() ); off += 1.5;
 		
 		// fit to screen
 		var action_fitToScreen = function(){}

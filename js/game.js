@@ -598,8 +598,10 @@ function insertScore(rank, scName, points){
 		scores.splice(5);
 }
 function responsiveText(pcText, mobileText = pcText){
-	// TODO: return mobileText if user is on mobile device
-	return pcText;
+	// returns mobileText if user is on a device with a touchscreen, otherwise returns pcText
+	return !(config.touchMode) ? 
+		pcText : 
+		mobileText;
 }
 
 function addInputEventListeners(){
