@@ -276,7 +276,7 @@ class combo_coins extends scoreCombo{
 		gameState.current.setFloatingScoreField(str1, style, floatingScoreFieldID.coinCombo, anim);
 		
 		if(str3 != null)
-			gameState.current.setFloatingScoreField(str2, style, floatingScoreFieldID.coinComboBonus, anim);
+			gameState.current.setFloatingScoreField(str3, style, floatingScoreFieldID.coinComboBonus, anim);
 		
 		if(str2 != null)
 			gameState.current.setFloatingScoreField(str2, style, floatingScoreFieldID.coinComboPts, anim2);
