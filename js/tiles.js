@@ -699,9 +699,10 @@ class tile{
 	}
 	rollThrough(ballOb = null){
 		if(this.tagged) return;
-		if(ballOb.ballType != balls.gold && this.tileVariant != tubeColors.gold)
-			if(ballOb.ballType != this.tileVariant)
-				return;
+		if(this.isEntity(entities.tube))
+			if(ballOb.ballType != balls.gold && this.tileVariant != tubeColors.gold)
+				if(ballOb.ballType != this.tileVariant)
+					return;
 		this.m_rollThrough(this, ballOb);
 	}
 	collectItem(ballOb = null){
