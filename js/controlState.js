@@ -263,6 +263,7 @@ class touchPanel{
 		this.isActive = false;
 		this.timeOpened = timeElapsed;
 		this.origin = new vec2();
+		this.touchPos = this.origin.clone();
 		this.activeDirections = [side.left, side.right, side.up, side.down];
 	}
 	
@@ -279,6 +280,7 @@ class touchPanel{
 		this.isActive = true;
 		this.timeOpened = timeElapsed;
 		this.origin = pos;
+		this.touchPos = this.origin.clone();
 		return this;
 	}
 	kill(){
@@ -292,11 +294,12 @@ class touchPanel{
 		if(!this.isActive)
 			return;
 		
+		this.touchPos = pos.clone();
 		this.determineSwipeAction(pos);
-		
 		this.action_move(pos);
 	}
 	determineSwipeAction(pos){
+		// determines if a swipe action is triggered, and if so, which direction the swipe was
 		var sdist = 20;
 		
 		if(this.origin.distance(pos) >= sdist){

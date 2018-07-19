@@ -2159,7 +2159,7 @@ class gameplayPhase{
 	
 	// for override, create the appropriate touch panel for the current phase
 	getNewTouchPanelAt(pos){
-		var r = new touchPanel;
+		var r = new touchPanel();
 		var ths = this;
 		
 		r.action_swipeLeft = function(){
@@ -2203,6 +2203,19 @@ class phase_tooltip extends gameplayPhase{
 	controlTap(control){
 		if(control == controlAction.select)
 			this.nextPhase();
+	}
+	
+	getNewTouchPanelAt(pos){
+		var r = new touchPanel();
+		var ths = this;
+		
+		r.activeDirections = [side.up];
+		r.action_swipeUp = function(){
+			gameState.current.controlTap(controlAction.select);
+			ths.parentState.killTouchPanel();
+		}
+		
+		return r.spawn(pos);
 	}
 	
 	nextPhase(){
