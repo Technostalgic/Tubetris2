@@ -2307,6 +2307,15 @@ class phase_placeTileform extends gameplayPhase{
 	}
 	
 	getNewTouchPanelAt(pos){
+		// returns null if the player is actually trying to tap the next tileform
+		if(pos.x >= tile.nextTileformSlot.x - 2 * tile.tilesize && pos.x <= tile.nextTileformSlot.x + 2 * tile.tilesize ){
+			if(pos.y >= tile.nextTileformSlot.y - 1 * tile.tilesize && pos.y <= tile.nextTileformSlot.y + 1 * tile.tilesize ){
+				this.parentState.controlTap(controlAction.swap);
+				return null;
+			}
+		}
+		
+		// returns a touch panel at the specified position
 		var r = new touchPanel();
 		var ths = this;
 
