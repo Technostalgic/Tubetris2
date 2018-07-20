@@ -1954,16 +1954,13 @@ class state_gameplayState extends gameState{
 	}
 	mouseUp(pos){
 		this.touchEnd(pos);
+		this.lastMousePressed = false;
 	}
 	handleMouseTouchEmulation(){
 		// handles all the logic that has to do with emulating a touchscreen with the mouse
-		if(this.lastMousePressed){
-			// triggers when the mouse is released
-			if(!controlState.mouseDown){
+		if(this.lastMousePressed)
+			if(!controlState.mouseDown)
 				this.mouseUp(controlState.mousePos);
-				this.lastMousePressed = false;
-			}
-		}
 	}
 	
 	touchStart(pos, touch){
@@ -2321,15 +2318,14 @@ class phase_placeTileform extends gameplayPhase{
 		));
 		r.action_swipeLeft = function(){
 			gameState.current.controlTap(controlAction.left);
-			ths.parentState.killTouchPanel();
+			ths.parentState.setTouchPanel(ths.getNewXMoveTouchPanel(r.touchPos));
 		}
 		r.action_swipeRight = function(){
 			gameState.current.controlTap(controlAction.right);
-			ths.parentState.killTouchPanel();
+			ths.parentState.setTouchPanel(ths.getNewXMoveTouchPanel(r.touchPos));
 		}
 		r.action_swipeUp = function(){
-			let rotPanel = ths.getNewRotTouchPanel(pos);
-			ths.parentState.setTouchPanel(rotPanel.spawn(r.touchPos));
+			ths.parentState.setTouchPanel(ths.getNewRotTouchPanel(r.touchPos));
 		}
 		r.action_swipeDown = function(){
 			gameState.current.controlTap(controlAction.down);
@@ -2409,7 +2405,40 @@ class phase_placeTileform extends gameplayPhase{
 
 		return r.spawn(pos);
 	}
-
+	getNewXMoveTouchPanel(pos){
+		// returns a new sliding touch panel for when the left or right swipe action is selected from the main touch panel
+		var r = new touchPanel();
+		var ths = this;
+		var slideDist = 35;
+		
+		r.activeDirections = [side.left, side.right];
+		
+		var moveLeft = function(){
+			gameState.current.controlTap(controlAction.left);
+			r.origin.x = r.touchPos.x;
+		};
+		var moveRight = function(){
+			gameState.current.controlTap(controlAction.right);
+			r.origin.x = r.touchPos.x;
+		};
+		
+		r.setSwipeAction(side.left, moveLeft);
+		r.setSwipeAction(side.right, moveRight);
+		
+		// set so that the player doesn't have to stay centered on the touch panel
+		r.action_move = function(pos){
+			r.drawPos.x = pos.x;
+			
+			let dif = pos.x - r.origin.x;
+			if(Math.abs(dif) >= slideDist){
+				if(dif < 0) moveLeft();
+				else moveRight();
+			}
+		}
+		
+		return r.spawn(pos);
+	}
+	
 	setTileform(tf, dropInterval = 1000){
 		// sets the current tileform
 		this.currentTileform = tf;
