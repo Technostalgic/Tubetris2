@@ -187,8 +187,8 @@ class tooltip{
 	static get tip_tileformRotation(){
 		var r = new tooltip();
 		r.setTitle("Tileform Rotation");
-		r.text_pc = "You can also rotate the tileform clockise with [" + controlState.getControlKeyName(controlAction.rotateCW) + "]";
-		r.text_mobile = "You can also rotate it by [swiping upward]";
+		r.text_pc = "You can also rotate the tileform clockwise with [" + controlState.getControlKeyName(controlAction.rotateCW) + "]";
+		r.text_mobile = "You can also rotate the tileform by [swiping upward] and making a [circular gesture] with your finger";
 		
 		// gets a rectangle surrounding the current tileform
 		r.getFocusArea = function(){
@@ -391,7 +391,7 @@ class tooltip{
 		r.text_pc = "tiles that are (charged) will have a (yellow tinted background) 1.5| " + 
 			"when destroyed they will cause a (chain reaction) that causes all the " +
 			"other tiles and tubes that are connected to it to also be destroyed 1.5| " +
-			"this can be very benefecial if you have a lot of interconnected pipe systems laid " +
+			"this can be very beneficial if you have a lot of interconnected pipe systems laid " +
 			"out and they are inside of charged rows";
 		
 		return r;
