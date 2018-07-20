@@ -282,12 +282,17 @@ class touchPanel{
 		return touchPanel.getDefaultBackdrop(this.radius);
 	}
 	static getDefaultBackdrop(radius){
+		// returns the default circular backdrop with a transparent center
 		var cvs = document.createElement("canvas");
 		cvs.width = ((radius + 15) * 2) * config.swipeRadius;
 		cvs.height = cvs.width;
 		var ctx = cvs.getContext("2d");
 		
 		drawCircleFill(ctx, new vec2(cvs.width / 2), cvs.width / 2, color.fromHex("#000"));
+		
+		ctx.globalCompositeOperation = "destination-out";
+		drawCircleFill(ctx, new vec2(cvs.width / 2), cvs.width / 4, color.fromHex("#000"));
+		ctx.globalCompositeOperation = "source-over";
 		
 		return cvs;
 	}
@@ -395,13 +400,14 @@ class touchPanel{
 	}
 	
 	draw(){
-		// draws each active direction
+		// draws the touch panel
 		if(!this.isActive)
 			return;
 		
 		var prog = this.getAnimProgress();
 		var drawDist = this.radius * config.swipeRadius;
 		
+		// draws the backdrop
 		var alpha = prog * 0.65;
 		var maxSize = new vec2(this.backdrop.width, this.backdrop.height);
 		var bdSprite = new spriteContainer(
@@ -415,6 +421,7 @@ class touchPanel{
 		bdSprite.draw();
 		renderContext.globalAlpha = 1;
 		
+		//draws each active direction
 		for(let dir of this.activeDirections){
 			let off = vec2.fromSide(dir).multiply(prog * drawDist);
 			switch(dir){
