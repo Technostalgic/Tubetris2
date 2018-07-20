@@ -126,7 +126,7 @@ class tooltip{
 		r.setTitle("Current Level");
 		r.text_pc = "This displays the (game level) that you are currenly on 1.5| " + 
 			"The level is complete when the (number below) counts down to zero and that last tileform is placed 1.5| " +
-			"After each level you will recieve a (point reward) and prgress to the (next level) 1.5| " +
+			"After each level you will recieve a (point reward) and progress to the (next level) 1.5| " +
 			"As the levels progress (new tiles) and (tubes) will be introduced and the (difficulty will increase)";
 
 		r.getFocusArea = function(){
@@ -390,7 +390,7 @@ class tooltip{
 		r.setTitle("Charged Tiles");
 		r.text_pc = "tiles that are (charged) will have a (yellow tinted background) 1.5| " + 
 			"when destroyed they will cause a (chain reaction) that causes all the " +
-			"other tiles and tubes that are connected to it to also be destroyed 1.5|" +
+			"other tiles and tubes that are connected to it to also be destroyed 1.5| " +
 			"this can be very benefecial if you have a lot of interconnected pipe systems laid " +
 			"out and they are inside of charged rows";
 		

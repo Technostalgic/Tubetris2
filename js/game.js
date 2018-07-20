@@ -833,7 +833,7 @@ function getCanvas(){
 }
 function fitToScreen(){
 	// expands the canvas so that it fills the screen while keeping the native aspect ratio
-	var w = window.innerWidth < window.outerWidth ? window.innerWidth : window.outerWidth;
+	var w = window.innerWidth;// < window.outerWidth ? window.innerWidth : window.outerWidth;
 	var h = window.innerHeight;
 	var ratio = nativeResolution.x / nativeResolution.y;
 	
