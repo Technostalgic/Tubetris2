@@ -1659,6 +1659,8 @@ class state_gameplayState extends gameState{
 		this.switchGameplayPhase(new phase_placeTileform(this));
 		this.tooltipProgress = tooltipProgression.getDefault();
 		
+		this.lastMousePressed = false;
+		
 		this.initHudPreRenders();
 		this.updateHUDPreRenders();
 		
@@ -1943,6 +1945,27 @@ class state_gameplayState extends gameState{
 		this.phase.controlTap(control);
 	}
 	
+	mouseTap(pos){
+		this.touchStart(pos);
+		this.lastMousePressed = true;
+	}
+	mouseMove(pos){
+		this.touchMove(pos);
+	}
+	mouseUp(pos){
+		this.touchEnd(pos);
+	}
+	handleMouseTouchEmulation(){
+		// handles all the logic that has to do with emulating a touchscreen with the mouse
+		if(this.lastMousePressed){
+			// triggers when the mouse is released
+			if(!controlState.mouseDown){
+				this.mouseUp(controlState.mousePos);
+				this.lastMousePressed = false;
+			}
+		}
+	}
+	
 	touchStart(pos, touch){
 		this.createTouchPanel(pos);
 	}
@@ -1998,6 +2021,7 @@ class state_gameplayState extends gameState{
 	update(dt){
 		// main logic step
 		super.update(dt);
+		this.handleMouseTouchEmulation();
 		
 		this.tooltipProgress.checkTooltips(this);
 		
