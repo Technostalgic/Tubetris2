@@ -221,23 +221,23 @@ function drawArrow(pos, dir = side.right){
 	
 	drawImage(renderContext, gfx.arrows, pos.minus(new vec2(ssize / 2)), sprite);
 }
-function drawCircleFill(pos, radius = 50, col = color.fromRGBA(0, 0, 0, 1)){
+function drawCircleFill(ctx, pos, radius = 50, col = color.fromRGBA(0, 0, 0, 1)){
 	// draws a filled circle with the specified parameters
-	col.setFill();
+	col.setFill(ctx);
 	
-	renderContext.beginPath();
-	renderContext.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
-	renderContext.closePath();
-	renderContext.fill();
+	ctx.beginPath();
+	ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+	ctx.closePath();
+	ctx.fill();
 }
-function drawCircleOutline(pos, radius = 50, col = color.fromRGBA(255, 255, 255, 1), width = 2){
+function drawCircleOutline(ctx, pos, radius = 50, col = color.fromRGBA(255, 255, 255, 1), width = 2){
 	// draws a circle outline with the specified parameters
-	col.setStroke();
+	col.setStroke(ctx);
 	
-	renderContext.beginPath();
-	renderContext.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
-	renderContext.closePath();
-	renderContext.stroke();
+	ctx.beginPath();
+	ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+	ctx.closePath();
+	ctx.stroke();
 }
 /// ================================|--------------------|================================
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }High-Level functions{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

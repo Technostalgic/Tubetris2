@@ -266,6 +266,8 @@ class touchPanel{
 		this.drawPos = this.origin.clone();
 		this.touchPos = this.origin.clone();
 		this.activeDirections = [side.left, side.right, side.up, side.down];
+		this.radius = 75;
+		this.backdrop = null;
 	}
 	
 	// override these:
@@ -276,6 +278,20 @@ class touchPanel{
 	action_kill(){}
 	action_move(pos){}
 	
+	generateBackdrop(){
+		return touchPanel.getDefaultBackdrop(this.radius);
+	}
+	static getDefaultBackdrop(radius){
+		var cvs = document.createElement("canvas");
+		cvs.width = ((radius + 15) * 2) * config.swipeRadius;
+		cvs.height = cvs.width;
+		var ctx = cvs.getContext("2d");
+		
+		drawCircleFill(ctx, new vec2(cvs.width / 2), cvs.width / 2, color.fromHex("#000"));
+		
+		return cvs;
+	}
+	
 	spawn(pos){
 		// spawns the panel at the specified position
 		this.isActive = true;
@@ -283,6 +299,7 @@ class touchPanel{
 		this.origin = pos;
 		this.drawPos = this.origin.clone();
 		this.touchPos = this.origin.clone();
+		this.backdrop = this.generateBackdrop();
 		return this;
 	}
 	kill(){
@@ -383,10 +400,20 @@ class touchPanel{
 			return;
 		
 		var prog = this.getAnimProgress();
-		var drawDist = 75 * config.swipeRadius;
+		var drawDist = this.radius * config.swipeRadius;
 		
-		var col = color.fromRGBA(0, 0, 0, prog * 0.65);
-		drawCircleFill(this.drawPos, prog * drawDist + 15, col);
+		var alpha = prog * 0.65;
+		var maxSize = new vec2(this.backdrop.width, this.backdrop.height);
+		var bdSprite = new spriteContainer(
+			this.backdrop,
+			new spriteBox(new vec2(), maxSize.clone()),
+			new collisionBox(new vec2(), maxSize.multiply(prog))
+		);
+		bdSprite.bounds.setCenter(this.drawPos);
+		console.log(this.backdrop);
+		renderContext.globalAlpha = alpha;
+		bdSprite.draw();
+		renderContext.globalAlpha = 1;
 		
 		for(let dir of this.activeDirections){
 			let off = vec2.fromSide(dir).multiply(prog * drawDist);

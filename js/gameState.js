@@ -1201,7 +1201,7 @@ class state_controlOptions extends state_optionsSubMenu{
 class state_touchOptions extends state_optionsSubMenu{
 	constructor(){
 		super();
-		this.setTitle("TOUCH CONTROLS");
+		this.setTitle("TOUCHSCREEN");
 	}
 	
 	addSubMenuButtions(){
@@ -2438,6 +2438,7 @@ class phase_placeTileform extends gameplayPhase{
 		return r.spawn(pos);
 	}
 	getNewYMoveTouchPanel(pos){
+		// returns a new touch panel for when the down swipe action is triggered
 		var r = new touchPanel();
 		var ths = this;
 		var slideDist = 32 * config.swipeRadius;
