@@ -1210,17 +1210,15 @@ class state_touchOptions extends state_optionsSubMenu{
 		var tpos = new vec2(screenBounds.center.x, this.buttonStartPos);
 		var ths = this;
 		
-		// Touch Mode: on/off
+		// Haptic Pulses: on/off
+		// Swipe Radius: 0.1 - 2.0 (+/- 0.1)
 		
 		this.buttons.push(new settingButton().construct("Haptic Pulses", tpos.plus(new vec2(0, off * dif)), "optomized control mode for touchscreen devices"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("touchMode"), settingButton.generateSetValueFunc("touchMode")
 			).generateSettingPreRenders() ); off++;
-		this.buttons.push(new settingButton().construct("H Swipe Radius", tpos.plus(new vec2(0, off * dif)), "the horizontal swipe sensitivity: lower numbers are more sensitive"
-			).setGettersAndSetters(settingButton.generateGetValueFunc("swipeRadiusH"), settingButton.generateSetValueFunc("swipeRadiusH")
-			).setValueBounds(0.2, 2, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off++;
-		this.buttons.push(new settingButton().construct("V Swipe Radius", tpos.plus(new vec2(0, off * dif)), "the vertical swipe sensitivity: lower numbers are more sensitive"
-			).setGettersAndSetters(settingButton.generateGetValueFunc("swipeRadiusV"), settingButton.generateSetValueFunc("swipeRadiusV")
-			).setValueBounds(0.2, 2, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off++;
+		this.buttons.push(new settingButton().construct("Swipe Radius", tpos.plus(new vec2(0, off * dif)), "the in-game sensitivity to swipe actions: lower numbers are more sensitive"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("swipeRadius"), settingButton.generateSetValueFunc("swipeRadiusV")
+			).setValueBounds(0.1, 2, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off++;
 	}
 }
 
