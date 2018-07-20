@@ -346,10 +346,10 @@ function loadGFX(){
 	loadGraphic("tiles_blocks", "tiles_blocks.png");
 	loadGraphic("tiles_balls", "tiles_balls.png");
 	loadGraphic("effect_poof", "effect_poof.png");
+	loadGraphic("effect_sparkle", "effect_sparkle.png");
 	loadGraphic("effect_explosion", "effect_explosion.png");
 	loadGraphic("pathIndicators", "pathIndicators.png");
-	loadGraphic("item_backdrop", "item_backdrop.png");
-	loadGraphic("item_icons", "item_icons.png");
+	loadGraphic("touchPanelIcons", "touchPanelIcons.png");
 	loadGraphic("arrows", "arrows.png");
 	loadGraphic("coin", "coin.png");
 	
