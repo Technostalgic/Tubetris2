@@ -299,6 +299,12 @@ class touchPanel{
 		action_kill = function(){};
 		action_move = function(pos){};
 	}
+	stripDrawActions(){
+		this.drawAction_swipeLeft = function(){};
+		this.drawAction_swipeRight = function(){};
+		this.drawAction_swipeUp = function(){};
+		this.drawAction_swipeDown = function(){};
+	}
 	
 	touchMove(pos, touch){
 		// triggered when the player moves their finger
@@ -349,13 +355,35 @@ class touchPanel{
 		drawArrow(pos, side.down);
 	}
 	
+	setSwipeSprite(dir, spCont){
+		// sets the appropriate drawAction to draw the specified spriteContainer
+		var func = function(pos){
+			spCont.bounds.setCenter(pos);
+			spCont.draw();
+		};
+		switch(dir){
+			case side.left: this.drawAction_swipeLeft = func; break;
+			case side.right: this.drawAction_swipeRight = func; break;
+			case side.up: this.drawAction_swipeUp = func; break;
+			case side.down: this.drawAction_swipeDown = func; break;
+		}
+	}
+	setSwipeAction(dir, action){
+		switch(dir){
+			case side.left: this.action_swipeLeft = action; break;
+			case side.right: this.action_swipeRight = action; break;
+			case side.up: this.action_swipeUp = action; break;
+			case side.down: this.action_swipeDown = action; break;
+		}
+	}
+	
 	draw(){
 		// draws each active direction
 		if(!this.isActive)
 			return;
 		
 		var prog = this.getAnimProgress();
-		var drawDist = 35;
+		var drawDist = 55;
 		
 		var col = color.fromRGBA(0, 0, 0, prog * 0.65);
 		drawCircleFill(this.drawPos, prog * drawDist + 15, col);

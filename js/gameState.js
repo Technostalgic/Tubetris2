@@ -1962,6 +1962,10 @@ class state_gameplayState extends gameState{
 		
 		this.currentTouchPanel = tp;
 	}
+	setTouchPanel(panel){
+		// sets the current touch panel to the specified touch panel
+		this.currentTouchPanel = panel;
+	}
 	killTouchPanel(){
 		// kills the touch panel if there is one
 		if(this.currentTouchPanel)
@@ -2283,6 +2287,105 @@ class phase_placeTileform extends gameplayPhase{
 		}
 	}
 	
+	getNewTouchPanelAt(pos){
+		var r = new touchPanel();
+		var ths = this;
+
+		r.setSwipeSprite(side.up, new spriteContainer(
+			gfx.touchPanelIcons,
+			new spriteBox(new vec2(), new vec2(32))
+		));
+		r.action_swipeLeft = function(){
+			gameState.current.controlTap(controlAction.left);
+			ths.parentState.killTouchPanel();
+		}
+		r.action_swipeRight = function(){
+			gameState.current.controlTap(controlAction.right);
+			ths.parentState.killTouchPanel();
+		}
+		r.action_swipeUp = function(){
+			let rotPanel = ths.getNewRotTouchPanel(pos);
+			ths.parentState.setTouchPanel(rotPanel.spawn(r.touchPos));
+		}
+		r.action_swipeDown = function(){
+			gameState.current.controlTap(controlAction.down);
+			ths.parentState.killTouchPanel();
+		}
+		
+		return r.spawn(pos);
+	}
+	getNewRotTouchPanel(pos, phase = 0){
+		// returns a new rotation touch panel for when the rotate action is selected from the main touch panel
+		var r = new touchPanel();
+		var ths = this;
+		
+		r.stripDrawActions();
+
+		// the function that will be called for rotate clockwise
+		var rotCW = function(){
+			ths.parentState.setTouchPanel(ths.getNewRotTouchPanel(r.touchPos, (phase + 1) % 4));
+			gameState.current.controlTap(controlAction.rotateCW);
+		};
+		// ** counter clockwise
+		var rotCCW = function(){
+			let nphase = phase - 1;
+			if(nphase < 0)
+				nphase = 3;
+			ths.parentState.setTouchPanel(ths.getNewRotTouchPanel(r.touchPos, nphase));
+			gameState.current.controlTap(controlAction.rotateCCW);
+		};
+
+		// the icon for clockwise
+		var spriteCW = new spriteContainer(
+			gfx.touchPanelIcons,
+			new spriteBox(new vec2(), new vec2(32))
+		);
+		// ** counter clockwise
+		var spriteCCW = new spriteContainer(
+			gfx.touchPanelIcons,
+			new spriteBox(new vec2(32, 0), new vec2(32))
+		);
+
+		// sets dirs based on the phase that is specified
+		// dir[0] will always be the direction for clockwise and dir[1] counter clockwise
+		var dirs = [];
+		switch(phase){
+			case 0:
+				dirs = [side.right, side.left];
+				break;
+			case 1:
+				dirs = [side.down, side.up];
+				break;
+			case 2:
+				dirs = [side.left, side.right];
+				break;
+			case 3:
+				dirs = [side.up, side.down];
+				break;
+		}
+		r.activeDirections = dirs;
+
+		// bind the actions and the icons to the touch panel 
+		r.setSwipeSprite(dirs[0], spriteCW);
+		r.setSwipeSprite(dirs[1], spriteCCW);
+		r.setSwipeAction(dirs[0], rotCW);
+		r.setSwipeAction(dirs[1], rotCCW);
+
+		// makes it so that the touchpanel slides along with the player's finger
+		// but only along the axis that isn't being used for determining a swipe action
+		var horizontalSlide = phase % 2 == 1;
+		r.action_move = function(pos){
+			if(horizontalSlide)
+				r.origin.x = pos.x;
+			else
+				r.origin.y = pos.y;
+
+			r.drawPos = r.origin.clone();
+		}
+
+		return r.spawn(pos);
+	}
+
 	setTileform(tf, dropInterval = 1000){
 		// sets the current tileform
 		this.currentTileform = tf;
