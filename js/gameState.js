@@ -2407,7 +2407,7 @@ class phase_placeTileform extends gameplayPhase{
 		// returns a new sliding touch panel for when the left or right swipe action is selected from the main touch panel
 		var r = new touchPanel();
 		var ths = this;
-		var slideDist = 35;
+		var slideDist = 35 * config.swipeRadius;
 		
 		r.activeDirections = [side.left, side.right];
 		

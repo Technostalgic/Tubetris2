@@ -317,7 +317,7 @@ class touchPanel{
 	}
 	determineSwipeAction(pos){
 		// determines if a swipe action is triggered, and if so, which direction the swipe was
-		var sdist = 50;
+		var sdist = 50 * config.swipeRadius;
 		
 		if(this.origin.distance(pos) >= sdist){
 			var dif = pos.minus(this.origin);
@@ -383,7 +383,7 @@ class touchPanel{
 			return;
 		
 		var prog = this.getAnimProgress();
-		var drawDist = 75;
+		var drawDist = 75 * config.swipeRadius;
 		
 		var col = color.fromRGBA(0, 0, 0, prog * 0.65);
 		drawCircleFill(this.drawPos, prog * drawDist + 15, col);
