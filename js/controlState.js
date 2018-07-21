@@ -416,7 +416,6 @@ class touchPanel{
 			new collisionBox(new vec2(), maxSize.multiply(prog))
 		);
 		bdSprite.bounds.setCenter(this.drawPos);
-		console.log(this.backdrop);
 		renderContext.globalAlpha = alpha;
 		bdSprite.draw();
 		renderContext.globalAlpha = 1;

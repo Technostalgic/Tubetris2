@@ -2426,7 +2426,7 @@ class phase_placeTileform extends gameplayPhase{
 		};
 		var moveRight = function(){
 			gameState.current.controlTap(controlAction.right);
-			r.origin.x += r.touchPos.x;
+			r.origin.x += slideDist;
 		};
 		
 		r.setSwipeAction(side.left, moveLeft);
