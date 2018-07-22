@@ -354,6 +354,11 @@ class touchPanel{
 			}
 		}
 	}
+	hapticPulse(){
+		// sends a haptic pulse to the device to let the use know exactly when a control was triggered
+		if(hapticFeedbackEnabled())
+			window.navigator.vibrate(15);
+	}
 	
 	getAnimProgress(){
 		// returns the progress between 0 and 1 how complete the panel opening animation is

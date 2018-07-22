@@ -24,6 +24,8 @@ class effect{
 	static createExplosion(pos){
 		// creates an explosion effect at the specified location
 		if(!config.explosionEffects) return;
+		if(hapticFeedbackEnabled())
+			window.navigator.vibrate(50);
 		var e = animatedSpriteEffect.build(gfx.effect_explosion, 33, animatedSpriteEffect.getFrames(gfx.effect_explosion, 12));
 		e.pos = pos;
 		

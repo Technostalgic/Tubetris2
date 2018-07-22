@@ -191,8 +191,10 @@ class menuButton{
 		// called when the button is pressed by the player
 		log("menu button '" + this.text + "' triggered", logType.log);
 		
+		if(hapticFeedbackEnabled())
+			window.navigator.vibrate(50);
 		if(this.action)
-			this.action(args);		
+			this.action(args);
 	}
 	
 	draw(selected = false){
@@ -588,6 +590,8 @@ class state_menuState extends gameState{
 			if(this.buttons[i].normalBounds.overlapsPoint(pos)){
 				this.currentSelection = i;
 				audioMgr.playSound(sfx.moveCursor);
+				if(hapticFeedbackEnabled())
+					window.navigator.vibrate(25);
 				return;
 			}
 		}
@@ -1213,8 +1217,11 @@ class state_touchOptions extends state_optionsSubMenu{
 		// Haptic Pulses: on/off
 		// Swipe Radius: 0.1 - 2.0 (+/- 0.1)
 		
-		this.buttons.push(new settingButton().construct("Haptic Pulses", tpos.plus(new vec2(0, off * dif)), "optomized control mode for touchscreen devices"
+		this.buttons.push(new settingButton().construct("Touchscreen Mode", tpos.plus(new vec2(0, off * dif)), "optomized control mode for touchscreen devices"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("touchMode"), settingButton.generateSetValueFunc("touchMode")
+			).generateSettingPreRenders() ); off++;
+		this.buttons.push(new settingButton().construct("Haptic Pulses", tpos.plus(new vec2(0, off * dif)), "whether or not the device vibrates to provide haptic feedback when pressing buttons or operating controls"
+			).setGettersAndSetters(settingButton.generateGetValueFunc("hapticPulses"), settingButton.generateSetValueFunc("hapticPulses")
 			).generateSettingPreRenders() ); off++;
 		this.buttons.push(new settingButton().construct("Swipe Radius", tpos.plus(new vec2(0, off * dif)), "the in-game sensitivity to swipe actions: lower numbers are more sensitive"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("swipeRadius"), settingButton.generateSetValueFunc("swipeRadiusV")
@@ -2186,18 +2193,22 @@ class gameplayPhase{
 		var ths = this;
 		
 		r.action_swipeLeft = function(){
+			r.hapticPulse();
 			gameState.current.controlTap(controlAction.left);
 			ths.parentState.killTouchPanel();
 		}
 		r.action_swipeRight = function(){
+			r.hapticPulse();
 			gameState.current.controlTap(controlAction.right);
 			ths.parentState.killTouchPanel();
 		}
 		r.action_swipeUp = function(){
+			r.hapticPulse();
 			gameState.current.controlTap(controlAction.up);
 			ths.parentState.killTouchPanel();
 		}
 		r.action_swipeDown = function(){
+			r.hapticPulse();
 			gameState.current.controlTap(controlAction.down);
 			ths.parentState.killTouchPanel();
 		}
@@ -2234,6 +2245,7 @@ class phase_tooltip extends gameplayPhase{
 		
 		r.activeDirections = [side.up];
 		r.action_swipeUp = function(){
+			r.hapticPulse();
 			gameState.current.controlTap(controlAction.select);
 			ths.parentState.killTouchPanel();
 		}
@@ -2311,6 +2323,8 @@ class phase_placeTileform extends gameplayPhase{
 		if(pos.x >= tile.nextTileformSlot.x - 2 * tile.tilesize && pos.x <= tile.nextTileformSlot.x + 2 * tile.tilesize ){
 			if(pos.y >= tile.nextTileformSlot.y - 1 * tile.tilesize && pos.y <= tile.nextTileformSlot.y + 1 * tile.tilesize ){
 				this.parentState.controlTap(controlAction.swap);
+				if(hapticFeedbackEnabled())
+					window.navigator.vibrate(25);
 				return null;
 			}
 		}
@@ -2325,17 +2339,21 @@ class phase_placeTileform extends gameplayPhase{
 			new spriteBox(new vec2(), new vec2(32))
 		));
 		r.action_swipeLeft = function(){
+			r.hapticPulse();
 			gameState.current.controlTap(controlAction.left);
 			ths.parentState.setTouchPanel(ths.getNewXMoveTouchPanel(r.touchPos));
 		}
 		r.action_swipeRight = function(){
+			r.hapticPulse();
 			gameState.current.controlTap(controlAction.right);
 			ths.parentState.setTouchPanel(ths.getNewXMoveTouchPanel(r.touchPos));
 		}
 		r.action_swipeUp = function(){
+			r.hapticPulse();
 			ths.parentState.setTouchPanel(ths.getNewRotTouchPanel(r.touchPos));
 		}
 		r.action_swipeDown = function(){
+			r.hapticPulse();
 			if(ths.currentTileform.canMove(side.down)) 
 				ths.currentTileform.move(side.down);
 			else {
@@ -2356,11 +2374,13 @@ class phase_placeTileform extends gameplayPhase{
 
 		// the function that will be called for rotate clockwise
 		var rotCW = function(){
+			r.hapticPulse();
 			ths.parentState.setTouchPanel(ths.getNewRotTouchPanel(r.touchPos, (phase + 1) % 4));
 			gameState.current.controlTap(controlAction.rotateCW);
 		};
 		// ** counter clockwise
 		var rotCCW = function(){
+			r.hapticPulse();
 			let nphase = phase - 1;
 			if(nphase < 0)
 				nphase = 3;
@@ -2427,10 +2447,12 @@ class phase_placeTileform extends gameplayPhase{
 		r.activeDirections = [side.left, side.right];
 		
 		var moveLeft = function(){
+			r.hapticPulse();
 			gameState.current.controlTap(controlAction.left);
 			r.origin.x -= slideDist;
 		};
 		var moveRight = function(){
+			r.hapticPulse();
 			gameState.current.controlTap(controlAction.right);
 			r.origin.x += slideDist;
 		};
@@ -2461,12 +2483,14 @@ class phase_placeTileform extends gameplayPhase{
 		
 		r.activeDirections = [side.down, side.up];
 		var moveDown = function(){
+			r.hapticPulse();
 			if(ths.currentTileform.canMove(side.down)) 
 				ths.currentTileform.move(side.down);
 			r.origin.y += slideDist;
 			ths.bumps++;
 		};
 		var moveUp = function(){
+			r.hapticPulse();
 			r.origin.y -= slideDist;
 			if(ths.bumps <= 0) return;
 			ths.currentTileform.move(side.up);

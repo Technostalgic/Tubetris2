@@ -558,6 +558,7 @@ function setDefaultConfig(){
 	// sets the default game configuration settings
 	config = {
 		touchMode: false,
+		hapticPulses: true,
 		swipeRadius: 1,
 		animText: true,
 		animSpeed: 1,
@@ -619,6 +620,13 @@ function responsiveText(pcText, mobileText = pcText){
 	return !(config.touchMode) ? 
 		pcText : 
 		mobileText;
+}
+function hapticFeedbackEnabled(){
+	// if the game is allowed to send haptic feedback to the device
+	return (
+		//config.touchMode && 
+		config.hapticPulses
+	);
 }
 
 function addInputEventListeners(){
