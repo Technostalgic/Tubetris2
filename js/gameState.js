@@ -2337,7 +2337,10 @@ class phase_placeTileform extends gameplayPhase{
 		r.action_swipeDown = function(){
 			if(ths.currentTileform.canMove(side.down)) 
 				ths.currentTileform.move(side.down);
-			else ths.currentTileform.setInPlace();
+			else {
+				ths.placeTileform();
+				return;
+			}
 			ths.parentState.setTouchPanel(ths.getNewYMoveTouchPanel(r.touchPos));
 		}
 		
