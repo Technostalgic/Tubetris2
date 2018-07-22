@@ -2335,7 +2335,9 @@ class phase_placeTileform extends gameplayPhase{
 			ths.parentState.setTouchPanel(ths.getNewRotTouchPanel(r.touchPos));
 		}
 		r.action_swipeDown = function(){
-			gameState.current.controlTap(controlAction.down);
+			if(ths.currentTileform.canMove(side.down)) 
+				ths.currentTileform.move(side.down);
+			else ths.currentTileform.setInPlace();
 			ths.parentState.setTouchPanel(ths.getNewYMoveTouchPanel(r.touchPos));
 		}
 		
@@ -2451,22 +2453,33 @@ class phase_placeTileform extends gameplayPhase{
 		var r = new touchPanel();
 		var ths = this;
 		var slideDist = 32 * config.swipeRadius;
+		this.bumps = 1;
 		
-		r.activeDirections = [side.down];
+		r.activeDirections = [side.down, side.up];
 		var moveDown = function(){
-			gameState.current.controlTap(controlAction.down);
+			if(ths.currentTileform.canMove(side.down)) 
+				ths.currentTileform.move(side.down);
 			r.origin.y += slideDist;
+			ths.bumps++;
 		};
+		var moveUp = function(){
+			r.origin.y -= slideDist;
+			if(ths.bumps <= 0) return;
+			ths.currentTileform.move(side.up);
+			ths.bumps--;
+		}
 		
 		r.setSwipeAction(side.down, moveDown);
+		r.setSwipeAction(side.up, moveUp);
 		
 		// set so that the player doesn't have to stay centered on the touch panel
 		r.action_move = function(pos){
 			r.drawPos.y = Math.max(r.origin.y, pos.y);
 			
 			let dif = pos.y - r.origin.y;
-			while(dif >= slideDist){
-				moveDown();
+			while(Math.abs(dif) >= slideDist){
+				if(dif > 0) moveDown();
+				else moveUp();
 				dif = pos.y - r.origin.y;
 			}
 		};
