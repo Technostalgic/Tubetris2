@@ -2318,6 +2318,7 @@ class phase_placeTileform extends gameplayPhase{
 		// returns a touch panel at the specified position
 		var r = new touchPanel();
 		var ths = this;
+		r.touchRadius = 35;
 
 		r.setSwipeSprite(side.up, new spriteContainer(
 			gfx.touchPanelIcons,

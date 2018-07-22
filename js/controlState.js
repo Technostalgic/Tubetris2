@@ -267,6 +267,7 @@ class touchPanel{
 		this.touchPos = this.origin.clone();
 		this.activeDirections = [side.left, side.right, side.up, side.down];
 		this.radius = 75;
+		this.touchRadius = 50;
 		this.backdrop = null;
 	}
 	
@@ -339,7 +340,7 @@ class touchPanel{
 	}
 	determineSwipeAction(pos){
 		// determines if a swipe action is triggered, and if so, which direction the swipe was
-		var sdist = 50 * config.swipeRadius;
+		var sdist = this.touchRadius * config.swipeRadius;
 		
 		if(this.origin.distance(pos) >= sdist){
 			var dif = pos.minus(this.origin);
