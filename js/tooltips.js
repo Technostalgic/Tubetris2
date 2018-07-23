@@ -429,7 +429,7 @@ class tooltip{
 	}
 	generatePreRender(){
 		// generates the text preRender and stores it in this.preRender
-		var txt = responsiveText(this.text_pc, this.text_mobile);
+		var txt = responsiveText(this.text_pc, this.text_mobile) || this.text_pc;
 		
 		this.textBlock = new textBlock(
 			txt,
