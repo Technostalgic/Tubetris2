@@ -222,8 +222,13 @@ class tile{
 		var r = uid;
 		if(direction == 1) r = tile.rotatedEntityID[r];
 		// if counter clockwise, rotate by 90 degrees clockwise 3 times (270 degrees) to get the same result as rotating by 90 degrees CCW
-		else for(var i = 3; i > 0; i--) 
+		else for(var i = 3; i > 0; i--){
 			r = tile.rotatedEntityID[r];
+
+			// if not on the last iteration, set r to the new rotated object's UID instead of the entityID
+			if(i > 1)
+				r = tile.getEntityUID(r, entityType)
+		}
 		
 		return r;
 	}
