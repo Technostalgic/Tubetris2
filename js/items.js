@@ -51,10 +51,12 @@ class item{
 		// activates the item, ballOb should be the ball object that touched it to activate it
 		this.destroy();
 		audioMgr.playSound(sfx.getCoin);
+		effect.createSparkle(tile.toScreenPos(this.gridPos));
 		scoring.addScore(
 			300 + 50 * gameState.current.currentLevel.difficulty, 
 			tile.toScreenPos(this.parentTile.gridPos),
 			scoreTypes.bonus);
+			
 		
 		gameState.current.addToComboValue(floatingScoreFieldID.coinCombo);
 	}

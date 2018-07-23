@@ -873,6 +873,7 @@ function updateEffects(dt){
 		effects[i].update(dt);
 }
 function drawEffects(){
+	// draws all the effect objects
 	effects.forEach(function(effectOb){
 		effectOb.draw();
 	});

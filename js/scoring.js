@@ -90,9 +90,9 @@ class scoring{
 		
 		var style = scoring.getScoreStyle(value, scoreType);
 		
-		var time = 500 + Math.min(value * 2, 500);
+		var time = 450 + Math.min(value * 2, 500);
 		if(scoreType == scoreTypes.bonus)
-			time += 250;
+			time += 150;
 		
 		var splash = splashText.build(value.toString(), pos, time, style, style.anim);
 		splash.add();
