@@ -12,15 +12,6 @@ class effect{
 		this.dead = false;
 	}
 	
-	static createSparkle(pos){
-		// creates a sparkle effect at the specified position
-		if(!config.explosionEffects) return;
-		var e = animatedSpriteEffect.build(gfx.effect_sparkle, 33, animatedSpriteEffect.getFrames(gfx.effect_sparkle, 10));
-		e.pos = pos;
-		
-		e.add();
-		return e;
-	}
 	static createPoof(pos){
 		// creates a poof effect at the specified position
 		if(!config.explosionEffects) return;

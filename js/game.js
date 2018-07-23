@@ -346,7 +346,6 @@ function loadGFX(){
 	loadGraphic("tiles_blocks", "tiles_blocks.png");
 	loadGraphic("tiles_balls", "tiles_balls.png");
 	loadGraphic("effect_poof", "effect_poof.png");
-	loadGraphic("effect_sparkle", "effect_sparkle.png");
 	loadGraphic("effect_explosion", "effect_explosion.png");
 	loadGraphic("pathIndicators", "pathIndicators.png");
 	loadGraphic("touchPanelIcons", "touchPanelIcons.png");
