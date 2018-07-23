@@ -2502,7 +2502,7 @@ class phase_placeTileform extends gameplayPhase{
 		
 		// set so that the player doesn't have to stay centered on the touch panel
 		r.action_move = function(pos){
-			r.drawPos.y = Math.max(r.origin.y, pos.y);
+			r.drawPos.y = pos.y;
 			
 			let dif = pos.y - r.origin.y;
 			while(Math.abs(dif) >= slideDist){
