@@ -429,8 +429,10 @@ class tooltip{
 	}
 	generatePreRender(){
 		// generates the text preRender and stores it in this.preRender
-		var txt = responsiveText(this.text_pc, this.text_mobile) || this.text_pc;
-		
+		var txt = this.text_pc;
+		if(this.text_mobile) 
+			txt = responsiveText(this.text_pc, this.text_mobile) || this.text_pc;
+
 		this.textBlock = new textBlock(
 			txt,
 			textStyle.getDefault().setColor(textColor.green).setAlignment(0.5, 0),
