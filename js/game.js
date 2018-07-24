@@ -868,9 +868,27 @@ function getMaxCanvasSize(){
 	var maxH = Math.min(screen.availHeight, screen.height, window.innerHeight, window.outerHeight);
 	return new vec2(maxW, maxH);
 }
+function nativeResolutionSupported(){
+	var size = getMaxCanvasSize();
+	return (
+		nativeResolution.x <= size.x &&
+		nativeResolution.y <= size.y
+	);
+}
+
 function makeCanvas(){
 	// creates the game canvas element
-	var size = getFitCanvasSize();
+	var size = nativeResolutionSupported() ?
+		nativeResolution.clone() :
+		getFitCanvasSize();
+	switch(config.canvasScaleMode){
+		case canvasScaleMode.fit:
+			size = getFitCanvasSize();
+			break;
+		case config.canvasScaleMode.stretch:
+			size = getMaxCanvasSize();
+			break;
+	}
 
 	var cvs = document.createElement("canvas");
 	cvs.width = size.x;
@@ -895,29 +913,26 @@ function getCanvas(){
 }
 function fitToScreen(){
 	// expands the canvas so that it fills the screen while keeping the native aspect ratio
-	var w = window.innerWidth;
-	var h = window.innerHeight;
-	var ratio = nativeResolution.x / nativeResolution.y;
+	var size = getFitCanvasSize();
 	
-	var fixedCanvasHeight = h;
-	var fixedCanvasWidth = h * ratio;
-	if(fixedCanvasWidth > w){
-		fixedCanvasWidth = w;
-		fixedCanvasHeight = w / ratio;
-	}
-	
-	scalingTarget.width = fixedCanvasWidth;
-	scalingTarget.height = fixedCanvasHeight;
+	scalingTarget.width = size.x;
+	scalingTarget.height = size.y;
 }
 function stretchToScreen(){
 	// stretches the canvas so that its covers the whole screen
-	scalingTarget.width = window.innerWidth;
-	scalingTarget.height = window.innerHeight;
+	var size = getMaxCanvasSize();
+
+	scalingTarget.width = size.x;
+	scalingTarget.height = size.y;
 }
 function setNativeResolution(){
 	// sets the canvas back to native resolution
-	scalingTarget.width = nativeResolution.x;
-	scalingTarget.height = nativeResolution.y;
+	var size = nativeResolutionSupported() ?
+		nativeResolution.clone() :
+		getFitCanvasSize();
+	
+	scalingTarget.width = size.x;
+	scalingTarget.height = size.y;
 }
 
 function updateEffects(dt){
