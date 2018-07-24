@@ -53,6 +53,10 @@ class controlState{
 		// the event listener that is triggered when the mouse is pressed
 		controlState.mouseDown = true;
 		gameState.current.mouseTap(controlState.mousePos);
+		
+		// sets the control mode to keyboard mode unless the touch mode was explicitly specified by the user
+		if(!config.touchModeSpecified)
+			config.touchMode = false;
 	}
 	static listenForMouseUp(e){
 		// the event listener that is triggered when the mouse is released
@@ -68,6 +72,10 @@ class controlState{
 		a.forEach(function(ctrl){
 			gameState.current.controlTap(ctrl);
 		});
+
+		// sets the control mode to keyboard mode unless the touch mode was explicitly specified by the user
+		if(!config.touchModeSpecified)
+			config.touchMode = false;
 	}
 	static listenForKeyUp(e){
 		// the event listener that is triggered when a keyboard key is released
@@ -76,6 +84,7 @@ class controlState{
 	}
 	
 	static listenForTouchStart(e){
+		// triggered when the screen is touched
 		for(let touch of e.touches){
 			if(!controlState.touchList.includes(touch)){
 				controlState.touchList.push(touch);
@@ -95,6 +104,10 @@ class controlState{
 				}
 			}
 		}
+		
+		// sets the control mode to touchscreen mode unless keyboard mode was explicitly specified by the user
+		if(!config.touchModeSpecified)
+			config.touchMode = true;
 	}
 	static listenForTouchMove(e){
 		e.preventDefault(); // disable touch scrolling

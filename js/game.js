@@ -585,6 +585,7 @@ function setDefaultConfig(){
 	// sets the default game configuration settings
 	config = {
 		touchMode: determineIfMobile(),
+		touchModeSpecified: false,
 		hapticPulses: true,
 		swipeRadius: 1,
 		animText: true,
