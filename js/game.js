@@ -28,9 +28,8 @@ var renderTarget,
 	scalingTarget;
 var renderContext,
 	scalingContext;
-	
-var screenBounds,
-	nativeResolution = new vec2(500, 660);
+var nativeResolution = new vec2(500, 660),
+	screenBounds =  new collisionBox(new vec2(), new vec2(nativeResolution.x, nativeResolution.y));
 
 // sets the keys that are used to retrieve saved information in localStorage
 var storageKeys = {
@@ -248,16 +247,16 @@ function init(){
 	
 	localStorageCheck();
 	
+	audioMgr.init();
+	controlState.init();
+	tile.init();
+
 	load();
 	makeCanvas();
 	getCanvas();
 	applyConfig();
 	
 	addInputEventListeners();
-	
-	audioMgr.init();
-	controlState.init();
-	tile.init();
 
 	goToMainMenu();
 	log("intitialized game!");
@@ -292,9 +291,7 @@ function determineIfMobile(){
 	
 	var mobPlats = [
 		"android",
-		"linux armv6l",
-		"linux armv7l",
-		"linux armv8l",
+		"linux armv",
 		"linux aarch64",
 		"linux i686",
 		"iphone",
@@ -873,9 +870,6 @@ function getCanvas(){
 	renderTarget.width = nativeResolution.x;
 	renderTarget.height = nativeResolution.y;
 	renderContext = renderTarget.getContext("2d");
-	
-	// sets the screen bounds
-	screenBounds = new collisionBox(new vec2(), new vec2(renderTarget.width, renderTarget.height));
 }
 function fitToScreen(){
 	// expands the canvas so that it fills the screen while keeping the native aspect ratio
