@@ -248,14 +248,16 @@ function init(){
 	
 	localStorageCheck();
 	
+	load();
+	makeCanvas();
 	getCanvas();
+	applyConfig();
+	
 	addInputEventListeners();
 	
 	audioMgr.init();
 	controlState.init();
 	tile.init();
-	
-	load();
 
 	goToMainMenu();
 	log("intitialized game!");
@@ -447,7 +449,7 @@ function loadConfig(){
 		
 		log(splOp[0] + " = " + config[splOp[0]], logType.unimportant);
 	});
-	applyConfig();
+	
 	log("loaded!", logType.success);
 }
 function loadControls(){
@@ -579,7 +581,7 @@ function checkSmallScreenScaling(){
 	// and adjusts to accomodate
 	if(window.outerWidth < nativeResolution.x || window.outerHeight < nativeResolution.y)
 		config.canvasScaleMode = 1;
-	applyConfig();
+	//applyConfig();
 }
 
 function setDefaultConfig(){
@@ -849,6 +851,15 @@ function applyConfig(){
 		audioMgr.currentMusic.volume = config.volume_music;
 }
 
+function makeCanvas(){
+	// creates the game canvas element
+	var cvs = document.createElement("canvas");
+	cvs.width = nativeResolution.x;
+	cvs.height = nativeResolution.y;
+	cvs.id = "gameCanvas";
+	
+	document.body.appendChild(cvs);
+}
 function getCanvas(){
 	// gets or creates the canvas and canvas contexts from the webpage and sets them to the global variables
 	log("retrieving canvas data... ");
@@ -868,7 +879,7 @@ function getCanvas(){
 }
 function fitToScreen(){
 	// expands the canvas so that it fills the screen while keeping the native aspect ratio
-	var w = window.innerWidth;// < window.outerWidth ? window.innerWidth : window.outerWidth;
+	var w = window.innerWidth;
 	var h = window.innerHeight;
 	var ratio = nativeResolution.x / nativeResolution.y;
 	
