@@ -1181,8 +1181,12 @@ class state_controlOptions extends state_optionsSubMenu{
 		var ths = this;
 		
 		// Touch Mode: on/off
+		var action_touchModeSetter = function(val){
+			config.touchMode = val;
+			config.touchModeSpecified = true;
+		}
 		this.buttons.push(new settingButton().construct("Touch Mode", tpos.plus(new vec2(0, off * dif)), "optomized control mode for touchscreen devices"
-			).setGettersAndSetters(settingButton.generateGetValueFunc("touchMode"), settingButton.generateSetValueFunc("touchMode")
+			).setGettersAndSetters(settingButton.generateGetValueFunc("touchMode"), action_touchModeSetter
 			).generateSettingPreRenders() );
 		
 		// Edit Keys
