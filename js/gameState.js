@@ -1981,11 +1981,26 @@ class state_gameplayState extends gameState{
 	
 	createTouchPanel(pos){
 		// creates the appropriate touch panel at the specified location
+		if(pos.y <= 35){
+			this.setTouchPanel(this.getPauseTouchPanel(pos));
+			return;
+		}
+
 		var tp = null;
 		if(this.phase)
 			tp = this.phase.getNewTouchPanelAt(pos);
 		
-		this.currentTouchPanel = tp;
+		this.setTouchPanel(tp);
+	}
+	getPauseTouchPanel(pos){
+		var r = new touchPanel();
+		r.activeDirections = [side.down];
+
+		r.action_swipeDown = function(){
+			gameState.current.controlTap(controlAction.pause);
+		}
+
+		return r.spawn(pos);
 	}
 	setTouchPanel(panel){
 		// sets the current touch panel to the specified touch panel
