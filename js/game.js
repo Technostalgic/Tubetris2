@@ -823,6 +823,14 @@ function parseAny(str){
 }
 function applyConfig(){
 	// applies the game configuration settings
+
+	// applies canvasScaleMode
+	switch(config.canvasScaleMode){
+		case canvasScaleMode.native: setNativeResolution(); break;
+		case canvasScaleMode.fit: fitToScreen(); break;
+		case canvasScaleMode.stretch: stretchToScreen(); break;
+	}
+
 	// applies image smoothing
 	renderContext.mozImageSmoothingEnabled     = config.imageSmoothing;
 	renderContext.oImageSmoothingEnabled       = config.imageSmoothing;
@@ -836,24 +844,37 @@ function applyConfig(){
 	scalingContext.webkitImageSmoothingEnabled = config.scaleSmoothing;
 	scalingContext.msImageSmoothingEnabled     = config.scaleSmoothing;
 	scalingContext.imageSmoothingEnabled       = config.scaleSmoothing;
-	
-	// applies canvasScaleMode
-	switch(config.canvasScaleMode){
-		case canvasScaleMode.native: setNativeResolution(); break;
-		case canvasScaleMode.fit: fitToScreen(); break;
-		case canvasScaleMode.stretch: stretchToScreen(); break;
-	}
 
 	// applies music volume
 	if(audioMgr.currentMusic)
 		audioMgr.currentMusic.volume = config.volume_music;
 }
 
+function getFitCanvasSize(){
+	var ratio = nativeResolution.x / nativeResolution.y;
+	var maxSize = getMaxCanvasSize();
+	var w = maxSize.x;
+	var h = w / ratio;
+
+	if(h > maxSize.y){
+		h = maxSize.y;
+		w = h * ratio;
+	}
+
+	return new vec2(w, h);
+}
+function getMaxCanvasSize(){
+	var maxW = Math.min(screen.availWidth, screen.width, window.innerWidth, window.outerWidth);
+	var maxH = Math.min(screen.availHeight, screen.height, window.innerHeight, window.outerHeight);
+	return new vec2(maxW, maxH);
+}
 function makeCanvas(){
 	// creates the game canvas element
+	var size = getFitCanvasSize();
+
 	var cvs = document.createElement("canvas");
-	cvs.width = nativeResolution.x;
-	cvs.height = nativeResolution.y;
+	cvs.width = size.x;
+	cvs.height = size.y;
 	cvs.id = "gameCanvas";
 	
 	document.body.appendChild(cvs);
