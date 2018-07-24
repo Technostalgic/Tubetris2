@@ -2016,10 +2016,12 @@ class state_gameplayState extends gameState{
 	}
 	getPauseTouchPanel(pos){
 		var r = new touchPanel();
+		var ths = this;
 		r.activeDirections = [side.down];
 
 		r.action_swipeDown = function(){
 			gameState.current.controlTap(controlAction.pause);
+			ths.killTouchPanel();
 		}
 
 		return r.spawn(pos);
