@@ -42,7 +42,7 @@ class tooltip{
 		r.text_pc = "These (tooltips) will help guide you through how to play the game 2| " +
 			"if you already know how to play you can go into the (options menu) by pressing [escape] and turn them off";
 		r.text_mobile = "These (tooltips) will help guide you through how to play the game 2| " +
-			"if you already know how to play you can go into the (options menu) and turn them off";
+			"if you already know how to play you can go into the (options menu) by [swiping down from the top of the screen] and turn them off";
 		
 		r.childTips = [
 			tooltip.tip_HUD,
@@ -81,6 +81,8 @@ class tooltip{
 		r.setTitle("Upcoming Tileform");
 		r.text_pc = "This will be the (next tileform) that appears after the (current tileform) is placed 1.5| " +
 			"Use [" + controlState.getControlKeyName(controlAction.swap) + "] to swap your (current tileform) with the (next tileform)";
+		r.text_mobile = "This will be the (next tileform) that appears after the (current tileform) is placed 1.5| " +
+			"[Tap on it] to swap it with your (current tileform)";
 
 		r.getFocusArea = function(){
 			return new collisionBox(
@@ -291,6 +293,8 @@ class tooltip{
 		r.setTitle("Balls: Continued");
 		r.text_pc = "the ball (must match colors) with the tube to destroy it unless either the ball or tube is (gold colored) 1.5| " +
 			"(rotate) the ball with [" + controlState.getControlKeyName(controlAction.rotateCW) + "] to cycle through different ball colors";
+		r.text_mobile = "the ball (must match colors) with the tube to destroy it unless either the ball or tube is (gold colored) 1.5| " +
+			"(rotate) the ball to cycle through different ball colors";
 		
 		r.childTips = [
 			tooltip.tip_ballPause,
@@ -333,6 +337,8 @@ class tooltip{
 		r.setTitle("Ball Intersection");
 		r.text_pc = "When the ball comes to an (intersection) it will stop and let you decide which way to go 1.5| the (arrow indicators) let you know all the directions that the ball can be directed in 1.5| " +
 			"use [" + controlState.getControlKeyName(controlAction.left) + "] or [" + controlState.getControlKeyName(controlAction.right) + "] or [" + controlState.getControlKeyName(controlAction.up) + "] or [" + controlState.getControlKeyName(controlAction.down) + "] to choose a direction";
+		r.text_mobile = "When the ball comes to an (intersection) it will stop and let you decide which way to go 1.5| the (arrow indicators) let you know all the directions that the ball can be directed in 1.5| " +
+			"direct the ball by [swiping in the direction] that you choose for it to go";
 		
 		// gets a rectangle surrounding the current ball
 		r.getFocusArea = function(){
@@ -431,7 +437,7 @@ class tooltip{
 		// generates the text preRender and stores it in this.preRender
 		var txt = this.text_pc;
 		if(this.text_mobile) 
-			txt = responsiveText(this.text_pc, this.text_mobile) || this.text_pc;
+			txt = responsiveText(this.text_pc, this.text_mobile);
 
 		this.textBlock = new textBlock(
 			txt,
