@@ -56,7 +56,6 @@ class item{
 			tile.toScreenPos(this.parentTile.gridPos),
 			scoreTypes.bonus);
 			
-		
 		gameState.current.addToComboValue(floatingScoreFieldID.coinCombo);
 	}
 	

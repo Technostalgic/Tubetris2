@@ -66,6 +66,8 @@ class controlState{
 	static listenForKeyDown(e){
 		// the event listener that is triggered when a keyboard key is pressed
 		if(!e.keyCode) return;
+		//console.log(e.key + "(key #" + e.keyCode.toString() + ") Pressed");
+
 		controlState.keys[e.keyCode] = true;
 		
 		var a = controlState.getControlsForKey(e.keyCode);

@@ -1464,12 +1464,20 @@ class state_gameOverRanked extends state_gameOver{
 	}
 	
 	controlTap(action){
-		if(action == controlAction.select){
-			var stt = new state_nameEntry();
-			stt.setRank(this.rank, this.score);
-			gameState.switchState(stt);
-		}
+		if(action == controlAction.select)
+			this.finishState();
 	}
+	touchMove(pos, touch){
+		if(pos.y <= controlState.touchStartPos.y - 75 * config.swipeRadius)
+			this.finishState();
+	}
+
+	finishState(){
+		var stt = new state_nameEntry();
+		stt.setRank(this.rank, this.score);
+		gameState.switchState(stt);
+	}
+
 	addButtons(){}
 	
 	drawInternals(){
@@ -1544,7 +1552,7 @@ class state_nameEntry extends state_menuState{
 			new collisionBox(new vec2(0, screenBounds.center.y - 120), new vec2(screenBounds.width, 32)),
 			[new textStyle(fonts.small, style.color).setAlignment(0.5, 0)]
 		);
-		var promptTxt = "Enter your name below:";
+		var promptTxt = responsiveText("Enter your name below:", "Tap to enter your name below:");
 		
 		this.rankText = preRenderedText.fromBlock(rankBlock);
 		this.prompt = preRenderedText.fromString(promptTxt, screenBounds.center.minus(new vec2(0, 46)), new textStyle(fonts.small));
@@ -1571,13 +1579,16 @@ class state_nameEntry extends state_menuState{
 		// if backspace is pressed
 		if(keyCode == 8)
 			this.name = this.name.substr(0, this.name.length - 1);
+		if(keyCode == 13){
+			this.finishEntry();
+		}
 		else{ 
 			if(keyCode == 32)
 				chr = " ";
 			this.name = this.name + chr;
 		}
 		
-		
+		// makes sure the name stays within the max length
 		if(this.name.length > this.maxLength)
 			this.name = this.name.substr(0, this.maxLength);
 	}
@@ -1600,9 +1611,16 @@ class state_nameEntry extends state_menuState{
 		gameState.switchState(stt);
 	}
 	
-	controlTap(action){
-		if(action == controlAction.select)
-			this.finishEntry();
+	controlTap(action){ }
+	touchStart(pos, touch){
+		if(pos.y <= 380 && pos.y >= 230){
+			this.name = prompt("Enter Name:");
+			if(!this.name)
+				this.name = "";
+			if(this.name.length > this.maxLength)
+				this.name = this.name.substr(0, this.maxLength);
+		}
+		super.touchStart(pos, touch);
 	}
 	
 	drawName(){
