@@ -2087,8 +2087,8 @@ class state_gameplayState extends gameState{
 		hudPreRenders.nbombLabelPreRender = preRenderedText.fromString("next bomb:", nbombPos, new textStyle(fonts.small));
 		
 		// bonus
-		var bonusPos = tile.toScreenPos(new vec2(12, 11)).plus(new vec2(0, -22));
-		hudPreRenders.bonusLabelPreRender = preRenderedText.fromString("bonus:", bonusPos, new textStyle(fonts.small));
+		// var bonusPos = tile.toScreenPos(new vec2(12, 11)).plus(new vec2(0, -22));
+		// hudPreRenders.bonusLabelPreRender = preRenderedText.fromString("bonus:", bonusPos, new textStyle(fonts.small));
 		
 		// current score
 		var scorePos = tile.toScreenPos(new vec2(12, 18)).plus(new vec2(0, -22));
@@ -2130,9 +2130,9 @@ class state_gameplayState extends gameState{
 		this.hudPreRenders.nbombPreRender = preRenderedText.fromString(nbomb.toString(), nbombPos, new textStyle(fonts.large, textColor.red));
 		
 		// ??
-		var bonus = "none";
-		var bonusPos = tile.toScreenPos(new vec2(12, 11));
-		this.hudPreRenders.bonusPreRender = preRenderedText.fromString(bonus.toString(), bonusPos, textStyle.getDefault());
+		//var bonus = "none";
+		//var bonusPos = tile.toScreenPos(new vec2(12, 11));
+		//this.hudPreRenders.bonusPreRender = preRenderedText.fromString(bonus.toString(), bonusPos, textStyle.getDefault());
 		
 		// draw tileforms til next level:
 		var lvlPos = tile.toScreenPos(new vec2(12, 16));
