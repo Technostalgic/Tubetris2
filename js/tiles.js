@@ -1177,7 +1177,10 @@ class tileform{
 		// 'anchored' determines whether or not the tileform should be translated so that the top left tile matches the same 
 		//   tile position as it did before being rotated, useful for square pieces not looking weird while rotated
 		// 'forced' forces the piece to rotate if it overlaps a non-empty tile
-		if(!forced && !this.canRotate(dir, anchored)) return;
+		if(!forced && !this.canRotate(dir, anchored)) {
+			audioMgr.playSound(sfx.invalidMove);
+			return;
+		}
 		
 		// if anchored, stores the lop left tile position in tlPos0
 		var tlPos0;
