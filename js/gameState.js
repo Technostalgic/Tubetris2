@@ -2723,9 +2723,7 @@ class phase_ballPhysics extends gameplayPhase{
 			ballOb.draw();
 		});
 	}
-	end(){
-		
-	}
+	end(){ }
 	
 	nextPhase(){
 		var phase = new phase_destroyTaggedTiles(this.parentState);
@@ -2981,7 +2979,10 @@ class phase_fellTiles extends gameplayPhase{
 	}
 	getFallingTiles(){
 		var r = [];
-		
+
+		this.getSoloTiles().forEach(function(ttile){
+			r.push(ttile);
+		});
 		this.fallHeights.forEach(function(y0, x){
 			for(let y = y0; y >= 0; y--){
 				let t = tile.at(x, y);
@@ -2993,6 +2994,17 @@ class phase_fellTiles extends gameplayPhase{
 		// reverse the tile array, this is important because the bottom tiles must check for 
 		// ground collision beffore the tiles above them
 		return r.reverse();
+	}
+	getSoloTiles(){
+		var r = [];
+
+		var iter = function(ttile){
+			if(ttile.getDirectNeighbors().length <= 0)
+				r.push(ttile);
+		}
+		tile.iterateGrid(iter);
+
+		return r;
 	}
 
 	nextPhase(){
