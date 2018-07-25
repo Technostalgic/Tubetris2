@@ -199,7 +199,7 @@ class combo_bombs extends scoreCombo{
 		else mult = 300;
 		
 		// if 5 bombs are detonated in one go, all the bricks are converted to bombs
-		if(this.comboValue == 5)
+		if(this.comboValue == 4)
 			gameState.current.phase.brickBombs = true;
 		
 		this.comboPointValue = mult * this.comboValue;
