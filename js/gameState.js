@@ -1064,13 +1064,13 @@ class state_audioOptions extends state_optionsSubMenu{
 		// Music Volume
 		// Sound Volume
 		//this.buttons.push(new settingButton().construct("track", tpos.plus(new vec2(0, off * dif)), "choose the song that plays during the game",
-			).setGettersAndSetters(null, null
-			).setValueBounds(0, 1, 0.1, buttonSwitchMode.enumeration).generateSettingPreRenders() ); 
-			off += 1.5;
-		this.buttons.push(new settingButton().construct("Music", tpos.plus(new vec2(0, off * dif)), "the volume level of the music", true
+		//	).setGettersAndSetters(null, null
+		//	).setValueBounds(0, 1, 0.1, buttonSwitchMode.enumeration).generateSettingPreRenders() ); 
+		//	off += 1.5;
+		this.buttons.push(new settingButton().construct("Music Volume", tpos.plus(new vec2(0, off * dif)), "the volume level of the music", true
 			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_music"), settingButton.generateSetValueFunc("volume_music")
 			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() ); off ++;
-		this.buttons.push(new settingButton().construct("Sound", tpos.plus(new vec2(0, off * dif)), "the volume level of the sound effects"
+		this.buttons.push(new settingButton().construct("Sound Volume", tpos.plus(new vec2(0, off * dif)), "the volume level of the sound effects"
 			).setGettersAndSetters(settingButton.generateGetValueFunc("volume_sound"), settingButton.generateSetValueFunc("volume_sound")
 			).setValueBounds(0, 1, 0.1, buttonSwitchMode.percent).generateSettingPreRenders() );
 	}
