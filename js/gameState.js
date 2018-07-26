@@ -886,8 +886,8 @@ class state_credits extends state_menuState{
 		this.buttons.push(
 			menuButton.buildCreditsLink(
 				"J-Robot",
-				"J-Robot created all the retro fonts that hit you right in the nostalgia",
-				"https://opengameart.org/users/surt",
+				"J-Robot created the retro block font and the explosion effect",
+				"https://opengameart.org/users/j-robot",
 				tpos.plus(new vec2(0, off * dif)),
 				textStyle.getDefault().setColor(textColor.cyan),
 				new textAnim_compound([
@@ -928,7 +928,7 @@ class state_credits extends state_menuState{
 			menuButton.buildCreditsLink(
 				"Necrosome",
 				"Ethan Nickerson slammed his face against his keyboard until the menu music somehow came out of that",
-				"http://zombo.com",
+				"https://atsugotwasted.bandcamp.com/releases",
 				tpos.plus(new vec2(0, off * dif)),
 				textStyle.getDefault().setColor(textColor.cyan),
 				new textAnim_compound([
