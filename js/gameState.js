@@ -1063,7 +1063,7 @@ class state_audioOptions extends state_optionsSubMenu{
 		// Track
 		// Music Volume
 		// Sound Volume
-		this.buttons.push(new settingButton().construct("track", tpos.plus(new vec2(0, off * dif)), "choose the song that plays during the game",
+		//this.buttons.push(new settingButton().construct("track", tpos.plus(new vec2(0, off * dif)), "choose the song that plays during the game",
 			).setGettersAndSetters(null, null
 			).setValueBounds(0, 1, 0.1, buttonSwitchMode.enumeration).generateSettingPreRenders() ); 
 			off += 1.5;
