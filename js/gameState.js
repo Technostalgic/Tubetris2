@@ -2990,20 +2990,23 @@ class phase_fellTiles extends gameplayPhase{
 					r.push(t);
 			}
 		});
-		
+
 		// reverse the tile array, this is important because the bottom tiles must check for 
 		// ground collision beffore the tiles above them
 		return r.reverse();
 	}
 	getSoloTiles(){
+		// gets all the single tiles that are just floating randomly in the air
 		var r = [];
 
 		var iter = function(ttile){
+			if(ttile.gridPos.y >= tile.gridBounds.size.y - 1 || ttile.isEmpty())
+				return;
 			if(ttile.getDirectNeighbors().length <= 0)
 				r.push(ttile);
 		}
 		tile.iterateGrid(iter);
-
+		
 		return r;
 	}
 
