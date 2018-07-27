@@ -896,19 +896,19 @@ class state_credits extends state_menuState{
 				])
 			)
 		); off++;
-		this.buttons.push(
-			menuButton.buildCreditsLink(
-				"Puddin",
-				"Puddin animated the coin graphic",
-				"https://opengameart.org/users/puddin",
-				tpos.plus(new vec2(0, off * dif)),
-				textStyle.getDefault().setColor(textColor.cyan),
-				new textAnim_compound([
-					new textAnim_blink(500, 0.1, textColor.yellow),
-					scaleAnim
-				])
-			)
-		); off++;
+		//this.buttons.push(
+		//	menuButton.buildCreditsLink(
+		//		"Puddin",
+		//		"Puddin animated the coin graphic",
+		//		"https://opengameart.org/users/puddin",
+		//		tpos.plus(new vec2(0, off * dif)),
+		//		textStyle.getDefault().setColor(textColor.cyan),
+		//		new textAnim_compound([
+		//			new textAnim_blink(500, 0.1, textColor.yellow),
+		//			scaleAnim
+		//		])
+		//	)
+		//); off++;
 		off += 0.5;
 		
 		this.buttons.push(
@@ -966,6 +966,12 @@ class state_credits extends state_menuState{
 			)
 		); off++;
 		
+		// list button
+		var action_list = function(){
+			window.open("./credits.txt", "_blank");
+		};
+		this.buttons.push(new menuButton().construct("list", new vec2(screenBounds.center.x, screenBounds.bottom - 145), "get the full credits list", action_list));
+	
 		// back button
 		var action_switchToPreviousMenu = function(){
 			if(ths.previousState) ths.switchToPreviousState();
