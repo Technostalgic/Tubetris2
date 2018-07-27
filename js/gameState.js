@@ -886,7 +886,7 @@ class state_credits extends state_menuState{
 		this.buttons.push(
 			menuButton.buildCreditsLink(
 				"J-Robot",
-				"J-Robot created the retro block font and the explosion effect",
+				"J-Robot created the retro fonts and the explosion effect",
 				"https://opengameart.org/users/j-robot",
 				tpos.plus(new vec2(0, off * dif)),
 				textStyle.getDefault().setColor(textColor.cyan),
@@ -900,7 +900,7 @@ class state_credits extends state_menuState{
 			menuButton.buildCreditsLink(
 				"Puddin",
 				"Puddin animated the coin graphic",
-				"https://opengameart.org/users/surt",
+				"https://opengameart.org/users/puddin",
 				tpos.plus(new vec2(0, off * dif)),
 				textStyle.getDefault().setColor(textColor.cyan),
 				new textAnim_compound([

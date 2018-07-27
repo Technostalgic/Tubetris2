@@ -148,7 +148,7 @@ class tile{
 			0,	// ball(green): (16 - offIDCount) -> 0
 			4,	// ball(gold): (17 - offIDCount) -> 4
 		];  
-	}       
+	}
 	static constructGrid(){
 		// constructs a tile grid full of empty tiles
 		tile.grid = [];
