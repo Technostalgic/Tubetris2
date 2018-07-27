@@ -624,6 +624,37 @@ class state_menuState extends gameState{
 	}
 }
 
+////======================================================================================
+/// ---------------------------------TRAILER STUFF----------------------------------------
+////======================================================================================
+
+class trailerSlide extends state_menuState{
+	constructor(titleName, titleStyle, titleAnim, pos = null){
+		super();
+		this.setTitle(titleName, titleStyle, titleAnim);
+		if(pos) this.title.setCenter(pos);
+	}
+	
+	static get_trailerSlide0(){
+		var style = textStyle.getDefault();
+		var anim = null;
+		var pos = screenBounds.center;
+		
+		return new trailerSlide("Imagine that Tetris", style, anim, pos);
+	}
+	static get_trailerSlide1(){
+		var style = textStyle.getDefault();
+		var anim = null;
+		var pos = screenBounds.center;
+		
+		return new trailerSlide("And Pipe Dream", style, anim, pos);
+	}
+}
+
+////======================================================================================
+/// --------------------------------------------------------------------------------------
+////======================================================================================
+
 // a simple confirmation dialogue
 class state_confirmationDialogue extends state_menuState{
 	constructor(confirmAction, denyAction = function(){}){

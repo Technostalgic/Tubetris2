@@ -258,7 +258,8 @@ function init(){
 	
 	addInputEventListeners();
 
-	goToMainMenu();
+	goToFirstTrailerSlide();
+	//goToMainMenu();
 	log("intitialized game!");
 }
 function load(){
@@ -1025,6 +1026,9 @@ function startNewGame(){
 function goToMainMenu(){
 	audioMgr.playMusic(music.menu);
 	gameState.switchState(new state_mainMenu());
+}
+function goToFirstTrailerSlide(){
+	gameState.switchState(trailerSlide.get_trailerSlide0());
 }
 
 function drawFPS(){
