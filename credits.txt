@@ -2,6 +2,7 @@ gfx:
 Tubes: Surt ( https://opengameart.org/users/surt ) https://opengameart.org/content/plums
 Font & Explosion: J-Robot ( https://opengameart.org/users/j-robot ) https://opengameart.org/content/pixel-block-font
 Coin: Puddin ( https://opengameart.org/users/puddin ) https://opengameart.org/content/rotating-coin
+Poof Effect: Pow Studios ( http://powstudios.com/ ) http://powstudios.com/content/smoke-animation-pack-1 
 
 sfx:
 Metal/tube sounds: Ogrebane ( https://opengameart.org/users/ogrebane ) https://opengameart.org/content/wood-and-metal-sound-effects-volume-2
