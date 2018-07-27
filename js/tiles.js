@@ -933,6 +933,17 @@ class tileform{
 		
 		return r;
 	}
+	static getPiece_detPack(){
+		// 2 bombs next to each other
+		var r = new tileform();
+		
+		r.tiles = [
+			tile.fromData(new vec2(), blocks.block_bomb, entities.block),
+			tile.fromData(new vec2(1, 0), blocks.block_bomb, entities.block),
+		];
+		
+		return r;
+	}
 	static getPiece_brick(){
 		var r = new tileform();
 		

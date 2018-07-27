@@ -240,6 +240,10 @@ class combo_coins extends scoreCombo{
 		else if(this.comboValue == 10)
 			gameState.current.nextTileforms.splice(0, 0, tileform.getPiece_ball(balls.gold));
 		
+		// adds detPack if 15 coins are collected
+		else if(this.comboValue == 15)
+			gameState.current.nextTileforms.splice(0, 0, tileform.getPiece_detPack());
+		
 		if(this.comboValue >= 10)
 			val = 2250 * Math.floor(this.comboValue / 5);
 			
@@ -260,6 +264,9 @@ class combo_coins extends scoreCombo{
 		}
 		if(this.comboValue >= 10){
 			str3 = "extra gold ball!!";
+		}
+		if(this.comboValue >= 15){
+			str3 = "det-pack gained!!!";
 		}
 		if(this.comboPointValue > 0){
 			str2 = this.comboPointValue + " pts";
