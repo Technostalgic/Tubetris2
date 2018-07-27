@@ -241,7 +241,8 @@ class tooltip{
 		r.setTitle("Bombs");
 		r.text_pc = "This (special tileform) is a (bomb) 1.5| " + 
 			"(bombs) will detonate when placed next to each other or when a ball rolls into them 1.5| " + 
-			"when the (bomb) detonates | all of the tiles surrounding it will be destroyed";
+			"when the (bomb) detonates | all of the tiles surrounding it will be destroyed 1.5| " + 
+			"if enough bombs are detonated with a (single ball) there will be a bonus";
 		
 		// gets a rectangle surrounding the current tileform
 		r.getFocusArea = function(){
@@ -257,7 +258,16 @@ class tooltip{
 		};
 		
 		r.childTips = [
+			tooltip.tip_bombBonuses
 		];
+		
+		return r;
+	}
+	static get tip_bombBonuses(){
+		var r = new tooltip();
+		
+		r.setTitle("Bomb bonus");
+		r.text_pc = "if you detonate (4 or more bombs) in a single turn then all of the (bricks) on the screen will (turn into bombs)";
 		
 		return r;
 	}
@@ -329,6 +339,21 @@ class tooltip{
 				return true;
 			return false;
 		};
+		
+		r.childTips = [
+			tooltip.tip_coinBonuses
+		];
+		
+		return r;
+	}
+	static get tip_coinBonuses(){
+		var r = new tooltip();
+		
+		r.setTitle("Coin Bonuses");
+		r.text_pc = "collect enough coins to get the (bonuses) listed below: 1.5| " +
+			"(5x coins) - extra ball 1| " +
+			"(10x coins) - extra gold ball - 2250 pts 1| " +
+			"(15x coins) - 4500 pts";
 		
 		return r;
 	}
