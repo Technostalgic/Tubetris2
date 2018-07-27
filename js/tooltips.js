@@ -352,8 +352,8 @@ class tooltip{
 		r.setTitle("Coin Bonuses");
 		r.text_pc = "collect enough coins to get the (bonuses) listed below: 1.5| " +
 			"(5x coins) - extra ball 1| " +
-			"(10x coins) - extra gold ball - 2250 pts 1| " +
-			"(15x coins) - 4500 pts";
+			"(10x coins) - extra gold ball 1| "; // +
+			//"(15x coins) - 4500 pts";
 		
 		return r;
 	}
