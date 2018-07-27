@@ -1,13 +1,19 @@
-gfx:
-Tubes: Surt ( https://opengameart.org/users/surt ) https://opengameart.org/content/plums
-Font & Explosion: J-Robot ( https://opengameart.org/users/j-robot ) https://opengameart.org/content/pixel-block-font
-Coin: Puddin ( https://opengameart.org/users/puddin ) https://opengameart.org/content/rotating-coin
-Poof Effect: Pow Studios ( http://powstudios.com/ ) http://powstudios.com/content/smoke-animation-pack-1 
+--Programming & Design:
+  Isaiah Smith:
+    https://technostalgic.itch.io
+    http://technostalgic.tech
+    Twitter @TechnostalgicGM
 
-sfx:
-Metal/tube sounds: Ogrebane ( https://opengameart.org/users/ogrebane ) https://opengameart.org/content/wood-and-metal-sound-effects-volume-2
-Retro sound effects: SubspaceAudio ( https://opengameart.org/users/subspaceaudio )  https://opengameart.org/content/512-sound-effects-8-bit-style
+--GFX:
+  Tubes: Surt ( https://opengameart.org/users/surt ) https://opengameart.org/content/plums
+  Font & Explosion: J-Robot ( https://opengameart.org/users/j-robot ) https://opengameart.org/content/pixel-block-font
+  Coin: Puddin ( https://opengameart.org/users/puddin ) https://opengameart.org/content/rotating-coin
+  Poof Effect: Pow Studios ( http://powstudios.com/ ) http://powstudios.com/content/smoke-animation-pack-1 
 
-Music:
-"Modern" track: gega ( https://opengameart.org/users/gega ) https://opengameart.org/content/teck-sound
-"Menu" track: Ethan Nickerson ( https://atsugotwasted.bandcamp.com/releases )
+--SFX:
+  Metal/tube sounds: Ogrebane ( https://opengameart.org/users/ogrebane ) https://opengameart.org/content/wood-and-metal-sound-effects-volume-2
+  Retro sound effects: SubspaceAudio ( https://opengameart.org/users/subspaceaudio )  https://opengameart.org/content/512-sound-effects-8-bit-style
+
+Sound Track:
+  "Modern" track: gega ( https://opengameart.org/users/gega ) https://opengameart.org/content/teck-sound
+  "Menu" track: Ethan Nickerson ( https://atsugotwasted.bandcamp.com/releases )
