@@ -629,25 +629,54 @@ class state_menuState extends gameState{
 ////======================================================================================
 
 class trailerSlide extends state_menuState{
-	constructor(titleName, titleStyle, titleAnim, pos = null){
+	constructor(txt, txtStyle, txtAnim, pos = null){
 		super();
-		this.setTitle(titleName, titleStyle, titleAnim);
-		if(pos) this.title.setCenter(pos);
+		this.prTexts = [];
+		if(txt)
+			this.addText(txt, txtStyle, txtAnim, pos);
 	}
 	
-	static get_trailerSlide0(){
-		var style = textStyle.getDefault();
-		var anim = null;
-		var pos = screenBounds.center;
+	addText(txt, style = null, anim = null, pos = screenBounds.center){
+		style = style || new textStyle(fonts.large, textColor.green);
+		var pr = preRenderedText.fromString(txt, pos, style);
+		var prTextOb = {prText: pr, prAnim: anim}
 		
-		return new trailerSlide("Imagine that Tetris", style, anim, pos);
+		console.log(anim);
+		
+		this.prTexts.push(prTextOb);
 	}
-	static get_trailerSlide1(){
-		var style = textStyle.getDefault();
-		var anim = null;
+	drawTexts(){
+		this.prTexts.forEach(function(pr){
+			let tpr = !!pr.prAnim ? pr.prText.animated(pr.prAnim) : pr.prText;
+			tpr.draw();
+		});
+	}
+	drawInternals(){
+		this.drawTexts();
+	}
+	
+	drawTitle(){}
+	
+	static get_trailerSlide0(){
+		var style = textStyle.getDefault().setColor(textColor.green);
+		var anim = new textAnim_scaleTransform(500, 0, 1).setAnimType(textAnimType.bulgeIn, false);
+		var animExit = new textAnim_scaleTransform(500, 1, 0).setAnimType(textAnimType.linear, false);
+		animExit.animDelay = 4000;
 		var pos = screenBounds.center;
 		
-		return new trailerSlide("And Pipe Dream", style, anim, pos);
+		anim.animDelay = 1250;
+		var r = new trailerSlide("Imagine that Tetris", style, new textAnim_compound([anim, animExit]), pos);
+		
+		anim = new textAnim_scaleTransform(500, 0, 1).setAnimType(textAnimType.bulgeIn, false);
+		anim.animDelay = 2500;
+		r.addText("And Pipe Dream", style, new textAnim_compound([anim, animExit]), pos.plus(new vec2(0, 50)));
+		
+		style = textStyle.getDefault().setColor(textColor.yellow);
+		anim = new textAnim_scaleTransform(500, 0, 2).setAnimType(textAnimType.bulgeIn, false);
+		anim.animDelay = 4000;
+		r.addText("Had a Baby", style, anim, pos.plus(new vec2(0, 25)));
+		
+		return r;
 	}
 }
 
