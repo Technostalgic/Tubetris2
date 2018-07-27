@@ -854,7 +854,7 @@ class state_credits extends state_menuState{
 			menuButton.buildCreditsLink(
 				"Technostalgic",
 				"Technostalgic programmed the game and everything you love about it! I also made some of the graphics",
-				"http://technostalgic.tech/pages/Home/index.html",
+				"http://technostalgic.itch.io/",
 				tpos.plus(new vec2(0, off * dif)),
 				textStyle.getDefault().setColor(textColor.yellow),
 				new textAnim_compound([
