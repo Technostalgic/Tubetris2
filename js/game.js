@@ -414,7 +414,7 @@ function loadMusic(){
 	loadTrack("modern", "modern.mp3");
 	loadTrack("menu", "menu.mp3");
 
-	log(Object.keys(sfx).length.toString() + " tracks indexed", logType.notify);
+	log(Object.keys(music).length.toString() + " tracks indexed", logType.notify);
 }
 function loadConfig(){
 	// loads the game configuration from localStorage
