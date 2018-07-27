@@ -638,7 +638,7 @@ class trailerSlide extends state_menuState{
 	
 	addText(txt, style = null, anim = null, pos = screenBounds.center){
 		style = style || new textStyle(fonts.large, textColor.green);
-		var pr = preRenderedText.fromString(txt, pos, style);
+		var pr = preRenderedText.fromBlock(new textBlock(txt, style, screenBounds));
 		var prTextOb = {prText: pr, prAnim: anim}
 		
 		console.log(anim);
@@ -676,6 +676,35 @@ class trailerSlide extends state_menuState{
 		anim.animDelay = 4000;
 		r.addText("Had a Baby", style, anim, pos.plus(new vec2(0, 25)));
 		
+		return r;
+	}
+	static get_trailerSlide1(){
+		var style = textStyle.getDefault().setColor(textColor.green).setScale(1.5);
+		var anim1 = new textAnim_scale(500, 0.85, 1.15, 0.1).setAnimType(textAnimType.trigonometricCycle, true);
+		var anim2 = new textAnim_blink(1000, 0.1, textColor.yellow).setAnimType(textAnimType.linear, true);
+		var pos = screenBounds.center;
+		
+		var r = new trailerSlide("No annoying ads", style, new textAnim_compound([anim1, anim2]), pos);
+		return r;
+	}
+	static get_trailerSlide2(){
+		var style = textStyle.getDefault().setColor(textColor.light).setScale(1.5);
+		var anim1 = new textAnim_yOffset(1000, 10, 0.1).setAnimType(textAnimType.trigonometricCycle, true);
+		var anim2 = new textAnim_blink(1000, 0, textColor.red).setAnimType(textAnimType.linear, true);
+		var pos = screenBounds.center;
+		
+		var r = new trailerSlide("No micro 2| transactions", style, new textAnim_compound([anim1, anim2]), pos);
+		return r;
+	}
+	static get_trailerSlide3(){
+		var style = textStyle.getDefault().setColor(textColor.light).setScale(3);
+		var anim1 = new textAnim_yOffset(1200, 50, 0.1).setAnimType(textAnimType.trigonometricCycle, true);
+		var anim2 = new textAnim_rotationOffset(1200, 1, 0.1).setAnimType(textAnimType.trigonometricCycle, true);
+		anim2.animOffset = 250;
+		var anim3 = new textAnim_rainbow(500, 0.1).setAnimType(textAnimType.linear, true);
+		var pos = screenBounds.center;
+		
+		var r = new trailerSlide("Totally 4| Free!", style, new textAnim_compound([anim1, anim2, anim3]), pos);
 		return r;
 	}
 }
