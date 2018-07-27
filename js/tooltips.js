@@ -435,7 +435,7 @@ class tooltip{
 		r.text_pc = "The (destruction) of tiles will also cause certain tiles to (fall down) to the ground 1.5| " + 
 			"tiles will fall if either one of (2 conditions) are met 2| " +
 			"they will fall if any tile (beneath them) in the (same column) has been destroyed 1.5| " +
-			"or they will fall if they have (no direct neighbors)"
+			"or they will fall if they have (no direct neighbors)";
 		
 		r.activePhase = phase_fellTiles;
 		r.condition = function(){

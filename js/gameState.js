@@ -2916,9 +2916,22 @@ class phase_fellTiles extends gameplayPhase{
 		if(!this.fallingTiles){
 			this.fallingTiles = this.getFallingTiles();
 			this.fallingTiles.forEach(function(tileOb){
+				// mark each falling tile as empty in the tile grid
 				let tpos = tileOb.gridPos.clone();
 				tile.setTileAt(tile.getEmpty(tpos), tpos);
 			});
+			
+			// solo tiles are gotten after the falling tiles are marked empty so that the solo condition is tested 
+			// in a more chronoligically accurate way
+			let soloTiles = this.getSoloTiles();
+			soloTiles.forEach(function(tileOb){
+				// mark each solo tile as empty in the tile grid
+				let tpos = tileOb.gridPos.clone();
+				tile.setTileAt(tile.getEmpty(tpos), tpos);
+			});
+			
+			// concat this.falling tiles with the solo tiles that we just got
+			this.fallingTiles = this.fallingTiles.concat(soloTiles);
 		}
 	}
 	update(dt){
@@ -2985,10 +2998,7 @@ class phase_fellTiles extends gameplayPhase{
 	}
 	getFallingTiles(){
 		var r = [];
-
-		this.getSoloTiles().forEach(function(ttile){
-			r.push(ttile);
-		});
+		
 		this.fallHeights.forEach(function(y0, x){
 			for(let y = y0; y >= 0; y--){
 				let t = tile.at(x, y);
