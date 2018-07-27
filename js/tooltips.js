@@ -308,7 +308,8 @@ class tooltip{
 		
 		r.childTips = [
 			tooltip.tip_ballPause,
-			tooltip.tip_coins
+			tooltip.tip_coins,
+			tooltip.tip_fallingTiles
 		];
 		
 		return r;
@@ -424,6 +425,23 @@ class tooltip{
 			"other tiles and tubes that are connected to it to also be destroyed 1.5| " +
 			"this can be very beneficial if you have a lot of interconnected pipe systems laid " +
 			"out and they are inside of charged rows";
+		
+		return r;
+	}
+	static get tip_fallingTiles(){
+		var r = new tooltip();
+		
+		r.setTitle("Falling Tiles");
+		r.text_pc = "The (destruction) of tiles will also cause certain tiles to (fall down) to the ground 1.5| " + 
+			"tiles will fall if either one of (2 conditions) are met 2| " +
+			"they will fall if any tile (beneath them) in the (same column) has been destroyed 1.5| " +
+			"or they will fall if they have (no direct neighbors)"
+		
+		r.activePhase = phase_fellTiles;
+		r.condition = function(){
+			if(gameState.current.phase.fallingTiles.length > 0)
+				return true;
+		};
 		
 		return r;
 	}
