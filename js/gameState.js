@@ -474,6 +474,8 @@ class state_menuState extends gameState{
 		this.title = new preRenderedText();
 		this.titleStyle = new textStyle(fonts.large, textColor.green, 2);
 		this.titleAnim = null;
+		
+		this.currentTouchPanel = null;
 	}
 	
 	initialize(){
@@ -571,16 +573,33 @@ class state_menuState extends gameState{
 	}
 	mouseTap(pos){
 		// defines what happens when the mouse is clicked in the main menu
+		if(this.currentTouchPanel){
+			this.killTouchPanel()
+			return;
+		}
 		if(this.selectionFocus) return;
 		if(!this.initialized) this.initialize();
 		if(this.buttons.length <= 0) return;
-		if(this.selectedButton.selectedBounds.overlapsPoint(pos))
-			this.select();
+		if(this.selectedButton.selectedBounds.overlapsPoint(pos)){
+			this.touchStart(pos, null);
+			if(!this.currentTouchPanel)
+				this.select();
+		}
 	}
 	mouseMove(pos){
 		// defines what happens when the mouse is moved in the main menu
+		
 		if(this.selectionFocus) return;
 		if(!this.initialized) this.initialize();
+		
+		// emulate touchmove
+		if(this.currentTouchPanel){
+			this.touchMove(pos, null);
+			//if(!controlState.mouseDown)
+			//	this.killTouchPanel();
+			return;
+		}
+		
 		if(this.buttons.length <= 0) return;
 		if(this.selectedButton.selectedBounds.overlapsPoint(pos))
 			return;
@@ -597,6 +616,69 @@ class state_menuState extends gameState{
 		}
 	}
 
+	touchStart(pos, touch){
+		// creates a touch panel on the button if applicable
+		if(!this.selectedButton) return;
+		
+		if(this.selectedButton.selectedBounds.overlapsPoint(pos)){
+			if(this.selectedButton instanceof settingButton){
+				if(!(
+					this.selectedButton.mode == buttonSwitchMode.bool ||
+					this.selectedButton.mode == buttonSwitchMode.enumeration
+					)){
+					this.currentTouchPanel = this.getValueSliderPanel(pos);
+				}
+			}
+		}
+	}
+	touchMove(pos, touch){
+		if(this.currentTouchPanel)
+			this.currentTouchPanel.touchMove(pos, touch);
+	}
+	touchEnd(pos, touch){
+		this.killTouchPanel();
+	}
+	
+	killTouchPanel(){
+		if(this.currentTouchPanel){
+			this.currentTouchPanel.kill();
+			this.currentTouchPanel = null;
+		}
+	}
+	getValueSliderPanel(pos){
+		// gets a touch panel for sliding a value up or down
+		var ths = this;
+		var panel = new touchPanel();
+		var swiperad = 32 * config.swipeRadius;
+		
+		panel.activeDirections = [side.left, side.right];
+		
+		var swipeLeft = function(){
+			ths.navigateLeft();
+			panel.origin.x -= swiperad;
+		};
+		var swipeRight = function(){
+			ths.navigateRight();
+			panel.origin.x += swiperad;
+		};
+		var move = function(pos){
+			panel.drawPos.x = panel.touchPos.x;
+			
+			var dif = panel.touchPos.x - panel.origin.x;
+			while(Math.abs(dif) >= swiperad){
+				if(dif > 0) swipeRight();
+				else swipeLeft();
+				dif = panel.touchPos.x - panel.origin.x;
+			}
+		};
+		
+		panel.action_swipeLeft = swipeLeft;
+		panel.action_swipeRight = swipeRight;
+		panel.action_move = move;
+		
+		return panel.spawn(pos);
+	}
+	
 	drawTitle(){
 		var pr = !!this.titleAnim ? this.title.animated(this.titleAnim) : this.title;
 		pr.draw();
@@ -621,6 +703,8 @@ class state_menuState extends gameState{
 		
 		// renders the foreground border
 		drawForegroundBorder();
+		
+		if(this.currentTouchPanel) this.currentTouchPanel.draw();
 	}
 }
 
