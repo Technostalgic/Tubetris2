@@ -518,7 +518,8 @@ class tile{
 	static RT_normal(self, ballOb){
 		// tag the tile
 		if(!this.tagged && this.isEntity(tubes.quad))
-			ballOb.toPause = true;
+			if(ballOb.ballType == balls.gold || self.tileVariant == tubeColors.gold || ballOb.ballType == self.tileVariant)
+				ballOb.toPause = true;
 		
 		// return if the ball is just a tracer
 		if(ballOb.isVirtual) return;
