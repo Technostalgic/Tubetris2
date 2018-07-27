@@ -542,9 +542,6 @@ class tooltip{
 	
 	conditionIsMet(){
 		// a safe way to check if the tooltip's condition has been met, if an error is thrown, it is caught and returns false
-		if(!config.tooltipsEnabled)
-			return false;
-		
 		try{
 			return this.condition();
 		} catch(e){
@@ -633,10 +630,15 @@ class tooltipProgression{
 	}
 	
 	checkTooltips(parentState){
+		// return if tooltips are disabled in the options menu
+		if(!config.tooltipsEnabled)
+			return;
+		
 		// return if there is already a tooltip being displayed
 		if(gameState.current.phase instanceof phase_tooltip)
 			return;
 		
+		// check the conditions of the active tooltips, and activate them if necessary
 		for(var ttip of this.tooltips){
 			if(gameState.current.phase instanceof ttip.activePhase){
 				if(ttip.conditionIsMet()){
