@@ -95,6 +95,11 @@ function log(obj = undefined, type = logType.log){
 	if(style) console.log(ob, style);
 	else console.log(ob);
 }
+function mobileDebugLog(e){
+	// logs the exception on the html body so that mobile browsers can see it
+	console.log(e);
+	document.body.innerHTML = e.toString();
+}
 function loadFont(assetname, filename, charsize, colorVariants = 8){
 	// downloads the specified font image to the client and puts it into a textRenderer container with the specified data
 	
@@ -243,23 +248,34 @@ function drawCircleOutline(ctx, pos, radius = 50, col = color.fromRGBA(255, 255,
 /// ================================|--------------------|================================
 function init(){
 	// initializes the game
+	
 	log("initializing game @" + performance.now().toString() + "ms...", logType.notify);
 	
+	// check to see if the user's browser has localStorage enabled
 	localStorageCheck();
-	
+
+	// initialize the static class variables
 	audioMgr.init();
 	controlState.init();
 	tile.init();
 
+	// loads all the assets from the server and the config/scores from localStorage, and when that's finished, starts the gameloop
 	load();
+	
+	// create the canvas and set the canvas variables
 	makeCanvas();
 	getCanvas();
+
+	// applies the configuration that was loaded
 	applyConfig();
 	
+	// adds event listeners for the keyboard and touchscreen and mouse
 	addInputEventListeners();
 
+	// opens the main menu game state
 	goToMainMenu();
-	log("intitialized game!");
+	
+	log("intitialized game!");	
 }
 function load(){
 	// loads all the game data
@@ -320,7 +336,7 @@ function step(){
 	
 	update(dt);
 	draw();
-	
+
 	window.requestAnimationFrame(step);
 }
 function update(dt){
