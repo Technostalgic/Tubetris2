@@ -13,5 +13,12 @@
 	<script src="js/es5.js"></script>
 </head>
 <body style=" text-align:center; color:white; background-color:black; margin:0px;">
-	<!--canvas id="gameCanvas" width="500px" height="660px"></canvas-->
+	<script>
+		try{
+			init();
+		} 
+		catch(e){
+			mobileDebugLog(e);
+		}
+	</script>
 </body>

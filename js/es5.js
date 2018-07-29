@@ -10613,8 +10613,6 @@ function startNewGame() {
 	var state = new state_gameplayState();
 
 	tile.constructGrid();
-	currentScore = 0;
-	ballScore = 0;
 
 	audioMgr.playMusic(music.modern);
 	gameState.switchState(state);
@@ -10681,4 +10679,4 @@ function clientToOffsetPos(clientpos) {
 /// ================================|--------------------|================================
 
 preventKeyScrolling();
-window.addEventListener("load", init);
+//window.addEventListener("load", init);
