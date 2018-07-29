@@ -9557,10 +9557,10 @@ var tooltipProgression = function () {
 /// =================================|----------------|===================================
 
 
-var debug = true;
-localStorageEnabled = true;
-timeElapsed = 0;
-tStamps = [];
+var debug = true,
+	localStorageEnabled = true,
+	timeElapsed = 0,
+	tStamps = [];
 
 var config = {},
     scores = {};
