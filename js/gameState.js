@@ -2175,26 +2175,26 @@ class state_gameplayState extends gameState{
 		hudPreRenders.nplPreRender = preRenderedText.fromString("NEXT:", nplPos, textStyle.getDefault().setColor(textColor.yellow));
 		
 		// draw tileforms til next ball:
-		var nballPos = tile.toScreenPos(new vec2(12, 7)).plus(new vec2(0, -22));
-		hudPreRenders.nballLabelPreRender = preRenderedText.fromString("next ball:", nballPos, new textStyle(fonts.small));
+		var nballPos = tile.toScreenPos(new vec2(12, 7)).plus(new vec2(0, -26));
+		hudPreRenders.nballLabelPreRender = preRenderedText.fromString("nxt ball", nballPos, new textStyle(fonts.small, textColor.light, 2));
 		
 		// draw tileforms til next bomb:
-		var nbombPos = tile.toScreenPos(new vec2(12, 9)).plus(new vec2(0, -22));
-		hudPreRenders.nbombLabelPreRender = preRenderedText.fromString("next bomb:", nbombPos, new textStyle(fonts.small));
+		var nbombPos = tile.toScreenPos(new vec2(12, 9)).plus(new vec2(0, -26));
+		hudPreRenders.nbombLabelPreRender = preRenderedText.fromString("nxt bomb", nbombPos, new textStyle(fonts.small, textColor.light, 2));
 		
 		// bonus
 		// var bonusPos = tile.toScreenPos(new vec2(12, 11)).plus(new vec2(0, -22));
 		// hudPreRenders.bonusLabelPreRender = preRenderedText.fromString("bonus:", bonusPos, new textStyle(fonts.small));
 		
 		// current score
-		var scorePos = tile.toScreenPos(new vec2(12, 18)).plus(new vec2(0, -22));
-		hudPreRenders.scoreLabelPreRender = preRenderedText.fromString("score:", scorePos, new textStyle(fonts.small));
+		var scorePos = tile.toScreenPos(new vec2(12, 17)).plus(new vec2(0, -26));
+		hudPreRenders.scoreLabelPreRender = preRenderedText.fromString("score:", scorePos, new textStyle(fonts.small, textColor.light, 2));
 		
 		// high score
 		var hscoretext = scores[0].score.toString();
 		var hscorePos = tile.toScreenPos(new vec2(12, 19)).plus(new vec2(0, 10));
-		hudPreRenders.hscoreLabelPreRender = preRenderedText.fromString("high:", new vec2(hscorePos.x, hscorePos.y - 10), new textStyle(fonts.small));
-		hudPreRenders.hscorePreRender = preRenderedText.fromString(hscoretext, hscorePos, new textStyle(fonts.small, textColor.green, 1));
+		hudPreRenders.hscoreLabelPreRender = preRenderedText.fromString("high:", new vec2(hscorePos.x, hscorePos.y - 20), new textStyle(fonts.small, textColor.light, 2));
+		hudPreRenders.hscorePreRender = preRenderedText.fromString(hscoretext, hscorePos, new textStyle(fonts.small, textColor.green, 2));
 		
 		this.hudPreRenders = hudPreRenders;
 	}
@@ -2203,13 +2203,13 @@ class state_gameplayState extends gameState{
 		this.updateScorePreRender();
 		
 		// current level:
-		var lvlPos = tile.toScreenPos(new vec2(12, 16));
+		var lvlPos = tile.toScreenPos(new vec2(12, 14));
 		this.hudPreRenders.lvlPreRender = preRenderedText.fromString("LEVEL " + this.currentLevel.difficulty, lvlPos, new textStyle(fonts.large, this.currentLevel.getDifficultyColor()));
 	}
 	updateScorePreRender(){
 		// draw the score
 		var scoreText = this.currentScore.toString();
-		var scorePos = tile.toScreenPos(new vec2(12, 18));
+		var scorePos = tile.toScreenPos(new vec2(12, 17));
 		this.hudPreRenders.scorePreRender = preRenderedText.fromString(scoreText, scorePos, new textStyle(fonts.large, textColor.green));
 	}
 	updateTileformDecrementPreRenders(){
@@ -2231,10 +2231,10 @@ class state_gameplayState extends gameState{
 		//this.hudPreRenders.bonusPreRender = preRenderedText.fromString(bonus.toString(), bonusPos, textStyle.getDefault());
 		
 		// draw tileforms til next level:
-		var lvlPos = tile.toScreenPos(new vec2(12, 16));
-		var progPos = lvlPos.plus(new vec2(0, 22));
+		var lvlPos = tile.toScreenPos(new vec2(12, 14));
+		var progPos = lvlPos.plus(new vec2(0, 24));
 		var tftlvl = this.nextTileforms.length + this.currentLevel.tfTilProgression;
-		this.hudPreRenders.progLabelPreRender = preRenderedText.fromString("next level in " + tftlvl, progPos, new textStyle(fonts.small));
+		this.hudPreRenders.progLabelPreRender = preRenderedText.fromString("next: " + tftlvl, progPos, new textStyle(fonts.small, textColor.light, 2));
 	}
 
 	drawTouchPanel(){
