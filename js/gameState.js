@@ -630,18 +630,12 @@ class state_menuState extends gameState{
 				}
 			}
 		}
-		if(!this.currentTouchPanel)
-			super.touchStart(pos, touch);
 	}
 	touchMove(pos, touch){
 		if(this.currentTouchPanel)
 			this.currentTouchPanel.touchMove(pos, touch);
-		else
-			super.touchMove(pos, touch);
 	}
 	touchEnd(pos, touch){
-		if(!this.currentTouchPanel)
-			super.touchEnd(pos, touch);
 		this.killTouchPanel();
 	}
 	
