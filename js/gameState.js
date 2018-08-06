@@ -624,7 +624,8 @@ class state_menuState extends gameState{
 			if(this.selectedButton instanceof settingButton){
 				if(!(
 					this.selectedButton.mode == buttonSwitchMode.bool ||
-					this.selectedButton.mode == buttonSwitchMode.enumeration
+					this.selectedButton.mode == buttonSwitchMode.enumeration ||
+					this.selectedButton.mode == buttonSwitchMode.directValue
 					)){
 					this.currentTouchPanel = this.getValueSliderPanel(pos);
 				}
