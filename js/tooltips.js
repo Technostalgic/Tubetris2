@@ -101,8 +101,8 @@ class tooltip{
 
 		r.getFocusArea = function(){
 			return new collisionBox(
-				tile.toScreenPos(new vec2(10, 7), false).minus(new vec2(0, 0.75).multiply(tile.tilesize)),
-				new vec2(5, 2).multiply(tile.tilesize)
+				tile.toScreenPos(new vec2(12, 7), false).minus(new vec2(1, 0.5).multiply(tile.tilesize)),
+				new vec2(3, 1.5).multiply(tile.tilesize)
 			);
 		};
 
@@ -116,8 +116,8 @@ class tooltip{
 
 		r.getFocusArea = function(){
 			return new collisionBox(
-				tile.toScreenPos(new vec2(10, 9), false).minus(new vec2(0, 0.75).multiply(tile.tilesize)),
-				new vec2(5, 2).multiply(tile.tilesize)
+				tile.toScreenPos(new vec2(12, 9), false).minus(new vec2(1, 0.5).multiply(tile.tilesize)),
+				new vec2(3, 1.5).multiply(tile.tilesize)
 			);
 		};
 
@@ -133,7 +133,7 @@ class tooltip{
 
 		r.getFocusArea = function(){
 			return new collisionBox(
-				tile.toScreenPos(new vec2(12, 14), false).minus(new vec2(2, 0).multiply(tile.tilesize)),
+				tile.toScreenPos(new vec2(12, 16), false).minus(new vec2(2, 0).multiply(tile.tilesize)),
 				new vec2(5, 1.5).multiply(tile.tilesize)
 			);
 		};
@@ -148,8 +148,8 @@ class tooltip{
 
 		r.getFocusArea = function(){
 			return new collisionBox(
-				tile.toScreenPos(new vec2(12, 16.75), false).minus(new vec2(2, 0.5).multiply(tile.tilesize)),
-				new vec2(5, 4).multiply(tile.tilesize)
+				tile.toScreenPos(new vec2(12, 18), false).minus(new vec2(2, 0.5).multiply(tile.tilesize)),
+				new vec2(5, 2.5).multiply(tile.tilesize)
 			);
 		};
 

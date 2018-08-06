@@ -30,7 +30,6 @@ var renderContext,
 	scalingContext;
 var nativeResolution = new vec2(500, 660),
 	screenBounds =  new collisionBox(new vec2(), new vec2(nativeResolution.x, nativeResolution.y));
-var deviceScale = window.devicePixelRatio;
 
 // sets the keys that are used to retrieve saved information in localStorage
 var storageKeys = {
@@ -892,19 +891,6 @@ function nativeResolutionSupported(){
 		nativeResolution.y <= size.y
 	);
 }
-function getPixelRatio(){
-	if(!config.touchMode) return 1;
-	var ctx = document.createElement("canvas"),
-		dpr = window.devicePixelRatio || 1,
-		bsr = ctx.webkitBackingStorePixelRatio ||
-			ctx.mozBackingStorePixelRatio ||
-			ctx.msBackingStorePixelRatio ||
-			ctx.oBackingStorePixelRatio ||
-			ctx.backingStorePixelRatio || 1;
-		
-	return dpr / bsr;
-}
-
 
 function makeCanvas(){
 	// creates the game canvas element
@@ -919,15 +905,11 @@ function makeCanvas(){
 			size = getMaxCanvasSize();
 			break;
 	}
-	var pixelRatio = getPixelRatio();
-	size = size.multiply(pixelRatio);
 
 	var cvs = document.createElement("canvas");
 	cvs.width = size.x;
 	cvs.height = size.y;
 	cvs.id = "gameCanvas";
-
-	cvs.getContext("2d").setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
 	
 	document.body.appendChild(cvs);
 }
