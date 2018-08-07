@@ -232,6 +232,11 @@ class controlState{
 		// used when the player presses a key to change a keybinding
 		// removes the controlChangeListener from 'keydown' so that future keypresses are not binded
 		window.removeEventListener("keydown", controlState.controlChangeListener);
+		
+		// remove the cancel action so it doesn't cancel ever time you click on another button 
+		window.removeEventListener("mousedown", controlState.resetControlChangeListener);
+		window.removeEventListener("touchstart", controlState.resetControlChangeListener);
+
 		// resets the focus on the gamestate so the user can navigate the menu again
 		gameState.current.selectionFocus = false;
 	}

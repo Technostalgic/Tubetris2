@@ -1366,6 +1366,10 @@ class state_configureKeybindings extends state_menuState{
 				ths.selectionFocus = true;
 				window.addEventListener("keydown", listener);
 				controlState.controlChangeListener = listener;
+				setTimeout(function(){
+					window.addEventListener("mousedown", controlState.resetControlChangeListener);
+					window.addEventListener("touchstart", controlState.resetControlChangeListener);
+				});
 			};
 			
 			// so menu navigate left/right doesn't do anything
@@ -1409,6 +1413,7 @@ class state_configureKeybindings extends state_menuState{
 		saveControls();
 	}
 }
+
 // when the game is paused
 class state_pauseMenu extends state_menuState{
 	constructor(){
