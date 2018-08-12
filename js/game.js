@@ -354,7 +354,7 @@ function loadFonts(){
 	
 	// set individual character widths for each font
 	fonts.large.setSpecificCharacterWidths({
-		'1': 14, '!': 12, ':': 12, ' ': 6, 'j': 16
+		'1': 12, '!': 10, ':': 10, ' ': 6, 'j': 16
 	});
 	fonts.small.setSpecificCharacterWidths({
 		'0': 9, '1': 7, '2': 9, '3': 9, '4': 10, '5': 10, '6': 9, '7': 9, '8': 9, '9': 9, '!': 5, ':': 5, '-': 9,
@@ -1028,7 +1028,7 @@ function goToMainMenu(){
 	gameState.switchState(new state_mainMenu());
 }
 function goToFirstTrailerSlide(){
-	gameState.switchState(trailerSlide.get_trailerSlide1());
+	gameState.switchState(new state_mainMenu());
 }
 
 function drawFPS(){

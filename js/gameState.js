@@ -640,6 +640,7 @@ class trailerSlide extends state_menuState{
 		style = style || new textStyle(fonts.large, textColor.green);
 		var pr = preRenderedText.fromBlock(new textBlock(txt, style, screenBounds));
 		var prTextOb = {prText: pr, prAnim: anim}
+		prTextOb.prText.setCenter(pos);
 		
 		console.log(anim);
 		
@@ -659,21 +660,21 @@ class trailerSlide extends state_menuState{
 	
 	static get_trailerSlide0(){
 		var style = textStyle.getDefault().setColor(textColor.green);
-		var anim = new textAnim_scaleTransform(500, 0, 1).setAnimType(textAnimType.bulgeIn, false);
+		var anim = new textAnim_scaleTransform(500, 0, 1, 0.01).setAnimType(textAnimType.bulgeIn, false);
 		var animExit = new textAnim_scaleTransform(500, 1, 0).setAnimType(textAnimType.linear, false);
 		animExit.animDelay = 4000;
-		var pos = screenBounds.center;
+		var pos = screenBounds.center.minus(new vec2(0, 150));
 		
 		anim.animDelay = 1250;
-		var r = new trailerSlide("Imagine that Tetris", style, new textAnim_compound([anim, animExit]), pos);
+		var r = new trailerSlide("Imagine if Tetris", style, new textAnim_compound([anim, animExit]), pos);
 		
-		anim = new textAnim_scaleTransform(500, 0, 1).setAnimType(textAnimType.bulgeIn, false);
+		anim = new textAnim_scaleTransform(500, 0, 1, 0.01).setAnimType(textAnimType.bulgeIn, false);
 		anim.animDelay = 2500;
 		r.addText("And Pipe Dream", style, new textAnim_compound([anim, animExit]), pos.plus(new vec2(0, 50)));
 		
 		style = textStyle.getDefault().setColor(textColor.yellow);
-		anim = new textAnim_scaleTransform(500, 0, 2).setAnimType(textAnimType.bulgeIn, false);
-		anim.animDelay = 4000;
+		anim = new textAnim_scaleTransform(500, 0, 2, 0.1).setAnimType(textAnimType.bulgeIn, false);
+		anim.animDelay = 4200;
 		r.addText("Had a Baby", style, anim, pos.plus(new vec2(0, 25)));
 		
 		return r;
@@ -776,13 +777,13 @@ class state_mainMenu extends state_menuState{
 		// set the title and title animation
 		var tubetrisEntrance = new textAnim_scale(300, 0, 1, 0.4);
 		tubetrisEntrance.animType = textAnimType.bulgeIn;
-		tubetrisEntrance.animDelay = 200;
+		tubetrisEntrance.animDelay = 1000;
 		this.setTitle("TUBETRIS", new textStyle(fonts.large, textColor.green, 3), tubetrisEntrance);
 		
 		// "deluxe" text animation
 		var deluxeEntrance = new textAnim_scale(100, 0, 1, 0);
 		deluxeEntrance.animType = textAnimType.linear;
-		deluxeEntrance.animDelay = 1300;
+		deluxeEntrance.animDelay = 2500;
 		
 		this.titleDeluxeAnim = new textAnim_compound([
 			deluxeEntrance,
@@ -790,6 +791,14 @@ class state_mainMenu extends state_menuState{
 			new textAnim_rainbow(500, 1/12)
 			]);
 		
+		var anim = new textAnim_scaleTransform(250, 0, 1, 0.1);
+		anim = new textAnim_scaleTransform(250, 0, 1, 0.1);
+		anim.animType = textAnimType.bulgeIn;
+		anim.animDelay = 3500;
+		this.playNowAnim = new textAnim_compound([
+			anim,
+			new textAnim_yOffset(1000)
+		]);
 	}
 	
 	addButtons(){
@@ -798,16 +807,16 @@ class state_mainMenu extends state_menuState{
 		var off = 0;
 		var dif = 55;
 		
-		var action_startGame = function(){ startNewGame(); };
-		var action_switchToScoreboard = function(){ gameState.switchState(new state_scoreboard()); };
-		var action_switchToOptions = function(){ gameState.switchState(new state_optionsMenu()); };
-		var action_switchToCredits = function(){ gameState.switchState(new state_credits()); }
-		
-		this.buttons.push(new menuButton().construct("Start Game", screenBounds.center.plus(new vec2(0, off * dif)), "start a new game", action_startGame)); off++;
-		this.buttons.push(new menuButton().construct("Scoreboard", screenBounds.center.plus(new vec2(0, off * dif)), "view the highest scoring players", action_switchToScoreboard)); off++;
-		this.buttons.push(new menuButton().construct("Options", screenBounds.center.plus(new vec2(0, off * dif)), "configure gameplay and av options", action_switchToOptions)); off++;
-		//this.buttons.push(new menuButton().construct("Extras", screenBounds.center.plus(new vec2(0, off * dif)), "other things n stuff")); off++;
-		this.buttons.push(new menuButton().construct("Credits", screenBounds.center.plus(new vec2(0, off * dif)), "see who contributed to making the game!", action_switchToCredits)); off++;
+		//var action_startGame = function(){ startNewGame(); };
+		//var action_switchToScoreboard = function(){ gameState.switchState(new state_scoreboard()); };
+		//var action_switchToOptions = function(){ gameState.switchState(new state_optionsMenu()); };
+		//var action_switchToCredits = function(){ gameState.switchState(new state_credits()); }
+		//
+		//this.buttons.push(new menuButton().construct("Start Game", screenBounds.center.plus(new vec2(0, off * dif)), "start a new game", action_startGame)); off++;
+		//this.buttons.push(new menuButton().construct("Scoreboard", screenBounds.center.plus(new vec2(0, off * dif)), "view the highest scoring players", action_switchToScoreboard)); off++;
+		//this.buttons.push(new menuButton().construct("Options", screenBounds.center.plus(new vec2(0, off * dif)), "configure gameplay and av options", action_switchToOptions)); off++;
+		////this.buttons.push(new menuButton().construct("Extras", screenBounds.center.plus(new vec2(0, off * dif)), "other things n stuff")); off++;
+		//this.buttons.push(new menuButton().construct("Credits", screenBounds.center.plus(new vec2(0, off * dif)), "see who contributed to making the game!", action_switchToCredits)); off++;
 	}
 	
 	drawTitle(){
@@ -815,6 +824,9 @@ class state_mainMenu extends state_menuState{
 		
 		var animStyle = new textStyle(fonts.large, textColor.yellow, 2);
 		textRenderer.drawText("DELUXE", new vec2(screenBounds.center.x, screenBounds.top + 180), animStyle, this.titleDeluxeAnim);
+
+		textRenderer.drawText("Play Now At", new vec2(screenBounds.center.x, screenBounds.top + 350), new textStyle(fonts.large), this.playNowAnim);
+		textRenderer.drawText("HTTP:11 technostalgic!itch!io", new vec2(screenBounds.center.x, screenBounds.top + 400), new textStyle(fonts.large), this.playNowAnim);
 	}
 	
 	switchFrom(tostate = null){
