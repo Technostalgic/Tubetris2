@@ -1028,7 +1028,7 @@ function goToMainMenu(){
 	gameState.switchState(new state_mainMenu());
 }
 function goToFirstTrailerSlide(){
-	gameState.switchState(new state_mainMenu());
+	gameState.switchState(trailerSlide.get_trailerSlide3());
 }
 
 function drawFPS(){

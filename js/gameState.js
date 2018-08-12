@@ -640,7 +640,7 @@ class trailerSlide extends state_menuState{
 		style = style || new textStyle(fonts.large, textColor.green);
 		var pr = preRenderedText.fromBlock(new textBlock(txt, style, screenBounds));
 		var prTextOb = {prText: pr, prAnim: anim}
-		prTextOb.prText.setCenter(pos);
+		//prTextOb.prText.setCenter(pos);
 		
 		console.log(anim);
 		
@@ -683,7 +683,7 @@ class trailerSlide extends state_menuState{
 		var style = textStyle.getDefault().setColor(textColor.green).setScale(1.5);
 		var anim1 = new textAnim_scale(500, 0.85, 1.15, 0.1).setAnimType(textAnimType.trigonometricCycle, true);
 		var anim2 = new textAnim_blink(1000, 0.1, textColor.yellow).setAnimType(textAnimType.linear, true);
-		var pos = screenBounds.center;
+		var pos = screenBounds.center.plus(new vec2(135, 0));
 		
 		var r = new trailerSlide("No annoying ads", style, new textAnim_compound([anim1, anim2]), pos);
 		return r;
