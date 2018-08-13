@@ -510,14 +510,10 @@ class tile{
 		});
 		
 		if(enterDestMode){
-
 			// concat the previous phase's fall heights so that tiles aren't left hanging
 			var fh = [];
 			if(gameState.current.phase.fallHeights)
 				fh = gameState.current.phase.fallHeights;
-			
-			log("fh Tested!", logType.success);
-			console.log(fh);
 
 			gameState.current.tilesTagged = gameState.current.tilesTagged.concat(tagblocks);
 			var p = new phase_destroyTaggedTiles(gameState.current);
